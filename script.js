@@ -1,78 +1,121 @@
-﻿const burger = document.querySelector('.burger');
-const navLinks = document.querySelector('.nav-links');
-const navLinksItems = document.querySelectorAll('.nav-links a');
+﻿// ========== CUSTOM CURSOR ==========
+const cursor = document.querySelector('.cursor');
+const cursorFollower = document.querySelector('.cursor-follower');
 
-burger.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-    burger.classList.toggle('toggle');
-});
-
-navLinksItems.forEach(item => {
-    item.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-        burger.classList.remove('toggle');
-    });
-});
-
-const counters = document.querySelectorAll('.counter');
-const speed = 100;
-
-const startCounting = (counter) => {
-    const target = +counter.getAttribute('data-target');
-    const count = +counter.innerText;
-    const increment = target / speed;
+document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
     
-    if (count < target) {
-        counter.innerText = Math.ceil(count + increment);
-        setTimeout(() => startCounting(counter), 20);
-    } else {
-        counter.innerText = target;
-    }
-};
+    setTimeout(() => {
+        cursorFollower.style.left = e.clientX + 'px';
+        cursorFollower.style.top = e.clientY + 'px';
+    }, 80);
+});
 
-const observerOptions = { threshold: 0.5 };
+document.addEventListener('mousedown', () => {
+    cursor.style.transform = 'scale(0.8)';
+    cursorFollower.style.transform = 'scale(0.8)';
+});
 
-const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const countersInView = entry.target.querySelectorAll('.counter');
-            countersInView.forEach(counter => startCounting(counter));
-            observer.unobserve(entry.target);
-        }
+document.addEventListener('mouseup', () => {
+    cursor.style.transform = 'scale(1)';
+    cursorFollower.style.transform = 'scale(1)';
+});
+
+// Hover effect on links and buttons
+const hoverElements = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, .testimonial-card');
+
+hoverElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+        cursorFollower.style.width = '50px';
+        cursorFollower.style.height = '50px';
+        cursorFollower.style.borderColor = 'rgba(168, 85, 247, 0.8)';
     });
-}, observerOptions);
+    
+    el.addEventListener('mouseleave', () => {
+        cursorFollower.style.width = '30px';
+        cursorFollower.style.height = '30px';
+        cursorFollower.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+    });
+});
 
-const statsSection = document.querySelector('.stats');
-if (statsSection) { observer.observe(statsSection); }
+// ========== NAVBAR SCROLL EFFECT ==========
+const header = document.querySelector('.header');
+const hamburger = document.querySelector('.hamburger');
+const navMenu = document.querySelector('.nav-menu');
+const navLinks = document.querySelectorAll('.nav-link');
 
-const navbar = document.querySelector('.navbar');
 window.addEventListener('scroll', () => {
     if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(10, 10, 15, 0.95)';
-        navbar.style.boxShadow = '0 5px 30px rgba(0, 0, 0, 0.5)';
+        header.classList.add('scrolled');
     } else {
-        navbar.style.background = 'rgba(10, 10, 15, 0.8)';
-        navbar.style.boxShadow = 'none';
+        header.classList.remove('scrolled');
     }
 });
 
+// ========== MOBILE MENU ==========
+hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    
+    if (hamburger.classList.contains('active')) {
+        hamburger.children[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+        hamburger.children[1].style.opacity = '0';
+        hamburger.children[2].style.transform = 'rotate(-45deg) translate(7px, -7px)';
+    } else {
+        hamburger.children[0].style.transform = 'rotate(0) translate(0)';
+        hamburger.children[1].style.opacity = '1';
+        hamburger.children[2].style.transform = 'rotate(0) translate(0)';
+    }
+});
+
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        hamburger.children[0].style.transform = 'rotate(0) translate(0)';
+        hamburger.children[1].style.opacity = '1';
+        hamburger.children[2].style.transform = 'rotate(0) translate(0)';
+    });
+});
+
+// ========== ACTIVE NAV LINK ON SCROLL ==========
+const sections = document.querySelectorAll('section[id]');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        const sectionHeight = section.clientHeight;
+        
+        if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+            current = section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+});
+
+// ========== SMOOTH SCROLL ==========
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    anchor.addEventListener('click', function(e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
         }
     });
 });
 
-const style = document.createElement('style');
-style.textContent = 
-    .burger.toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
-    .burger.toggle .line2 { opacity: 0; }
-    .burger.toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
-;
-document.head.appendChild(style);
-
-console.log('Legante Project - Website hazir!');
-console.log('Discord: https://discord.gg/SDvC7nNYRp');
+console.log('🚀 Legante Project - Premium Website Active');
+console.log('🔗 Discord: https://discord.gg/SDvC7nNYRp');
+console.log('⭐ 50+ Premium Hile');
