@@ -39,45 +39,83 @@ particleStyle.textContent = `
 `;
 document.head.appendChild(particleStyle);
 
-// ========== CUSTOM CURSOR ==========
+// ========== CUSTOM CURSOR (DÜZELTİLDİ) ==========
 const cursor = document.querySelector('.cursor');
 const cursorFollower = document.querySelector('.cursor-follower');
 
+// Başlangıçta imleci gizle
+cursor.style.opacity = '0';
+cursorFollower.style.opacity = '0';
+
+let mouseX = -100;
+let mouseY = -100;
+let followerX = -100;
+let followerY = -100;
+
 document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
+    mouseX = e.clientX;
+    mouseY = e.clientY;
     
-    setTimeout(() => {
-        cursorFollower.style.left = e.clientX + 'px';
-        cursorFollower.style.top = e.clientY + 'px';
-    }, 100);
+    // Ana imleci hemen güncelle
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+    cursor.style.opacity = '1';
+    cursorFollower.style.opacity = '1';
 });
 
+// Mouse vücut dışına çıkınca imleci gizle
+document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    cursorFollower.style.opacity = '0';
+});
+
+document.addEventListener('mouseenter', () => {
+    cursor.style.opacity = '1';
+    cursorFollower.style.opacity = '1';
+});
+
+// Smooth follower animation
+function animateFollower() {
+    followerX += (mouseX - followerX) * 0.15;
+    followerY += (mouseY - followerY) * 0.15;
+    
+    cursorFollower.style.left = followerX + 'px';
+    cursorFollower.style.top = followerY + 'px';
+    
+    requestAnimationFrame(animateFollower);
+}
+
+animateFollower();
+
+// Click effect
 document.addEventListener('mousedown', () => {
-    cursor.style.transform = 'scale(0.7)';
-    cursorFollower.style.transform = 'scale(0.7)';
+    cursor.style.transform = 'translate(-50%, -50%) scale(0.7)';
+    cursorFollower.style.transform = 'translate(-50%, -50%) scale(0.7)';
 });
 
 document.addEventListener('mouseup', () => {
-    cursor.style.transform = 'scale(1)';
-    cursorFollower.style.transform = 'scale(1)');
+    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+    cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
 });
 
-const hoverElements = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, .testimonial-card, .market-item');
+// Hover effects
+const hoverElements = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, .testimonial-card, .market-item, .market-cat-btn');
 
 hoverElements.forEach(el => {
     el.addEventListener('mouseenter', () => {
         cursorFollower.style.width = '50px';
         cursorFollower.style.height = '50px';
         cursorFollower.style.borderColor = 'rgba(168, 85, 247, 0.7)';
-        cursor.style.transform = 'scale(1.5)';
+        cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+        cursor.style.background = '#fff';
     });
     
     el.addEventListener('mouseleave', () => {
         cursorFollower.style.width = '35px';
         cursorFollower.style.height = '35px';
         cursorFollower.style.borderColor = 'rgba(168, 85, 247, 0.4)';
-        cursor.style.transform = 'scale(1)';
+        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        cursor.style.background = '#c084fc';
     });
 });
 
@@ -185,4 +223,4 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 console.log('🚀 Legante Project - Premium Website v2.4.1');
 console.log('🔗 Discord: https://discord.gg/bM6SZcNmzW');
-console.log('✨ Partikül efekti aktif | Market filtresi aktif');
+console.log('✨ Partikül efekti aktif | Market filtresi aktif | İmleç düzeltildi');
