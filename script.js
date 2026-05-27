@@ -22,8 +22,7 @@ document.addEventListener('mouseup', () => {
     cursorFollower.style.transform = 'scale(1)';
 });
 
-// Hover effect on links and buttons
-const hoverElements = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, .testimonial-card');
+const hoverElements = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, .testimonial-card, .market-item');
 
 hoverElements.forEach(el => {
     el.addEventListener('mouseenter', () => {
@@ -102,6 +101,33 @@ window.addEventListener('scroll', () => {
     });
 });
 
+// ========== MARKET FILTER ==========
+const categoryButtons = document.querySelectorAll('.market-cat-btn');
+const marketItems = document.querySelectorAll('.market-item');
+
+categoryButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        button.classList.add('active');
+        
+        const category = button.getAttribute('data-category');
+        
+        marketItems.forEach(item => {
+            if (category === 'all') {
+                item.classList.remove('hidden');
+            } else {
+                if (item.getAttribute('data-category') === category) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            }
+        });
+    });
+});
+
 // ========== SMOOTH SCROLL ==========
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
@@ -117,5 +143,5 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 console.log('🚀 Legante Project - Premium Website Active');
-console.log('🔗 Discord: https://discord.gg/SDvC7nNYRp');
-console.log('⭐ 50+ Premium Hile');
+console.log('🔗 Discord: https://discord.gg/bM6SZcNmzW');
+console.log('🛒 Market: Aktif | Kategoriler: Tümü, VIP, Booster, Özel Üye, Diğer');
