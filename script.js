@@ -1,23 +1,25 @@
 ﻿// ========== PARTICLE SYSTEM ==========
 const particlesContainer = document.querySelector('.particles');
-for (let i = 0; i < 60; i++) {
-    const particle = document.createElement('div');
-    particle.classList.add('particle');
-    const size = Math.random() * 3 + 1;
-    const duration = Math.random() * 20 + 10;
-    const delay = Math.random() * 10;
-    particle.style.cssText = `
-        position: absolute;
-        width: ${size}px;
-        height: ${size}px;
-        background: rgba(168, 85, 247, ${Math.random() * 0.5 + 0.2});
-        border-radius: 50%;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        animation: particleFloat ${duration}s ${delay}s linear infinite;
-        box-shadow: 0 0 ${size * 3}px rgba(168, 85, 247, 0.5);
-    `;
-    particlesContainer.appendChild(particle);
+if (particlesContainer) {
+    for (let i = 0; i < 60; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        const size = Math.random() * 3 + 1;
+        const duration = Math.random() * 20 + 10;
+        const delay = Math.random() * 10;
+        particle.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            background: rgba(168, 85, 247, ${Math.random() * 0.5 + 0.2});
+            border-radius: 50%;
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation: particleFloat ${duration}s ${delay}s linear infinite;
+            box-shadow: 0 0 ${size * 3}px rgba(168, 85, 247, 0.5);
+        `;
+        particlesContainer.appendChild(particle);
+    }
 }
 
 const particleStyle = document.createElement('style');
@@ -36,51 +38,53 @@ const cursor = document.querySelector('.cursor');
 const cursorFollower = document.querySelector('.cursor-follower');
 let mouseX = -100, mouseY = -100, followerX = -100, followerY = -100;
 
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    cursor.style.left = mouseX + 'px';
-    cursor.style.top = mouseY + 'px';
-    cursor.style.opacity = '1';
-    cursorFollower.style.opacity = '1';
-});
-
-document.addEventListener('mouseleave', () => {
-    cursor.style.opacity = '0';
-    cursorFollower.style.opacity = '0';
-});
-
-function animateFollower() {
-    followerX += (mouseX - followerX) * 0.15;
-    followerY += (mouseY - followerY) * 0.15;
-    cursorFollower.style.left = followerX + 'px';
-    cursorFollower.style.top = followerY + 'px';
-    requestAnimationFrame(animateFollower);
-}
-animateFollower();
-
-document.addEventListener('mousedown', () => {
-    cursor.style.transform = 'translate(-50%, -50%) scale(0.7)';
-    cursorFollower.style.transform = 'translate(-50%, -50%) scale(0.7)';
-});
-document.addEventListener('mouseup', () => {
-    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-    cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
-});
-
-const hoverElements = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, .market-item');
-hoverElements.forEach(el => {
-    el.addEventListener('mouseenter', () => {
-        cursorFollower.style.width = '50px';
-        cursorFollower.style.height = '50px';
-        cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+if (cursor && cursorFollower) {
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+        cursor.style.opacity = '1';
+        cursorFollower.style.opacity = '1';
     });
-    el.addEventListener('mouseleave', () => {
-        cursorFollower.style.width = '35px';
-        cursorFollower.style.height = '35px';
+
+    document.addEventListener('mouseleave', () => {
+        cursor.style.opacity = '0';
+        cursorFollower.style.opacity = '0';
+    });
+
+    function animateFollower() {
+        followerX += (mouseX - followerX) * 0.15;
+        followerY += (mouseY - followerY) * 0.15;
+        cursorFollower.style.left = followerX + 'px';
+        cursorFollower.style.top = followerY + 'px';
+        requestAnimationFrame(animateFollower);
+    }
+    animateFollower();
+
+    document.addEventListener('mousedown', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(0.7)';
+        cursorFollower.style.transform = 'translate(-50%, -50%) scale(0.7)';
+    });
+    document.addEventListener('mouseup', () => {
         cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
     });
-});
+
+    const hoverElements = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, .market-item');
+    hoverElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursorFollower.style.width = '50px';
+            cursorFollower.style.height = '50px';
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+        });
+        el.addEventListener('mouseleave', () => {
+            cursorFollower.style.width = '35px';
+            cursorFollower.style.height = '35px';
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+    });
+}
 
 // ========== MOBILE MENU ==========
 const sidePanel = document.getElementById('side-panel');
@@ -92,20 +96,24 @@ function isMobile() { return window.innerWidth <= 992; }
 function updateMobileMenu() {
     if (isMobile()) {
         document.body.style.marginLeft = '0';
-        mobileBtn.style.display = 'flex';
-        mobileBtn.onclick = () => {
-            sidePanel.classList.toggle('mobile-open');
-            overlay.style.display = sidePanel.classList.contains('mobile-open') ? 'block' : 'none';
-        };
-        overlay.onclick = () => {
-            sidePanel.classList.remove('mobile-open');
-            overlay.style.display = 'none';
-        };
+        if (mobileBtn) mobileBtn.style.display = 'flex';
+        if (mobileBtn) {
+            mobileBtn.onclick = () => {
+                if (sidePanel) sidePanel.classList.toggle('mobile-open');
+                if (overlay) overlay.style.display = sidePanel?.classList.contains('mobile-open') ? 'block' : 'none';
+            };
+        }
+        if (overlay) {
+            overlay.onclick = () => {
+                if (sidePanel) sidePanel.classList.remove('mobile-open');
+                if (overlay) overlay.style.display = 'none';
+            };
+        }
     } else {
         document.body.style.marginLeft = '280px';
-        sidePanel.classList.remove('mobile-open');
-        overlay.style.display = 'none';
-        mobileBtn.style.display = 'none';
+        if (sidePanel) sidePanel.classList.remove('mobile-open');
+        if (overlay) overlay.style.display = 'none';
+        if (mobileBtn) mobileBtn.style.display = 'none';
     }
 }
 window.addEventListener('resize', updateMobileMenu);
@@ -141,8 +149,8 @@ document.querySelectorAll('.side-nav-link[href^="#"]').forEach(anchor => {
         if (target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             if (isMobile()) {
-                sidePanel.classList.remove('mobile-open');
-                overlay.style.display = 'none';
+                if (sidePanel) sidePanel.classList.remove('mobile-open');
+                if (overlay) overlay.style.display = 'none';
             }
         }
     });
@@ -166,196 +174,7 @@ categoryBtns.forEach(btn => {
     });
 });
 
-// ========== VIRUSTOTAL API (API KEY GEREKMEZ - PUBLIC API) ==========
-// VirusTotal v3 API - Public endpoint (rate limited)
-// Not: Bu API key herkese açık değildir, kendi key'inizi almak için virustotal.com/gui/join-us
-
-let vtUnlocked = false;
-const VT_PUBLIC_KEY = "YOUR_API_KEY_HERE"; // Kullanıcı kendi key'ini girecek
-
-// HTML yapısını oluştur (sadece bir kere)
-if (!document.querySelector('#virustotal')) {
-    const vtSection = document.createElement('section');
-    vtSection.className = 'vt-section';
-    vtSection.id = 'virustotal';
-    vtSection.innerHTML = `
-        <div class="section-container">
-            <div class="vt-container">
-                <div class="vt-title">
-                    <i class="fas fa-shield-virus" style="color: #a855f7;"></i>
-                    <span class="gradient-text">VirusTotal</span> Scanner
-                </div>
-                <div class="vt-sub">Dosya veya Link analizi yapın (API Key gerektirir)</div>
-                <div class="vt-input-group">
-                    <input type="text" id="vt-input" class="vt-input" placeholder="URL veya Hash girin...">
-                    <select id="vt-type" class="vt-type-select">
-                        <option value="url">URL</option>
-                        <option value="hash">Hash (MD5/SHA1/SHA256)</option>
-                    </select>
-                    <button id="vt-scan-btn" class="vt-btn"><i class="fas fa-search"></i> Analiz Et</button>
-                </div>
-                <div id="vt-loader" class="vt-loader">
-                    <div class="vt-spinner"></div>
-                    <span>VirusTotal'da taranıyor...</span>
-                </div>
-                <div id="vt-result" class="vt-result">
-                    <div id="vt-stats"></div>
-                    <div id="vt-detections"></div>
-                    <div id="vt-engines"></div>
-                </div>
-                <div id="vt-api-warning" style="margin-top: 15px; text-align: center; font-size: 0.7rem; color: #f59e0b; display: none;">
-                    ⚠️ API Key ayarlanmamış! VirusTotal.com/gui/join-us adresinden üye olup API key alın.
-                </div>
-            </div>
-        </div>
-    `;
-    
-    const heroSection = document.querySelector('#home');
-    if (heroSection && heroSection.nextSibling) {
-        heroSection.insertAdjacentElement('afterend', vtSection);
-    } else {
-        document.querySelector('main').insertBefore(vtSection, document.querySelector('#features'));
-    }
-}
-
-// VirusTotal API Fonksiyonları
-async function vtFetch(url, options = {}) {
-    if (VT_PUBLIC_KEY === "YOUR_API_KEY_HERE") {
-        document.getElementById('vt-api-warning').style.display = 'block';
-        throw new Error('API Key ayarlanmamış');
-    }
-    const headers = {
-        'x-apikey': VT_PUBLIC_KEY,
-        'Content-Type': 'application/json'
-    };
-    const response = await fetch(url, { ...options, headers });
-    if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    return response.json();
-}
-
-async function analyzeURL(url) {
-    const submitRes = await vtFetch('https://www.virustotal.com/api/v3/urls', {
-        method: 'POST',
-        body: JSON.stringify({ url: url })
-    });
-    const scanId = submitRes.data.id;
-    await new Promise(r => setTimeout(r, 3000));
-    const resultRes = await vtFetch(`https://www.virustotal.com/api/v3/analyses/${scanId}`);
-    return resultRes;
-}
-
-async function analyzeHash(hash) {
-    try {
-        const result = await vtFetch(`https://www.virustotal.com/api/v3/files/${hash}`);
-        return result;
-    } catch (e) {
-        if (e.message.includes('404')) throw new Error('Hash bulunamadı');
-        throw e;
-    }
-}
-
-function displayVTResults(data, type) {
-    const resultDiv = document.getElementById('vt-result');
-    const statsDiv = document.getElementById('vt-stats');
-    const enginesDiv = document.getElementById('vt-engines');
-    
-    let attributes, lastAnalysisStats, results = {};
-    if (type === 'url') {
-        attributes = data.data.attributes;
-        lastAnalysisStats = attributes.stats;
-        results = attributes.results || {};
-    } else {
-        attributes = data.data.attributes;
-        lastAnalysisStats = attributes.last_analysis_stats;
-        results = attributes.last_analysis_results || {};
-    }
-    
-    const malicious = lastAnalysisStats.malicious || 0;
-    const suspicious = lastAnalysisStats.suspicious || 0;
-    const undetected = lastAnalysisStats.undetected || 0;
-    const harmless = lastAnalysisStats.harmless || 0;
-    const total = malicious + suspicious + undetected + harmless;
-    
-    let detectionClass = 'clean';
-    let detectionText = '✅ Temiz';
-    if (malicious > 0) {
-        detectionClass = 'malicious';
-        detectionText = `⚠️ ZARARLI - ${malicious} tespit`;
-    } else if (suspicious > 0) {
-        detectionClass = 'suspicious';
-        detectionText = `⚠️ ŞÜPHELİ - ${suspicious} tespit`;
-    }
-    
-    statsDiv.innerHTML = `
-        <div class="vt-detections ${detectionClass}">
-            <div style="font-size: 1.2rem; font-weight: 700; margin-bottom: 5px;">${detectionText}</div>
-            <div style="font-size: 0.8rem;">${malicious} Zararlı | ${suspicious} Şüpheli | ${undetected} Temiz</div>
-        </div>
-        <div class="vt-stat"><span class="vt-stat-label">Toplam Tarama</span><span class="vt-stat-value">${total}</span></div>
-    `;
-    
-    const engineList = Object.entries(results);
-    if (engineList.length > 0) {
-        let enginesHtml = '<div style="margin-top: 20px;"><div style="font-weight: 700; margin-bottom: 10px;">🔍 Tarama Sonuçları:</div><div class="vt-engine-list">';
-        for (const [engine, result] of engineList.slice(0, 30)) {
-            const verdict = result.category || result.result;
-            const isMalicious = verdict === 'malicious' || verdict === 'malware';
-            enginesHtml += `<div class="vt-engine-item"><span class="vt-engine-name">${engine}</span><span class="vt-engine-result ${isMalicious ? '' : 'clean'}">${verdict || 'temiz'}</span></div>`;
-        }
-        enginesHtml += '</div></div>';
-        enginesDiv.innerHTML = enginesHtml;
-    }
-    resultDiv.classList.add('active');
-}
-
-async function runVTAnalysis() {
-    const input = document.getElementById('vt-input').value.trim();
-    const type = document.getElementById('vt-type').value;
-    const scanBtn = document.getElementById('vt-scan-btn');
-    const loader = document.getElementById('vt-loader');
-    const resultDiv = document.getElementById('vt-result');
-    
-    if (!input) { alert('URL veya Hash girin!'); return; }
-    
-    if (VT_PUBLIC_KEY === "YOUR_API_KEY_HERE") {
-        resultDiv.classList.add('active');
-        document.getElementById('vt-stats').innerHTML = `<div class="vt-detections" style="background:rgba(245,158,11,0.1);">⚠️ VirusTotal API Key ayarlanmamış!<br><span style="font-size:0.8rem;">virustotal.com/gui/join-us adresinden üye olup script.js içindeki VT_PUBLIC_KEY değişkenini key'inizle değiştirin.</span></div>`;
-        return;
-    }
-    
-    scanBtn.disabled = true;
-    loader.classList.add('active');
-    resultDiv.classList.remove('active');
-    
-    try {
-        let result;
-        if (type === 'url') {
-            let url = input;
-            if (!url.startsWith('http')) url = 'https://' + url;
-            result = await analyzeURL(url);
-            displayVTResults(result, 'url');
-        } else {
-            result = await analyzeHash(input);
-            displayVTResults(result, 'hash');
-        }
-    } catch (error) {
-        resultDiv.classList.add('active');
-        document.getElementById('vt-stats').innerHTML = `<div class="vt-detections" style="background:rgba(239,68,68,0.1);">❌ Hata: ${error.message}</div>`;
-    } finally {
-        scanBtn.disabled = false;
-        loader.classList.remove('active');
-    }
-}
-
-// Event listener
-const vtScanBtn = document.getElementById('vt-scan-btn');
-if (vtScanBtn) vtScanBtn.addEventListener('click', runVTAnalysis);
-const vtInput = document.getElementById('vt-input');
-if (vtInput) vtInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') runVTAnalysis(); });
-
-// ========== EXTRA TOOLS (7 TOOL - VIRUSTOTAL EXTRA TOOLS İÇİNDE) ==========
+// ========== EXTRA TOOLS (7 TOOL - VIRUSTOTAL DAHİL) ==========
 let unlocked = false;
 const MASTER_KEYS = ["LEGANTE2024", "VIPACCESS", "SMSBOOM69", "TOKENCHECK2024", "LEGANTEPRO", "FREETOOLS"];
 
@@ -365,7 +184,7 @@ const ipLink = document.getElementById('ip-locator-link');
 const passLink = document.getElementById('pass-gen-link');
 const hashLink = document.getElementById('hash-tool-link');
 const portLink = document.getElementById('port-scan-link');
-const vtExtraLink = document.getElementById('virustotal-link');
+const vtExtraLink = document.getElementById('virustotal-extra-link');
 const accessBtn = document.getElementById('access-extra-btn');
 
 function updateExtraToolsUI() {
@@ -419,7 +238,7 @@ function showKeyModal(callback) {
             unlocked = true;
             modalDiv.remove();
             updateExtraToolsUI();
-            callback(true);
+            if (callback) callback(true);
         } else {
             errorDiv.style.display = 'block';
             setTimeout(() => errorDiv.style.display = 'none', 2000);
@@ -428,13 +247,15 @@ function showKeyModal(callback) {
     input.onkeypress = (e) => { if(e.key === 'Enter') submit.click(); };
 }
 
-accessBtn.onclick = () => {
-    if (unlocked) {
-        alert('✅ Extra Tools zaten aktif!');
-    } else {
-        showKeyModal((success) => { if(success) alert('🔓 Extra Tools erişimi açıldı! 7 araç kullanıma hazır.'); });
-    }
-};
+if (accessBtn) {
+    accessBtn.onclick = () => {
+        if (unlocked) {
+            alert('✅ Extra Tools zaten aktif!');
+        } else {
+            showKeyModal((success) => { if(success) alert('🔓 Extra Tools erişimi açıldı! 7 araç kullanıma hazır.'); });
+        }
+    };
+}
 
 // Modal oluşturma
 function createToolModal(title, contentHTML) {
@@ -566,8 +387,8 @@ if (passLink) {
         e.preventDefault();
         if (!unlocked) { showKeyModal(()=>{}); return; }
         const modal = createToolModal('Password Generator', `
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <input type="number" id="pass-length" value="12" min="6" max="32" style="flex:1; padding:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+            <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                <input type="number" id="pass-length" value="12" min="6" max="32" style="flex:1; min-width:100px; padding:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <label><input type="checkbox" id="use-upper" checked> A-Z</label>
                     <label><input type="checkbox" id="use-lower" checked> a-z</label>
@@ -609,7 +430,7 @@ if (hashLink) {
         if (!unlocked) { showKeyModal(()=>{}); return; }
         const modal = createToolModal('Hash Tool', `
             <textarea id="hash-input" rows="3" placeholder="Metin girin..." style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;"></textarea>
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
                 <button id="hash-md5" style="flex:1; padding:10px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.3); border-radius:10px; color:white; cursor:pointer;">MD5</button>
                 <button id="hash-sha1" style="flex:1; padding:10px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.3); border-radius:10px; color:white; cursor:pointer;">SHA1</button>
                 <button id="hash-sha256" style="flex:1; padding:10px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.3); border-radius:10px; color:white; cursor:pointer;">SHA256</button>
@@ -686,201 +507,158 @@ if (portLink) {
     };
 }
 
-// 7. VIRUSTOTAL (EXTRA TOOLS İÇİNDE)
+// 7. VIRUSTOTAL SCANNER (EXTRA TOOLS İÇİNDE)
 if (vtExtraLink) {
     vtExtraLink.onclick = (e) => {
         e.preventDefault();
         if (!unlocked) { showKeyModal(()=>{}); return; }
-        document.querySelector('#virustotal').scrollIntoView({ behavior: 'smooth' });
+        const vtSection = document.getElementById('virustotal');
+        if (vtSection) {
+            vtSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            alert('VirusTotal bölümü bulunamadı!');
+        }
     };
 }
 
-updateExtraToolsUI();
-console.log('✅ Legante Project v3.0 | 7 Extra Tools | VirusTotal entegre');
-// ========== VIRUSTOTAL'U NORMAL MENÜDEN KALDIR, EXTRA TOOLS'A EKLE ==========
+// ========== VIRUSTOTAL API (EXTRA TOOLS AÇILINCA ÇALIŞIR) ==========
+const VT_API_KEY = "YOUR_API_KEY_HERE"; // Kendi API key'inizi girin
 
-// 1. Normal menüdeki VirusTotal linkini bul ve kaldır
-const normalVtLink = document.querySelector('#side-nav-menu a[href="#virustotal"]');
-if (normalVtLink) {
-    const parentLi = normalVtLink.closest('li');
-    if (parentLi) parentLi.remove();
-    console.log('✅ Normal menüden VirusTotal kaldırıldı');
-}
-
-// 2. Extra Tools menüsünde VirusTotal var mı kontrol et, yoksa ekle
-const extraToolsMenu = document.getElementById('extra-tools-menu');
-if (extraToolsMenu) {
-    // Daha önce eklenmiş mi kontrol et
-    let existingVtInExtra = document.getElementById('virustotal-extra-link');
-    if (!existingVtInExtra) {
-        const newVtItem = document.createElement('li');
-        newVtItem.style.marginBottom = '6px';
-        newVtItem.innerHTML = `
-            <a href="#" id="virustotal-extra-link" class="side-nav-link locked" style="cursor: pointer; opacity: 0.5; pointer-events: none;">
-                <i class="fas fa-lock"></i>
-                <span>VirusTotal Scanner (Kilitli)</span>
-            </a>
-        `;
-        extraToolsMenu.appendChild(newVtItem);
-        console.log('✅ VirusTotal Extra Tools menüsüne eklendi');
+async function vtFetch(url, options = {}) {
+    if (VT_API_KEY === "YOUR_API_KEY_HERE") {
+        const warning = document.getElementById('vt-api-warning');
+        if (warning) warning.style.display = 'block';
+        throw new Error('API Key ayarlanmamış');
     }
+    const headers = {
+        'x-apikey': VT_API_KEY,
+        'Content-Type': 'application/json'
+    };
+    const response = await fetch(url, { ...options, headers });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
 }
 
-// 3. Extra Tools'daki tüm linkleri güncelle (unlocked kontrolü)
-function updateExtraToolsWithVT() {
-    const unlocked = window.unlocked === true; // global unlocked değişkenini al
-    
-    const vtExtraLink = document.getElementById('virustotal-extra-link');
-    const smsLink = document.getElementById('sms-bomber-link');
-    const tokenLink = document.getElementById('token-checker-link');
-    const ipLink = document.getElementById('ip-locator-link');
-    const passLink = document.getElementById('pass-gen-link');
-    const hashLink = document.getElementById('hash-tool-link');
-    const portLink = document.getElementById('port-scan-link');
-    
-    const allExtraTools = [smsLink, tokenLink, ipLink, passLink, hashLink, portLink, vtExtraLink];
-    
-    allExtraTools.forEach(tool => {
-        if (tool) {
-            if (unlocked) {
-                tool.style.opacity = '1';
-                tool.style.pointerEvents = 'auto';
-                tool.classList.remove('locked');
-                const icon = tool.querySelector('i:first-child');
-                if (icon && icon.className.includes('fa-lock')) {
-                    icon.className = 'fas fa-chevron-right';
-                }
-                const span = tool.querySelector('span');
-                if (span) {
-                    span.innerText = span.innerText.replace(' (Kilitli)', '');
-                }
-            } else {
-                tool.style.opacity = '0.5';
-                tool.style.pointerEvents = 'none';
-                tool.classList.add('locked');
-                const icon = tool.querySelector('i:first-child');
-                if (icon && !icon.className.includes('fa-lock')) {
-                    icon.className = 'fas fa-lock';
-                }
-                const span = tool.querySelector('span');
-                if (span && !span.innerText.includes('(Kilitli)')) {
-                    span.innerText = span.innerText + ' (Kilitli)';
-                }
-            }
-        }
+async function analyzeURL(url) {
+    const submitRes = await vtFetch('https://www.virustotal.com/api/v3/urls', {
+        method: 'POST',
+        body: JSON.stringify({ url: url })
     });
+    const scanId = submitRes.data.id;
+    await new Promise(r => setTimeout(r, 3000));
+    return await vtFetch(`https://www.virustotal.com/api/v3/analyses/${scanId}`);
 }
 
-// 4. Extra Tools'daki VirusTotal linkine tıklama olayı ekle
-function bindVtExtraClick() {
-    const vtExtraLink = document.getElementById('virustotal-extra-link');
-    if (vtExtraLink) {
-        // Eski eventleri temizle
-        const newVtLink = vtExtraLink.cloneNode(true);
-        vtExtraLink.parentNode.replaceChild(newVtLink, vtExtraLink);
-        
-        newVtLink.onclick = (e) => {
-            e.preventDefault();
-            if (window.unlocked) {
-                const vtSection = document.querySelector('#virustotal');
-                if (vtSection) {
-                    vtSection.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    alert('VirusTotal bölümü bulunamadı!');
-                }
-            } else {
-                if (window.showKeyModal) {
-                    window.showKeyModal(() => {
-                        window.unlocked = true;
-                        updateExtraToolsWithVT();
-                    });
-                } else {
-                    alert('Önce EXTRA TOOLS erişimi açmalısınız!');
-                }
-            }
-        };
-        newVtLink.id = 'virustotal-extra-link';
+async function analyzeHash(hash) {
+    try {
+        return await vtFetch(`https://www.virustotal.com/api/v3/files/${hash}`);
+    } catch (e) {
+        if (e.message.includes('404')) throw new Error('Hash bulunamadı');
+        throw e;
     }
 }
 
-// 5. Key modal sonrası güncelleme için global değişkenleri yakala
-// Mevcut showKeyModal fonksiyonunu override et
-const originalShowKeyModal = window.showKeyModal;
-if (originalShowKeyModal) {
-    window.showKeyModal = function(callback) {
-        originalShowKeyModal((success) => {
-            if (success) {
-                window.unlocked = true;
-                updateExtraToolsWithVT();
-                bindVtExtraClick();
-            }
-            if (callback) callback(success);
-        });
-    };
-}
-
-// 6. Eğer access butonu zaten varsa, onun click eventini de güncelle
-const accessBtn = document.getElementById('access-extra-btn');
-if (accessBtn) {
-    const oldClick = accessBtn.onclick;
-    accessBtn.onclick = (e) => {
-        if (window.unlocked) {
-            alert('✅ Extra Tools zaten aktif!');
-        } else {
-            window.showKeyModal((success) => {
-                if (success) {
-                    alert('🔓 Extra Tools erişimi açıldı! 7 araç kullanıma hazır.');
-                    updateExtraToolsWithVT();
-                    bindVtExtraClick();
-                }
-            });
-        }
-    };
-}
-
-// 7. Extra Tools menüsünde "ERİŞ" butonuna tıklayınca çalışacak
-const extraAccessBtn = document.querySelector('.access-btn');
-if (extraAccessBtn && extraAccessBtn !== accessBtn) {
-    extraAccessBtn.onclick = () => {
-        if (window.unlocked) {
-            alert('✅ Extra Tools zaten aktif!');
-        } else {
-            window.showKeyModal((success) => {
-                if (success) {
-                    alert('🔓 Extra Tools erişimi açıldı!');
-                    updateExtraToolsWithVT();
-                    bindVtExtraClick();
-                }
-            });
-        }
-    };
-}
-
-// 8. Sayfa yüklendiğinde çalışacak
-window.addEventListener('DOMContentLoaded', () => {
-    // Normal menüdeki VirusTotal linkini tekrar kontrol et ve kaldır
-    const normalVtLinkAgain = document.querySelector('#side-nav-menu a[href="#virustotal"]');
-    if (normalVtLinkAgain) {
-        const parentLi = normalVtLinkAgain.closest('li');
-        if (parentLi) parentLi.remove();
+function displayVTResults(data, type) {
+    const resultDiv = document.getElementById('vt-result');
+    const statsDiv = document.getElementById('vt-stats');
+    const enginesDiv = document.getElementById('vt-engines');
+    if (!resultDiv || !statsDiv || !enginesDiv) return;
+    
+    let attributes, lastAnalysisStats, results = {};
+    if (type === 'url') {
+        attributes = data.data.attributes;
+        lastAnalysisStats = attributes.stats;
+        results = attributes.results || {};
+    } else {
+        attributes = data.data.attributes;
+        lastAnalysisStats = attributes.last_analysis_stats;
+        results = attributes.last_analysis_results || {};
     }
     
-    // Extra Tools menüsünde VirusTotal var mı kontrol et
-    const extraMenu = document.getElementById('extra-tools-menu');
-    if (extraMenu && !document.getElementById('virustotal-extra-link')) {
-        const vtItem = document.createElement('li');
-        vtItem.style.marginBottom = '6px';
-        vtItem.innerHTML = `
-            <a href="#" id="virustotal-extra-link" class="side-nav-link locked" style="cursor: pointer; opacity: 0.5; pointer-events: none;">
-                <i class="fas fa-lock"></i>
-                <span>VirusTotal Scanner (Kilitli)</span>
-            </a>
-        `;
-        extraMenu.appendChild(vtItem);
+    const malicious = lastAnalysisStats.malicious || 0;
+    const suspicious = lastAnalysisStats.suspicious || 0;
+    const undetected = lastAnalysisStats.undetected || 0;
+    const total = malicious + suspicious + undetected + (lastAnalysisStats.harmless || 0);
+    
+    let detectionClass = 'clean';
+    let detectionText = '✅ Temiz';
+    if (malicious > 0) {
+        detectionClass = 'malicious';
+        detectionText = `⚠️ ZARARLI - ${malicious} tespit`;
+    } else if (suspicious > 0) {
+        detectionClass = 'suspicious';
+        detectionText = `⚠️ ŞÜPHELİ - ${suspicious} tespit`;
     }
     
-    updateExtraToolsWithVT();
-    bindVtExtraClick();
-});
+    statsDiv.innerHTML = `
+        <div class="vt-detections ${detectionClass}">
+            <div style="font-size: 1.2rem; font-weight: 700; margin-bottom: 5px;">${detectionText}</div>
+            <div style="font-size: 0.8rem;">${malicious} Zararlı | ${suspicious} Şüpheli | ${undetected} Temiz</div>
+        </div>
+        <div class="vt-stat"><span class="vt-stat-label">Toplam Tarama</span><span class="vt-stat-value">${total}</span></div>
+    `;
+    
+    const engineList = Object.entries(results);
+    if (engineList.length > 0) {
+        let enginesHtml = '<div style="margin-top: 20px;"><div style="font-weight: 700; margin-bottom: 10px;">🔍 Tarama Sonuçları:</div><div class="vt-engine-list">';
+        for (const [engine, result] of engineList.slice(0, 30)) {
+            const verdict = result.category || result.result;
+            const isMalicious = verdict === 'malicious' || verdict === 'malware';
+            enginesHtml += `<div class="vt-engine-item"><span class="vt-engine-name">${engine}</span><span class="vt-engine-result ${isMalicious ? '' : 'clean'}">${verdict || 'temiz'}</span></div>`;
+        }
+        enginesHtml += '</div></div>';
+        enginesDiv.innerHTML = enginesHtml;
+    }
+    resultDiv.classList.add('active');
+}
 
-console.log('✅ VirusTotal normal menüden kaldırıldı, Extra Tools\'a eklendi');
+async function runVTAnalysis() {
+    const input = document.getElementById('vt-input')?.value.trim();
+    const type = document.getElementById('vt-type')?.value;
+    const scanBtn = document.getElementById('vt-scan-btn');
+    const loader = document.getElementById('vt-loader');
+    const resultDiv = document.getElementById('vt-result');
+    
+    if (!input) { alert('URL veya Hash girin!'); return; }
+    
+    if (VT_API_KEY === "YOUR_API_KEY_HERE") {
+        if (resultDiv) resultDiv.classList.add('active');
+        const statsDiv = document.getElementById('vt-stats');
+        if (statsDiv) statsDiv.innerHTML = `<div class="vt-detections" style="background:rgba(245,158,11,0.1);">⚠️ VirusTotal API Key ayarlanmamış!<br><span style="font-size:0.8rem;">virustotal.com/gui/join-us adresinden üye olup script.js içindeki VT_API_KEY değişkenini key'inizle değiştirin.</span></div>`;
+        return;
+    }
+    
+    if (scanBtn) scanBtn.disabled = true;
+    if (loader) loader.classList.add('active');
+    if (resultDiv) resultDiv.classList.remove('active');
+    
+    try {
+        let result;
+        if (type === 'url') {
+            let url = input;
+            if (!url.startsWith('http')) url = 'https://' + url;
+            result = await analyzeURL(url);
+            displayVTResults(result, 'url');
+        } else {
+            result = await analyzeHash(input);
+            displayVTResults(result, 'hash');
+        }
+    } catch (error) {
+        if (resultDiv) resultDiv.classList.add('active');
+        const statsDiv = document.getElementById('vt-stats');
+        if (statsDiv) statsDiv.innerHTML = `<div class="vt-detections" style="background:rgba(239,68,68,0.1);">❌ Hata: ${error.message}</div>`;
+    } finally {
+        if (scanBtn) scanBtn.disabled = false;
+        if (loader) loader.classList.remove('active');
+    }
+}
+
+// VirusTotal event listeners
+const vtScanBtn = document.getElementById('vt-scan-btn');
+if (vtScanBtn) vtScanBtn.addEventListener('click', runVTAnalysis);
+const vtInputField = document.getElementById('vt-input');
+if (vtInputField) vtInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') runVTAnalysis(); });
+
+// Başlangıçta UI güncelle
+updateExtraToolsUI();
+console.log('✅ Legante Project v3.0 | 7 Extra Tools | VirusTotal sadece Extra Tools\'da');
