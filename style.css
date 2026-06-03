@@ -990,70 +990,9 @@ section { padding: 100px 0; }
 .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.04); }
 .footer-bottom p { color: var(--text-muted); font-size: 0.8rem; }
 
-/* Mobile Menu */
-#mobile-menu-btn {
-    position: fixed;
-    left: 15px;
-    top: 15px;
-    width: 45px;
-    height: 45px;
-    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
-    border-radius: 12px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10001;
-    box-shadow: 0 5px 20px rgba(108,92,231,0.4);
-}
-
-#mobile-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-    z-index: 9998;
-    display: none;
-    backdrop-filter: blur(5px);
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-    .features-grid, .market-grid, .pricing-grid, .testimonials-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    body { margin-left: 0; }
-    .header { left: 0; width: 100%; }
-    #side-panel { transform: translateX(-100%); transition: transform 0.3s ease; }
-    #side-panel.mobile-open { transform: translateX(0); }
-    #mobile-menu-btn { display: flex; }
-    .hero-container { grid-template-columns: 1fr; text-align: center; }
-    .hero-visual { display: none; }
-    .hero-cta { justify-content: center; }
-    .hero-stats-mini { justify-content: center; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .cta-wrapper { flex-direction: column; text-align: center; padding: 40px 30px; }
-    .footer-grid { grid-template-columns: 1fr 1fr; }
-}
-
-@media (max-width: 768px) {
-    .features-grid, .market-grid, .pricing-grid, .testimonials-grid {
-        grid-template-columns: 1fr;
-    }
-    .section-title { font-size: 2rem; }
-    .hero-title { font-size: 2.5rem; }
-    .footer-grid { grid-template-columns: 1fr; }
-    .market-cat-btn { padding: 8px 16px; font-size: 0.75rem; }
-}
 /* ========== VIRUSTOTAL PANEL ========== */
 .vt-section {
     padding: 80px 0;
-    background: linear-gradient(135deg, rgba(6,6,11,0.8), rgba(10,10,20,0.9));
 }
 
 .vt-container {
@@ -1235,4 +1174,67 @@ section { padding: 100px 0; }
 
 .vt-engine-result.clean {
     color: #22c55e;
+}
+
+/* Mobile Menu */
+#mobile-menu-btn {
+    position: fixed;
+    left: 15px;
+    top: 15px;
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+    border-radius: 12px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    box-shadow: 0 5px 20px rgba(108,92,231,0.4);
+}
+
+#mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 9998;
+    display: none;
+    backdrop-filter: blur(5px);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .features-grid, .market-grid, .pricing-grid, .testimonials-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    body { margin-left: 0; }
+    .header { left: 0; width: 100%; }
+    #side-panel { transform: translateX(-100%); transition: transform 0.3s ease; }
+    #side-panel.mobile-open { transform: translateX(0); }
+    #mobile-menu-btn { display: flex; }
+    .hero-container { grid-template-columns: 1fr; text-align: center; }
+    .hero-visual { display: none; }
+    .hero-cta { justify-content: center; }
+    .hero-stats-mini { justify-content: center; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .cta-wrapper { flex-direction: column; text-align: center; padding: 40px 30px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+    .features-grid, .market-grid, .pricing-grid, .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+    .section-title { font-size: 2rem; }
+    .hero-title { font-size: 2.5rem; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .market-cat-btn { padding: 8px 16px; font-size: 0.75rem; }
+    .vt-input-group { flex-direction: column; }
+    .vt-btn { justify-content: center; }
 }
