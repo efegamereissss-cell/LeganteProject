@@ -1,12 +1,13 @@
-﻿// ========== SOL PANEL (SİDE MENU) - TÜM NAVİGASYON ==========
-// Mevcut navbar linklerini al ve sol panele taşı
-const originalNavLinks = document.querySelectorAll('.nav-link');
-const navMenuContainer = document.querySelector('.nav-menu');
-const header = document.querySelector('.header');
+﻿// ========== SOL PANEL - SÜREKLİ AÇIK (VARSAYILAN) ==========
+// Mevcut sol panel varsa kaldır
+const existingPanel = document.getElementById('side-panel');
+if (existingPanel) existingPanel.remove();
+const existingBtn = document.getElementById('menu-toggle-btn');
+if (existingBtn) existingBtn.remove();
 
-// Sol panel HTML
+// Sol panel HTML - KALICI AÇIK (transform ile değil, normal flow)
 const sidePanelHTML = `
-<div id="side-panel" style="position: fixed; left: 0; top: 0; width: 280px; height: 100vh; background: rgba(6, 6, 11, 0.98); backdrop-filter: blur(30px); border-right: 1px solid rgba(168, 85, 247, 0.2); z-index: 9999; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 5px 0 40px rgba(0,0,0,0.6);">
+<div id="side-panel" style="position: fixed; left: 0; top: 0; width: 280px; height: 100vh; background: rgba(6, 6, 11, 0.98); backdrop-filter: blur(30px); border-right: 1px solid rgba(168, 85, 247, 0.3); z-index: 9999; box-shadow: 5px 0 40px rgba(0,0,0,0.6); overflow-y: auto;">
     <div style="padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px;">
             <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -24,12 +25,12 @@ const sidePanelHTML = `
             <span style="color: #5a5a70; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-left: 12px;">MENÜ</span>
         </div>
         <ul id="side-nav-menu" style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 8px;"><a href="#home" class="side-nav-link" data-section="home"><i class="fas fa-home" style="width: 28px;"></i><span>Ana Sayfa</span></a></li>
-            <li style="margin-bottom: 8px;"><a href="#features" class="side-nav-link" data-section="features"><i class="fas fa-star" style="width: 28px;"></i><span>Özellikler</span></a></li>
-            <li style="margin-bottom: 8px;"><a href="#market" class="side-nav-link" data-section="market"><i class="fas fa-store" style="width: 28px;"></i><span>Market</span></a></li>
-            <li style="margin-bottom: 8px;"><a href="#stats" class="side-nav-link" data-section="stats"><i class="fas fa-chart-line" style="width: 28px;"></i><span>İstatistikler</span></a></li>
-            <li style="margin-bottom: 8px;"><a href="#pricing" class="side-nav-link" data-section="pricing"><i class="fas fa-tag" style="width: 28px;"></i><span>Paketler</span></a></li>
-            <li style="margin-bottom: 8px;"><a href="#testimonials" class="side-nav-link" data-section="testimonials"><i class="fas fa-comment" style="width: 28px;"></i><span>Yorumlar</span></a></li>
+            <li style="margin-bottom: 6px;"><a href="#home" class="side-nav-link" data-section="home"><i class="fas fa-home" style="width: 28px;"></i><span>Ana Sayfa</span></a></li>
+            <li style="margin-bottom: 6px;"><a href="#features" class="side-nav-link" data-section="features"><i class="fas fa-star" style="width: 28px;"></i><span>Özellikler</span></a></li>
+            <li style="margin-bottom: 6px;"><a href="#market" class="side-nav-link" data-section="market"><i class="fas fa-store" style="width: 28px;"></i><span>Market</span></a></li>
+            <li style="margin-bottom: 6px;"><a href="#stats" class="side-nav-link" data-section="stats"><i class="fas fa-chart-line" style="width: 28px;"></i><span>İstatistikler</span></a></li>
+            <li style="margin-bottom: 6px;"><a href="#pricing" class="side-nav-link" data-section="pricing"><i class="fas fa-tag" style="width: 28px;"></i><span>Paketler</span></a></li>
+            <li style="margin-bottom: 6px;"><a href="#testimonials" class="side-nav-link" data-section="testimonials"><i class="fas fa-comment" style="width: 28px;"></i><span>Yorumlar</span></a></li>
         </ul>
     </div>
     
@@ -58,7 +59,7 @@ const sidePanelHTML = `
     transition: all 0.3s ease;
 }
 .side-nav-link:hover {
-    background: rgba(168, 85, 247, 0.1);
+    background: rgba(168, 85, 247, 0.15);
     color: white;
     transform: translateX(5px);
 }
@@ -69,53 +70,139 @@ const sidePanelHTML = `
 }
 .side-nav-link i {
     font-size: 1.1rem;
+    width: 28px;
+}
+#side-panel::-webkit-scrollbar {
+    width: 3px;
+}
+#side-panel::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+}
+#side-panel::-webkit-scrollbar-thumb {
+    background: #a855f7;
+    border-radius: 3px;
 }
 </style>
 `;
 
 document.body.insertAdjacentHTML('beforeend', sidePanelHTML);
 
-// Panel açma butonu (sol üst köşe)
-const menuBtnHTML = `
-<div id="menu-toggle-btn" style="position: fixed; left: 20px; top: 20px; width: 45px; height: 45px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10000; box-shadow: 0 5px 20px rgba(108,92,231,0.4); transition: 0.3s;">
-    <i class="fas fa-bars" style="color: white; font-size: 1.3rem;"></i>
-</div>
-`;
-document.body.insertAdjacentHTML('beforeend', menuBtnHTML);
-
-// ORTA NAVBAR'DAKİ LİNKLERİ GİZLE (sol panele taşındı)
+// ORTA NAVBAR'DAKİ LİNKLERİ GİZLE
+const navMenuContainer = document.querySelector('.nav-menu');
 if (navMenuContainer) {
     navMenuContainer.style.display = 'none';
 }
 
-// Panel state
-const sidePanel = document.getElementById('side-panel');
-const menuBtn = document.getElementById('menu-toggle-btn');
-let isPanelOpen = false;
+// Header düzenlemesi - logo ve discord butonu için padding
+const headerScrolled = document.querySelector('.header');
+const styleMargin = document.createElement('style');
+styleMargin.textContent = `
+    body {
+        margin-left: 280px !important;
+    }
+    .header {
+        left: 280px !important;
+        width: calc(100% - 280px) !important;
+    }
+    .cursor, .cursor-follower {
+        z-index: 10000;
+    }
+    @media (max-width: 992px) {
+        body {
+            margin-left: 0 !important;
+        }
+        .header {
+            left: 0 !important;
+            width: 100% !important;
+        }
+        #side-panel {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        #side-panel.mobile-open {
+            transform: translateX(0);
+        }
+        .mobile-menu-overlay {
+            display: none;
+        }
+    }
+`;
+document.head.appendChild(styleMargin);
 
-menuBtn.addEventListener('click', () => {
-    isPanelOpen = !isPanelOpen;
-    sidePanel.style.transform = isPanelOpen ? 'translateX(0)' : 'translateX(-100%)';
-    menuBtn.style.left = isPanelOpen ? '300px' : '20px';
+// Mobil için menü butonu (sadece mobilde görünür)
+const mobileMenuBtn = document.createElement('div');
+mobileMenuBtn.id = 'mobile-menu-btn';
+mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+mobileMenuBtn.style.cssText = `
+    position: fixed;
+    left: 15px;
+    top: 15px;
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #6c5ce7, #a855f7);
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    box-shadow: 0 4px 15px rgba(108,92,231,0.4);
+`;
+document.body.appendChild(mobileMenuBtn);
+
+// Mobil overlay
+const overlay = document.createElement('div');
+overlay.id = 'mobile-overlay';
+overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 9998;
+    display: none;
+    backdrop-filter: blur(5px);
+`;
+document.body.appendChild(overlay);
+
+// Mobil işlemleri
+function isMobile() {
+    return window.innerWidth <= 992;
+}
+
+function updateMobileLayout() {
+    const panel = document.getElementById('side-panel');
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const overlayEl = document.getElementById('mobile-overlay');
     
-    // buton ikonunu değiştir
-    const icon = menuBtn.querySelector('i');
-    if (isPanelOpen) {
-        icon.className = 'fas fa-times';
+    if (isMobile()) {
+        document.body.style.marginLeft = '0';
+        if (panel) panel.classList.remove('mobile-open');
+        menuBtn.style.display = 'flex';
+        
+        menuBtn.onclick = () => {
+            panel.classList.toggle('mobile-open');
+            const isOpen = panel.classList.contains('mobile-open');
+            overlayEl.style.display = isOpen ? 'block' : 'none';
+            menuBtn.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        };
+        
+        overlayEl.onclick = () => {
+            panel.classList.remove('mobile-open');
+            overlayEl.style.display = 'none';
+            menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+        };
     } else {
-        icon.className = 'fas fa-bars';
+        document.body.style.marginLeft = '280px';
+        if (panel) panel.classList.remove('mobile-open');
+        overlayEl.style.display = 'none';
+        mobileMenuBtn.style.display = 'none';
     }
-});
+}
 
-// Dışarı tıklayınca kapat
-document.addEventListener('click', (e) => {
-    if (isPanelOpen && !sidePanel.contains(e.target) && !menuBtn.contains(e.target)) {
-        isPanelOpen = false;
-        sidePanel.style.transform = 'translateX(-100%)';
-        menuBtn.style.left = '20px';
-        menuBtn.querySelector('i').className = 'fas fa-bars';
-    }
-});
+window.addEventListener('resize', updateMobileLayout);
+updateMobileLayout();
 
 // Sol panel linkleri için aktif durum ve smooth scroll
 const sideNavLinks = document.querySelectorAll('.side-nav-link');
@@ -151,66 +238,19 @@ sideNavLinks.forEach(link => {
         if (target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             // mobilde paneli kapat
-            if (window.innerWidth <= 768) {
-                isPanelOpen = false;
-                sidePanel.style.transform = 'translateX(-100%)';
-                menuBtn.style.left = '20px';
-                menuBtn.querySelector('i').className = 'fas fa-bars';
+            if (isMobile()) {
+                const panel = document.getElementById('side-panel');
+                const overlayEl = document.getElementById('mobile-overlay');
+                panel.classList.remove('mobile-open');
+                overlayEl.style.display = 'none';
+                document.getElementById('mobile-menu-btn').innerHTML = '<i class="fas fa-bars"></i>';
             }
         }
     });
 });
 
-// Header'daki navbar'ı düzenle (logo ve discord butonu kalabilir)
-const navbar = document.querySelector('.navbar .nav-container');
-if (navbar) {
-    // mevcut nav-menu gizli, nav-actions'daki discord butonunu koru
-    const navActions = document.querySelector('.nav-actions');
-    if (navActions) {
-        // hamburgeri gizle (artık sol panel butonu var)
-        const hamburger = document.querySelector('.hamburger');
-        if (hamburger) hamburger.style.display = 'none';
-    }
-}
+// Hamburger varsa gizle
+const hamburger = document.querySelector('.hamburger');
+if (hamburger) hamburger.style.display = 'none';
 
-// Responsive: mobilde header düzenlemesi
-const styleResponsive = document.createElement('style');
-styleResponsive.textContent = `
-    @media (max-width: 768px) {
-        #menu-toggle-btn {
-            top: 15px;
-            left: 15px;
-            width: 40px;
-            height: 40px;
-        }
-        #side-panel {
-            width: 260px;
-        }
-        .navbar .nav-container {
-            justify-content: flex-end;
-            padding-right: 15px;
-        }
-        .nav-logo {
-            margin-right: auto;
-            margin-left: 60px;
-        }
-        .btn-nav span {
-            display: none;
-        }
-        .btn-nav {
-            padding: 10px 12px;
-        }
-    }
-    @media (max-width: 480px) {
-        .nav-logo {
-            margin-left: 55px;
-        }
-        .btn-nav {
-            padding: 8px 10px;
-        }
-    }
-`;
-document.head.appendChild(styleResponsive);
-
-// Logo'ya tıklayınca ana sayfaya git (zaten öyle)
-console.log('✅ Sol navigasyon paneli eklendi | Ana menü sol tarafa taşındı');
+console.log('✅ Sol menü KALICI AÇIK olarak eklendi | Desktop\'ta her zaman görünür, mobilde butonla açılır');
