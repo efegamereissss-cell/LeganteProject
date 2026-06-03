@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legante Project | Premium Hile Market</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -58,7 +57,7 @@
 
         <div class="panel-extra">
             <div class="menu-label" style="margin-top:20px;">
-                <span>EXTRA TOOLS</span>
+                <span>🛠️ EXTRA TOOLS</span>
                 <button id="access-extra-btn" class="access-btn"><i class="fas fa-key"></i> ERİŞ</button>
             </div>
             <ul id="extra-tools-menu">
@@ -68,6 +67,7 @@
                 <li><a href="#" id="pass-gen-link" class="side-nav-link locked"><i class="fas fa-lock"></i><span>Password Generator (Kilitli)</span></a></li>
                 <li><a href="#" id="hash-tool-link" class="side-nav-link locked"><i class="fas fa-lock"></i><span>Hash Tool (Kilitli)</span></a></li>
                 <li><a href="#" id="port-scan-link" class="side-nav-link locked"><i class="fas fa-lock"></i><span>Port Scanner (Kilitli)</span></a></li>
+                <li><a href="#" id="virustotal-extra-link" class="side-nav-link locked"><i class="fas fa-lock"></i><span>VirusTotal Scanner (Kilitli)</span></a></li>
             </ul>
         </div>
 
@@ -208,6 +208,39 @@
         <!-- CTA -->
         <section class="cta">
             <div class="section-container"><div class="cta-wrapper"><div class="cta-content"><h2>Hemen Aramıza Katıl!</h2><p>Discord sunucumuza katıl, 50+ özel hileye eriş ve saygılı topluluğun bir parçası ol!</p><div class="cta-buttons"><a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-white btn-lg"><i class="fab fa-discord"></i> Discord'a Katıl</a></div></div><div class="cta-visual"><i class="fab fa-discord cta-icon"></i></div></div></div>
+        </section>
+
+        <!-- VIRUSTOTAL SECTION (Normal menüden değil, sadece Extra Tools'dan erişilecek) -->
+        <section id="virustotal" class="vt-section">
+            <div class="section-container">
+                <div class="vt-container">
+                    <div class="vt-title">
+                        <i class="fas fa-shield-virus" style="color: #a855f7;"></i>
+                        <span class="gradient-text">VirusTotal</span> Scanner
+                    </div>
+                    <div class="vt-sub">Dosya veya Link analizi yapın (API Key gerektirir)</div>
+                    <div class="vt-input-group">
+                        <input type="text" id="vt-input" class="vt-input" placeholder="URL veya Hash girin...">
+                        <select id="vt-type" class="vt-type-select">
+                            <option value="url">URL</option>
+                            <option value="hash">Hash (MD5/SHA1/SHA256)</option>
+                        </select>
+                        <button id="vt-scan-btn" class="vt-btn"><i class="fas fa-search"></i> Analiz Et</button>
+                    </div>
+                    <div id="vt-loader" class="vt-loader">
+                        <div class="vt-spinner"></div>
+                        <span>VirusTotal'da taranıyor...</span>
+                    </div>
+                    <div id="vt-result" class="vt-result">
+                        <div id="vt-stats"></div>
+                        <div id="vt-detections"></div>
+                        <div id="vt-engines"></div>
+                    </div>
+                    <div id="vt-api-warning" style="margin-top: 15px; text-align: center; font-size: 0.7rem; color: #f59e0b; display: none;">
+                        ⚠️ API Key ayarlanmamış! VirusTotal.com/gui/join-us adresinden üye olup API key alın.
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
