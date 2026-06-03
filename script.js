@@ -697,3 +697,190 @@ if (vtExtraLink) {
 
 updateExtraToolsUI();
 console.log('✅ Legante Project v3.0 | 7 Extra Tools | VirusTotal entegre');
+// ========== VIRUSTOTAL'U NORMAL MENÜDEN KALDIR, EXTRA TOOLS'A EKLE ==========
+
+// 1. Normal menüdeki VirusTotal linkini bul ve kaldır
+const normalVtLink = document.querySelector('#side-nav-menu a[href="#virustotal"]');
+if (normalVtLink) {
+    const parentLi = normalVtLink.closest('li');
+    if (parentLi) parentLi.remove();
+    console.log('✅ Normal menüden VirusTotal kaldırıldı');
+}
+
+// 2. Extra Tools menüsünde VirusTotal var mı kontrol et, yoksa ekle
+const extraToolsMenu = document.getElementById('extra-tools-menu');
+if (extraToolsMenu) {
+    // Daha önce eklenmiş mi kontrol et
+    let existingVtInExtra = document.getElementById('virustotal-extra-link');
+    if (!existingVtInExtra) {
+        const newVtItem = document.createElement('li');
+        newVtItem.style.marginBottom = '6px';
+        newVtItem.innerHTML = `
+            <a href="#" id="virustotal-extra-link" class="side-nav-link locked" style="cursor: pointer; opacity: 0.5; pointer-events: none;">
+                <i class="fas fa-lock"></i>
+                <span>VirusTotal Scanner (Kilitli)</span>
+            </a>
+        `;
+        extraToolsMenu.appendChild(newVtItem);
+        console.log('✅ VirusTotal Extra Tools menüsüne eklendi');
+    }
+}
+
+// 3. Extra Tools'daki tüm linkleri güncelle (unlocked kontrolü)
+function updateExtraToolsWithVT() {
+    const unlocked = window.unlocked === true; // global unlocked değişkenini al
+    
+    const vtExtraLink = document.getElementById('virustotal-extra-link');
+    const smsLink = document.getElementById('sms-bomber-link');
+    const tokenLink = document.getElementById('token-checker-link');
+    const ipLink = document.getElementById('ip-locator-link');
+    const passLink = document.getElementById('pass-gen-link');
+    const hashLink = document.getElementById('hash-tool-link');
+    const portLink = document.getElementById('port-scan-link');
+    
+    const allExtraTools = [smsLink, tokenLink, ipLink, passLink, hashLink, portLink, vtExtraLink];
+    
+    allExtraTools.forEach(tool => {
+        if (tool) {
+            if (unlocked) {
+                tool.style.opacity = '1';
+                tool.style.pointerEvents = 'auto';
+                tool.classList.remove('locked');
+                const icon = tool.querySelector('i:first-child');
+                if (icon && icon.className.includes('fa-lock')) {
+                    icon.className = 'fas fa-chevron-right';
+                }
+                const span = tool.querySelector('span');
+                if (span) {
+                    span.innerText = span.innerText.replace(' (Kilitli)', '');
+                }
+            } else {
+                tool.style.opacity = '0.5';
+                tool.style.pointerEvents = 'none';
+                tool.classList.add('locked');
+                const icon = tool.querySelector('i:first-child');
+                if (icon && !icon.className.includes('fa-lock')) {
+                    icon.className = 'fas fa-lock';
+                }
+                const span = tool.querySelector('span');
+                if (span && !span.innerText.includes('(Kilitli)')) {
+                    span.innerText = span.innerText + ' (Kilitli)';
+                }
+            }
+        }
+    });
+}
+
+// 4. Extra Tools'daki VirusTotal linkine tıklama olayı ekle
+function bindVtExtraClick() {
+    const vtExtraLink = document.getElementById('virustotal-extra-link');
+    if (vtExtraLink) {
+        // Eski eventleri temizle
+        const newVtLink = vtExtraLink.cloneNode(true);
+        vtExtraLink.parentNode.replaceChild(newVtLink, vtExtraLink);
+        
+        newVtLink.onclick = (e) => {
+            e.preventDefault();
+            if (window.unlocked) {
+                const vtSection = document.querySelector('#virustotal');
+                if (vtSection) {
+                    vtSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('VirusTotal bölümü bulunamadı!');
+                }
+            } else {
+                if (window.showKeyModal) {
+                    window.showKeyModal(() => {
+                        window.unlocked = true;
+                        updateExtraToolsWithVT();
+                    });
+                } else {
+                    alert('Önce EXTRA TOOLS erişimi açmalısınız!');
+                }
+            }
+        };
+        newVtLink.id = 'virustotal-extra-link';
+    }
+}
+
+// 5. Key modal sonrası güncelleme için global değişkenleri yakala
+// Mevcut showKeyModal fonksiyonunu override et
+const originalShowKeyModal = window.showKeyModal;
+if (originalShowKeyModal) {
+    window.showKeyModal = function(callback) {
+        originalShowKeyModal((success) => {
+            if (success) {
+                window.unlocked = true;
+                updateExtraToolsWithVT();
+                bindVtExtraClick();
+            }
+            if (callback) callback(success);
+        });
+    };
+}
+
+// 6. Eğer access butonu zaten varsa, onun click eventini de güncelle
+const accessBtn = document.getElementById('access-extra-btn');
+if (accessBtn) {
+    const oldClick = accessBtn.onclick;
+    accessBtn.onclick = (e) => {
+        if (window.unlocked) {
+            alert('✅ Extra Tools zaten aktif!');
+        } else {
+            window.showKeyModal((success) => {
+                if (success) {
+                    alert('🔓 Extra Tools erişimi açıldı! 7 araç kullanıma hazır.');
+                    updateExtraToolsWithVT();
+                    bindVtExtraClick();
+                }
+            });
+        }
+    };
+}
+
+// 7. Extra Tools menüsünde "ERİŞ" butonuna tıklayınca çalışacak
+const extraAccessBtn = document.querySelector('.access-btn');
+if (extraAccessBtn && extraAccessBtn !== accessBtn) {
+    extraAccessBtn.onclick = () => {
+        if (window.unlocked) {
+            alert('✅ Extra Tools zaten aktif!');
+        } else {
+            window.showKeyModal((success) => {
+                if (success) {
+                    alert('🔓 Extra Tools erişimi açıldı!');
+                    updateExtraToolsWithVT();
+                    bindVtExtraClick();
+                }
+            });
+        }
+    };
+}
+
+// 8. Sayfa yüklendiğinde çalışacak
+window.addEventListener('DOMContentLoaded', () => {
+    // Normal menüdeki VirusTotal linkini tekrar kontrol et ve kaldır
+    const normalVtLinkAgain = document.querySelector('#side-nav-menu a[href="#virustotal"]');
+    if (normalVtLinkAgain) {
+        const parentLi = normalVtLinkAgain.closest('li');
+        if (parentLi) parentLi.remove();
+    }
+    
+    // Extra Tools menüsünde VirusTotal var mı kontrol et
+    const extraMenu = document.getElementById('extra-tools-menu');
+    if (extraMenu && !document.getElementById('virustotal-extra-link')) {
+        const vtItem = document.createElement('li');
+        vtItem.style.marginBottom = '6px';
+        vtItem.innerHTML = `
+            <a href="#" id="virustotal-extra-link" class="side-nav-link locked" style="cursor: pointer; opacity: 0.5; pointer-events: none;">
+                <i class="fas fa-lock"></i>
+                <span>VirusTotal Scanner (Kilitli)</span>
+            </a>
+        `;
+        extraMenu.appendChild(vtItem);
+    }
+    
+    updateExtraToolsWithVT();
+    bindVtExtraClick();
+});
+
+console.log('✅ VirusTotal normal menüden kaldırıldı, Extra Tools\'a eklendi');
