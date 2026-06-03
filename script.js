@@ -522,7 +522,7 @@ if (vtExtraLink) {
 }
 
 // ========== VIRUSTOTAL API (EXTRA TOOLS AÇILINCA ÇALIŞIR) ==========
-const VT_API_KEY = "YOUR_API_KEY_HERE"; // Kendi API key'inizi girin
+const VT_API_KEY = "f025e25ef11c7bd1f5714664aae66a4ba012320417a1a7fd7a4491030f11e7c7"; // Kendi API key'inizi girin
 
 async function vtFetch(url, options = {}) {
     if (VT_API_KEY === "YOUR_API_KEY_HERE") {
