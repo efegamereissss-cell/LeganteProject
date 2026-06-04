@@ -174,7 +174,7 @@ categoryBtns.forEach(btn => {
     });
 });
 
-// ========== EXTRA TOOLS (7 TOOL - VIRUSTOTAL DAHİL) ==========
+// ========== EXTRA TOOLS ==========
 let unlocked = false;
 const MASTER_KEYS = ["LEGANTE2024", "VIPACCESS", "SMSBOOM69", "TOKENCHECK2024", "LEGANTEPRO", "FREETOOLS"];
 
@@ -257,7 +257,6 @@ if (accessBtn) {
     };
 }
 
-// Modal oluşturma
 function createToolModal(title, contentHTML) {
     const modal = document.createElement('div');
     modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px); z-index:30001; display:flex; justify-content:center; align-items:center;';
@@ -276,7 +275,320 @@ function createToolModal(title, contentHTML) {
     return modal;
 }
 
-// 1. SMS BOMBER
+// ========== AI CHAT TOOLS ==========
+class AIChatTools {
+    constructor() {
+        this.currentModel = 'gpt';
+        this.messages = [];
+        this.isLoading = false;
+        this.apiKey = localStorage.getItem('legante_api_key') || '';
+        
+        this.demoResponses = {
+            'merhaba': 'Merhaba! 😊 Nasıl yardımcı olabilirim? Legante Project hakkında her şeyi sorabilirsiniz!',
+            'nasılsın': 'Ben bir AI asistanıyım, her zaman yardıma hazırım! Siz nasılsınız?',
+            'teşekkürler': 'Rica ederim! Başka bir konuda yardımcı olabilirsem memnuniyetle. 🤗',
+            'yardım': 'Size şu konularda yardımcı olabilirim:\n• Legante Project üyelikleri\n• Hileler ve özellikleri\n• Sık sorulan sorular\n• Genel bilgiler\n\nNe öğrenmek istersiniz?',
+            'vip': 'VIP üyeliklerimiz 3 farklı seviyededir: VIP 1 (79₺/ay), VIP 2 (149₺/ay), VIP 3 (249₺/ay). Her seviyede farklı avantajlar sunuyoruz! 🎯',
+            'fiyat': '💎 Fiyat listemiz:\n• VIP 1: 79₺/ay\n• VIP 2: 149₺/ay\n• VIP 3: 249₺/ay\n• Boost paketleri: 39₺ - 119₺\n• HWID Spoofer: 199₺ (ömür boyu)',
+            'hile': '50+ premium hile çeşidimiz var! Valorant, CS2, Fortnite, PUBG, Apex Legends ve daha fazlası. Hangi oyunla ilgileniyorsunuz? 🎮',
+            'güvenlik': 'Gelişmiş anti-ban sistemi, HWID spoofing ve şifreleme teknolojileri kullanıyoruz. Güvenlik önlemlerimiz en üst seviyededir! 🔒',
+            'destek': '7/24 canlı Discord desteğimiz var! Sunucumuza katılıp anlık yardım alabilirsiniz. Ayrıca özel VIP kanallarımız da mevcut. 💬',
+            'nasıl üye olurum': 'Üye olmak için Discord sunucumuza katılmanız yeterli! Daha sonra marketten istediğiniz paketi satın alabilirsiniz. 🚀',
+            'hwid': 'HWID Spoofer, bilgisayarınızın donanım kimliğini değiştirerek ban yediğiniz oyunlara tekrar girmenizi sağlar. Fiyatı: 199₺ (ömür boyu)'
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        this.cacheElements();
+        this.bindEvents();
+        this.loadMessages();
+        
+        if (this.apiKey && this.apiWarning) {
+            this.apiWarning.style.display = 'none';
+        }
+    }
+    
+    cacheElements() {
+        this.chatMessages = document.getElementById('chatMessages');
+        this.chatInput = document.getElementById('chatInput');
+        this.sendBtn = document.getElementById('sendMessageBtn');
+        this.clearBtn = document.getElementById('clearChatBtn');
+        this.modelBtns = document.querySelectorAll('.ai-model-btn');
+        this.quickQuestions = document.querySelectorAll('.quick-question');
+        this.apiWarning = document.getElementById('aiApiWarning');
+    }
+    
+    bindEvents() {
+        if (this.sendBtn) {
+            this.sendBtn.addEventListener('click', () => this.sendMessage());
+        }
+        
+        if (this.chatInput) {
+            this.chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+            
+            this.chatInput.addEventListener('input', () => {
+                this.chatInput.style.height = 'auto';
+                this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 120) + 'px';
+            });
+        }
+        
+        if (this.clearBtn) {
+            this.clearBtn.addEventListener('click', () => this.clearChat());
+        }
+        
+        this.modelBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.switchModel(btn.dataset.model);
+            });
+        });
+        
+        this.quickQuestions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const question = btn.dataset.question;
+                if (question) {
+                    this.chatInput.value = question;
+                    this.sendMessage();
+                }
+            });
+        });
+    }
+    
+    loadMessages() {
+        const savedMessages = localStorage.getItem('legante_chat_messages');
+        if (savedMessages && this.chatMessages) {
+            try {
+                const messages = JSON.parse(savedMessages);
+                if (messages.length > 0) {
+                    this.chatMessages.innerHTML = '';
+                    messages.forEach(msg => {
+                        this.addMessageToUI(msg.role, msg.content, false);
+                    });
+                    this.scrollToBottom();
+                }
+            } catch(e) {}
+        }
+    }
+    
+    saveMessages() {
+        const messagesToSave = [];
+        if (this.chatMessages) {
+            const messageElements = this.chatMessages.querySelectorAll('.chat-message:not(.typing-message)');
+            messageElements.forEach(el => {
+                const role = el.classList.contains('user-message') ? 'user' : 'assistant';
+                const text = el.querySelector('.message-text')?.innerHTML || '';
+                if (text) {
+                    messagesToSave.push({ role, content: text });
+                }
+            });
+        }
+        localStorage.setItem('legante_chat_messages', JSON.stringify(messagesToSave));
+    }
+    
+    switchModel(model) {
+        this.currentModel = model;
+        this.modelBtns.forEach(btn => {
+            if (btn.dataset.model === model) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        
+        const modelNames = { 'gpt': 'GPT-4', 'claude': 'Claude', 'gemini': 'Gemini', 'llama': 'Llama' };
+        this.addMessageToUI('assistant', `✨ Model ${modelNames[model]} olarak değiştirildi. Size nasıl yardımcı olabilirim?`);
+    }
+    
+    async sendMessage() {
+        if (this.isLoading) return;
+        
+        const message = this.chatInput?.value.trim();
+        if (!message) return;
+        
+        this.addMessageToUI('user', this.escapeHtml(message));
+        this.chatInput.value = '';
+        this.chatInput.style.height = 'auto';
+        this.scrollToBottom();
+        this.showTypingIndicator();
+        this.isLoading = true;
+        
+        try {
+            let response;
+            if (this.apiKey) {
+                response = await this.callRealAPI(message);
+            } else {
+                response = await this.getDemoResponse(message);
+            }
+            this.hideTypingIndicator();
+            this.addMessageToUI('assistant', response);
+        } catch (error) {
+            console.error('AI Chat Error:', error);
+            this.hideTypingIndicator();
+            this.addMessageToUI('assistant', '❌ Üzgünüm, bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        } finally {
+            this.isLoading = false;
+        }
+    }
+    
+    async callRealAPI(message) {
+        try {
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json',
+                    'HTTP-Referer': window.location.origin,
+                    'X-Title': 'Legante Project'
+                },
+                body: JSON.stringify({
+                    model: this.getModelName(),
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Sen Legante Project\'in AI asistanısın. Kibar, yardımsever ve bilgili bir şekilde cevap ver. Oyun hileleri, VIP üyelikler, Discord sunucusu ve genel sorular hakkında bilgi ver. Kullanıcıya her zaman yardımcı ol. Emoji kullanmaktan çekinme.'
+                        },
+                        { role: 'user', content: message }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 500
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } else {
+                throw new Error('API Error');
+            }
+        } catch (error) {
+            return this.getDemoResponse(message);
+        }
+    }
+    
+    getModelName() {
+        const models = {
+            'gpt': 'openai/gpt-3.5-turbo',
+            'claude': 'anthropic/claude-2',
+            'gemini': 'google/gemini-pro',
+            'llama': 'meta-llama/llama-2-13b-chat'
+        };
+        return models[this.currentModel] || models['gpt'];
+    }
+    
+    async getDemoResponse(message) {
+        await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 500));
+        const lowerMessage = message.toLowerCase();
+        
+        for (const [key, response] of Object.entries(this.demoResponses)) {
+            if (lowerMessage.includes(key)) {
+                return response;
+            }
+        }
+        
+        const defaultResponses = [
+            `🎮 Legante Project hakkında detaylı bilgi için Discord sunucumuza bekleriz!\n\nDiscord: discord.gg/bM6SZcNmzW\n\nSize özel tekliflerimiz ve 50+ premium hile seçeneğimiz mevcuttur.\n\n💡 İpucu: Gerçek AI yanıtları için alttaki uyarıya tıklayarak API key ekleyebilirsiniz.`,
+            `Merhaba! "${message}" hakkında sana yardımcı olabilirim. Detaylı bilgi için Discord sunucumuza katılabilir veya sorunu daha spesifik sorabilir misin? 😊\n\n🔗 Discord: discord.gg/bM6SZcNmzW`,
+            `Teşekkürler! Legante Project olarak her zaman yanınızdayız. 💪 Daha fazla bilgi için Discord sunucumuzu ziyaret edebilirsiniz: discord.gg/bM6SZcNmzW\n\nSorunuzu daha detaylı yazarsanız size daha iyi yardımcı olabilirim!`
+        ];
+        
+        return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
+    
+    addMessageToUI(role, content, save = true) {
+        if (!this.chatMessages) return;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${role === 'user' ? 'user-message' : 'ai-message'}`;
+        
+        const avatar = role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+        const sender = role === 'user' ? 'Siz' : 'Legante AI';
+        
+        let formattedContent = content
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+        
+        messageDiv.innerHTML = `
+            <div class="message-avatar">${avatar}</div>
+            <div class="message-content">
+                <div class="message-sender">${sender}</div>
+                <div class="message-text">${formattedContent}</div>
+            </div>
+        `;
+        
+        this.chatMessages.appendChild(messageDiv);
+        this.scrollToBottom();
+        
+        if (save) this.saveMessages();
+    }
+    
+    showTypingIndicator() {
+        this.hideTypingIndicator();
+        if (!this.chatMessages) return;
+        
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chat-message ai-message typing-message';
+        typingDiv.innerHTML = `
+            <div class="message-avatar"><i class="fas fa-robot"></i></div>
+            <div class="message-content">
+                <div class="message-sender">Legante AI</div>
+                <div class="typing-indicator"><span></span><span></span><span></span></div>
+            </div>
+        `;
+        this.chatMessages.appendChild(typingDiv);
+        this.scrollToBottom();
+    }
+    
+    hideTypingIndicator() {
+        const typingElement = this.chatMessages?.querySelector('.typing-message');
+        if (typingElement) typingElement.remove();
+    }
+    
+    clearChat() {
+        if (confirm('Sohbet geçmişini temizlemek istediğinizden emin misiniz?')) {
+            if (this.chatMessages) {
+                this.chatMessages.innerHTML = `
+                    <div class="chat-message ai-message">
+                        <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                        <div class="message-content">
+                            <div class="message-sender">Legante AI</div>
+                            <div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? Oyunlar, hileler veya herhangi bir konuda sorularını bekliyorum! 🎮<br><br>💡 <strong>İpucu:</strong> Gerçek AI yanıtları için alttaki uyarıya tıklayarak API key ekleyebilirsiniz.</div>
+                        </div>
+                    </div>
+                `;
+                localStorage.removeItem('legante_chat_messages');
+            }
+        }
+    }
+    
+    scrollToBottom() {
+        if (this.chatMessages) {
+            this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        }
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+}
+
+// AI Chat Tools'u başlat
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('ai-tools')) {
+        new AIChatTools();
+    }
+});
+
+// ========== SMS BOMBER (Extra Tools) ==========
 if (smsLink) {
     smsLink.onclick = (e) => {
         e.preventDefault();
@@ -316,7 +628,7 @@ if (smsLink) {
     };
 }
 
-// 2. TOKEN CHECKER
+// ========== TOKEN CHECKER ==========
 if (tokenLink) {
     tokenLink.onclick = (e) => {
         e.preventDefault();
@@ -354,7 +666,7 @@ if (tokenLink) {
     };
 }
 
-// 3. IP LOCATOR
+// ========== IP LOCATOR ==========
 if (ipLink) {
     ipLink.onclick = (e) => {
         e.preventDefault();
@@ -381,7 +693,7 @@ if (ipLink) {
     };
 }
 
-// 4. PASSWORD GENERATOR
+// ========== PASSWORD GENERATOR ==========
 if (passLink) {
     passLink.onclick = (e) => {
         e.preventDefault();
@@ -423,7 +735,7 @@ if (passLink) {
     };
 }
 
-// 5. HASH TOOL
+// ========== HASH TOOL ==========
 if (hashLink) {
     hashLink.onclick = (e) => {
         e.preventDefault();
@@ -464,7 +776,7 @@ if (hashLink) {
     };
 }
 
-// 6. PORT SCANNER
+// ========== PORT SCANNER ==========
 if (portLink) {
     portLink.onclick = (e) => {
         e.preventDefault();
@@ -507,7 +819,7 @@ if (portLink) {
     };
 }
 
-// 7. VIRUSTOTAL SCANNER (EXTRA TOOLS İÇİNDE)
+// ========== VIRUSTOTAL SCANNER ==========
 if (vtExtraLink) {
     vtExtraLink.onclick = (e) => {
         e.preventDefault();
@@ -521,8 +833,7 @@ if (vtExtraLink) {
     };
 }
 
-// ========== VIRUSTOTAL API (EXTRA TOOLS AÇILINCA ÇALIŞIR) ==========
-const VT_API_KEY = "f025e25ef11c7bd1f5714664aae66a4ba012320417a1a7fd7a4491030f11e7c7"; // Kendi API key'inizi girin
+const VT_API_KEY = "f025e25ef11c7bd1f5714664aae66a4ba012320417a1a7fd7a4491030f11e7c7";
 
 async function vtFetch(url, options = {}) {
     if (VT_API_KEY === "YOUR_API_KEY_HERE") {
@@ -653,12 +964,10 @@ async function runVTAnalysis() {
     }
 }
 
-// VirusTotal event listeners
 const vtScanBtn = document.getElementById('vt-scan-btn');
 if (vtScanBtn) vtScanBtn.addEventListener('click', runVTAnalysis);
 const vtInputField = document.getElementById('vt-input');
 if (vtInputField) vtInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') runVTAnalysis(); });
 
-// Başlangıçta UI güncelle
 updateExtraToolsUI();
-console.log('✅ Legante Project v3.0 | 7 Extra Tools | VirusTotal sadece Extra Tools\'da');
+console.log('✅ Legante Project v3.0 | 7 Extra Tools + AI Chat Tools | VirusTotal sadece Extra Tools\'da');
