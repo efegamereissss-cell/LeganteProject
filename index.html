@@ -90,7 +90,37 @@
         <div class="nav-top-bar">
             <div class="nav-container">
                 <div class="top-bar-text"><i class="fas fa-bolt"></i> 50+ Hile Aktif • 500+ Mutlu Üye • 7/24 Destek • 🤖 AI Chat Tools Aktif</div>
-                <div class="top-bar-social"><a href="https://discord.gg/bM6SZcNmzW" target="_blank"><i class="fab fa-discord"></i></a></div>
+                <div class="top-bar-social">
+                    <!-- Login/Register Buttons (Misafir modunda gösterilir) -->
+                    <div id="guest-header-buttons">
+                        <button class="auth-nav-btn" onclick="openAuthModal('login')"><i class="fas fa-sign-in-alt"></i> Giriş</button>
+                        <button class="auth-nav-btn" onclick="openAuthModal('register')"><i class="fas fa-user-plus"></i> Kayıt</button>
+                    </div>
+                    <!-- User Profile (Giriş yapınca gösterilir) -->
+                    <div id="user-header-profile" style="display:none;">
+                        <div class="user-profile-trigger" onclick="toggleUserMenu()">
+                            <img id="user-avatar-small" class="user-avatar-small" src="https://ui-avatars.com/api/?background=6c5ce7&color=fff&rounded=true&bold=true" alt="">
+                            <span id="user-name-display">Kullanıcı</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="user-dropdown-menu" class="user-dropdown">
+                            <div class="dropdown-header">
+                                <img id="dropdown-avatar" src="https://ui-avatars.com/api/?background=6c5ce7&color=fff&rounded=true&bold=true" alt="">
+                                <div>
+                                    <div id="dropdown-name">Kullanıcı</div>
+                                    <div id="dropdown-email" class="dropdown-email">email@example.com</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" onclick="showUserProfile(); return false;"><i class="fas fa-user"></i> Profilim</a>
+                            <a href="#" onclick="showUserOrders(); return false;"><i class="fas fa-shopping-bag"></i> Siparişlerim</a>
+                            <a href="#" onclick="showUserSettings(); return false;"><i class="fas fa-cog"></i> Ayarlar</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" onclick="logout(); return false;" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a>
+                        </div>
+                    </div>
+                    <a href="https://discord.gg/bM6SZcNmzW" target="_blank"><i class="fab fa-discord"></i></a>
+                </div>
             </div>
         </div>
         <nav class="navbar">
@@ -165,15 +195,15 @@
                 <div class="section-header"><span class="section-tag">MARKET</span><h2 class="section-title">Legante <span class="gradient-text">Market</span></h2><p class="section-description">İhtiyacın olan her şey burada! Kategorilere göz at, hemen satın al.</p></div>
                 <div class="market-categories"><button class="market-cat-btn active" data-category="all"><i class="fas fa-th-large"></i> Tümü</button><button class="market-cat-btn" data-category="vip"><i class="fas fa-crown"></i> VIP</button><button class="market-cat-btn" data-category="booster"><i class="fas fa-rocket"></i> Booster</button><button class="market-cat-btn" data-category="special"><i class="fas fa-star"></i> Özel Üye</button><button class="market-cat-btn" data-category="other"><i class="fas fa-ellipsis-h"></i> Diğer</button></div>
                 <div class="market-grid">
-                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-premium">PREMIUM</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 1</h3><p>Temel VIP avantajları</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 5 hile erişimi</li><li><i class="fas fa-check"></i> Öncelikli destek</li></ul><div class="market-price">₺79<span>/ay</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
-                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-hot">POPÜLER</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 2</h3><p>Gelişmiş VIP paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol + renk</li><li><i class="fas fa-check"></i> 15 hile erişimi</li><li><i class="fas fa-check"></i> Özel VIP kanal</li></ul><div class="market-price">₺149<span>/ay</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
-                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-ultimate">ULTIMATE</div><div class="market-icon"><i class="fas fa-gem"></i></div><h3>VIP 3</h3><p>Tam VIP deneyimi</p><ul class="market-features"><li><i class="fas fa-check"></i> Full yetkili rol</li><li><i class="fas fa-check"></i> 50+ hile erişimi</li><li><i class="fas fa-check"></i> Beta sürümler</li></ul><div class="market-price">₺249<span>/ay</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
-                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 1</h3><p>Başlangıç boost paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> 4 saat boost</li><li><i class="fas fa-check"></i> Sunucu önceliği</li><li><i class="fas fa-check"></i> Boost rozeti</li></ul><div class="market-price">₺39<span>/tek</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
-                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 2</h3><p>Profesyonel boost</p><ul class="market-features"><li><i class="fas fa-check"></i> 8 saat boost</li><li><i class="fas fa-check"></i> Boost kanalı erişimi</li><li><i class="fas fa-check"></i> Özel emoji kullanımı</li></ul><div class="market-price">₺69<span>/tek</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
-                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-fire"></i></div><h3>Boost 3</h3><p>Ultra boost paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> 16 saat boost</li><li><i class="fas fa-check"></i> Sunucu seviye atlama</li><li><i class="fas fa-check"></i> Boost leaderboard</li></ul><div class="market-price">₺119<span>/tek</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
-                    <div class="market-item" data-category="special"><div class="market-item-glow"></div><div class="market-badge badge-special">ÖZEL</div><div class="market-icon"><i class="fas fa-star"></i></div><h3>Özel Üye 1</h3><p>Özel statü başlangıç</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel üye rolü</li><li><i class="fas fa-check"></i> İsim değiştirme</li><li><i class="fas fa-check"></i> Özel oda erişimi</li></ul><div class="market-price">₺99<span>/ay</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
-                    <div class="market-item" data-category="special"><div class="market-item-glow"></div><div class="market-badge badge-special">ÖZEL</div><div class="market-icon"><i class="fas fa-medal"></i></div><h3>Özel Üye 2</h3><p>Elit üye paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> Elit üye rozeti</li><li><i class="fas fa-check"></i> Özel etkinlik katılımı</li><li><i class="fas fa-check"></i> Admin ile iletişim</li></ul><div class="market-price">₺179<span>/ay</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
-                    <div class="market-item" data-category="other"><div class="market-item-glow"></div><div class="market-badge badge-other">DİĞER</div><div class="market-icon"><i class="fas fa-key"></i></div><h3>HWID Spoofer</h3><p>Kalıcı ban çözümü</p><ul class="market-features"><li><i class="fas fa-check"></i> HWID resetleme</li><li><i class="fas fa-check"></i> Sınırsız kullanım</li><li><i class="fas fa-check"></i> Kurulum desteği</li></ul><div class="market-price">₺199<span>/ömür boyu</span></div><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block btn-sm">Satın Al</a></div>
+                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-premium">PREMIUM</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 1</h3><p>Temel VIP avantajları</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 5 hile erişimi</li><li><i class="fas fa-check"></i> Öncelikli destek</li></ul><div class="market-price">₺79<span>/ay</span></div><button onclick="handlePurchase('VIP 1', 79)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-hot">POPÜLER</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 2</h3><p>Gelişmiş VIP paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol + renk</li><li><i class="fas fa-check"></i> 15 hile erişimi</li><li><i class="fas fa-check"></i> Özel VIP kanal</li></ul><div class="market-price">₺149<span>/ay</span></div><button onclick="handlePurchase('VIP 2', 149)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-ultimate">ULTIMATE</div><div class="market-icon"><i class="fas fa-gem"></i></div><h3>VIP 3</h3><p>Tam VIP deneyimi</p><ul class="market-features"><li><i class="fas fa-check"></i> Full yetkili rol</li><li><i class="fas fa-check"></i> 50+ hile erişimi</li><li><i class="fas fa-check"></i> Beta sürümler</li></ul><div class="market-price">₺249<span>/ay</span></div><button onclick="handlePurchase('VIP 3', 249)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 1</h3><p>Başlangıç boost paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> 4 saat boost</li><li><i class="fas fa-check"></i> Sunucu önceliği</li><li><i class="fas fa-check"></i> Boost rozeti</li></ul><div class="market-price">₺39<span>/tek</span></div><button onclick="handlePurchase('Boost 1', 39)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 2</h3><p>Profesyonel boost</p><ul class="market-features"><li><i class="fas fa-check"></i> 8 saat boost</li><li><i class="fas fa-check"></i> Boost kanalı erişimi</li><li><i class="fas fa-check"></i> Özel emoji kullanımı</li></ul><div class="market-price">₺69<span>/tek</span></div><button onclick="handlePurchase('Boost 2', 69)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-fire"></i></div><h3>Boost 3</h3><p>Ultra boost paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> 16 saat boost</li><li><i class="fas fa-check"></i> Sunucu seviye atlama</li><li><i class="fas fa-check"></i> Boost leaderboard</li></ul><div class="market-price">₺119<span>/tek</span></div><button onclick="handlePurchase('Boost 3', 119)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="special"><div class="market-item-glow"></div><div class="market-badge badge-special">ÖZEL</div><div class="market-icon"><i class="fas fa-star"></i></div><h3>Özel Üye 1</h3><p>Özel statü başlangıç</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel üye rolü</li><li><i class="fas fa-check"></i> İsim değiştirme</li><li><i class="fas fa-check"></i> Özel oda erişimi</li></ul><div class="market-price">₺99<span>/ay</span></div><button onclick="handlePurchase('Özel Üye 1', 99)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="special"><div class="market-item-glow"></div><div class="market-badge badge-special">ÖZEL</div><div class="market-icon"><i class="fas fa-medal"></i></div><h3>Özel Üye 2</h3><p>Elit üye paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> Elit üye rozeti</li><li><i class="fas fa-check"></i> Özel etkinlik katılımı</li><li><i class="fas fa-check"></i> Admin ile iletişim</li></ul><div class="market-price">₺179<span>/ay</span></div><button onclick="handlePurchase('Özel Üye 2', 179)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="other"><div class="market-item-glow"></div><div class="market-badge badge-other">DİĞER</div><div class="market-icon"><i class="fas fa-key"></i></div><h3>HWID Spoofer</h3><p>Kalıcı ban çözümü</p><ul class="market-features"><li><i class="fas fa-check"></i> HWID resetleme</li><li><i class="fas fa-check"></i> Sınırsız kullanım</li><li><i class="fas fa-check"></i> Kurulum desteği</li></ul><div class="market-price">₺199<span>/ömür boyu</span></div><button onclick="handlePurchase('HWID Spoofer', 199)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
                 </div>
             </div>
         </section>
@@ -188,9 +218,9 @@
             <div class="section-container">
                 <div class="section-header"><span class="section-tag">PAKETLER</span><h2 class="section-title">Senin İçin En <span class="gradient-text">Uygun Paket</span></h2><p class="section-description">İhtiyacına uygun paketi seç, hemen kullanmaya başla.</p></div>
                 <div class="pricing-grid">
-                    <div class="pricing-card"><div class="pricing-header"><h3>Başlangıç</h3><p>Temel özellikler</p></div><div class="pricing-price"><span class="price">₺149</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> 5 Hile Erişimi</li><li><i class="fas fa-check"></i> Temel Koruma</li><li><i class="fas fa-check"></i> E-posta Desteği</li><li><i class="fas fa-times"></i> Öncelikli Güncelleme</li></ul><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-outline btn-block">Başla</a></div>
-                    <div class="pricing-card popular"><div class="popular-badge">EN POPÜLER</div><div class="pricing-header"><h3>Premium</h3><p>Tam erişim paketi</p></div><div class="pricing-price"><span class="price">₺299</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> 50+ Hile Erişimi</li><li><i class="fas fa-check"></i> Gelişmiş Koruma</li><li><i class="fas fa-check"></i> 7/24 Canlı Destek</li><li><i class="fas fa-check"></i> Öncelikli Güncelleme</li></ul><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-block">Hemen Katıl</a></div>
-                    <div class="pricing-card"><div class="pricing-header"><h3>Ultimate</h3><p>Özel müşteri paketi</p></div><div class="pricing-price"><span class="price">₺599</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> Sınırsız Hile Erişimi</li><li><i class="fas fa-check"></i> Ultra Koruma</li><li><i class="fas fa-check"></i> Özel Destek Ekibi</li><li><i class="fas fa-check"></i> Beta Sürümler</li></ul><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-outline btn-block">Başla</a></div>
+                    <div class="pricing-card"><div class="pricing-header"><h3>Başlangıç</h3><p>Temel özellikler</p></div><div class="pricing-price"><span class="price">₺149</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> 5 Hile Erişimi</li><li><i class="fas fa-check"></i> Temel Koruma</li><li><i class="fas fa-check"></i> E-posta Desteği</li><li><i class="fas fa-times"></i> Öncelikli Güncelleme</li></ul><button onclick="handlePurchase('Başlangıç Paketi', 149)" class="btn btn-outline btn-block">Başla</button></div>
+                    <div class="pricing-card popular"><div class="popular-badge">EN POPÜLER</div><div class="pricing-header"><h3>Premium</h3><p>Tam erişim paketi</p></div><div class="pricing-price"><span class="price">₺299</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> 50+ Hile Erişimi</li><li><i class="fas fa-check"></i> Gelişmiş Koruma</li><li><i class="fas fa-check"></i> 7/24 Canlı Destek</li><li><i class="fas fa-check"></i> Öncelikli Güncelleme</li></ul><button onclick="handlePurchase('Premium Paketi', 299)" class="btn btn-primary btn-block">Hemen Katıl</button></div>
+                    <div class="pricing-card"><div class="pricing-header"><h3>Ultimate</h3><p>Özel müşteri paketi</p></div><div class="pricing-price"><span class="price">₺599</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> Sınırsız Hile Erişimi</li><li><i class="fas fa-check"></i> Ultra Koruma</li><li><i class="fas fa-check"></i> Özel Destek Ekibi</li><li><i class="fas fa-check"></i> Beta Sürümler</li></ul><button onclick="handlePurchase('Ultimate Paketi', 599)" class="btn btn-outline btn-block">Başla</button></div>
                 </div>
             </div>
         </section>
@@ -217,37 +247,24 @@
                 </div>
                 
                 <div class="ai-chat-container">
-                    <!-- Model Seçici -->
                     <div class="ai-model-selector">
-                        <button class="ai-model-btn active" data-model="gpt">
-                            <i class="fas fa-robot"></i> GPT-4
-                        </button>
-                        <button class="ai-model-btn" data-model="claude">
-                            <i class="fas fa-brain"></i> Claude
-                        </button>
-                        <button class="ai-model-btn" data-model="gemini">
-                            <i class="fas fa-star-of-life"></i> Gemini
-                        </button>
-                        <button class="ai-model-btn" data-model="llama">
-                            <i class="fas fa-fire"></i> Llama
-                        </button>
+                        <button class="ai-model-btn active" data-model="gpt"><i class="fas fa-robot"></i> GPT-4</button>
+                        <button class="ai-model-btn" data-model="claude"><i class="fas fa-brain"></i> Claude</button>
+                        <button class="ai-model-btn" data-model="gemini"><i class="fas fa-star-of-life"></i> Gemini</button>
+                        <button class="ai-model-btn" data-model="llama"><i class="fas fa-fire"></i> Llama</button>
                     </div>
                     
-                    <!-- Chat Alanı -->
                     <div class="ai-chat-window">
                         <div class="ai-chat-messages" id="chatMessages">
                             <div class="chat-message ai-message">
-                                <div class="message-avatar">
-                                    <i class="fas fa-robot"></i>
-                                </div>
+                                <div class="message-avatar"><i class="fas fa-robot"></i></div>
                                 <div class="message-content">
                                     <div class="message-sender">Legante AI</div>
-                                    <div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? Oyunlar, hileler veya herhangi bir konuda sorularını bekliyorum! 🎮<br><br>💡 <strong>İpucu:</strong> Gerçek AI yanıtları için <a href="#" onclick="showAIApiGuide()" style="color:#a855f7;">API key</a> ekleyebilirsiniz. Demo modunda temel yanıtlar veriyorum.</div>
+                                    <div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? Oyunlar, hileler veya herhangi bir konuda sorularını bekliyorum! 🎮<br><br>💡 <strong>İpucu:</strong> Gerçek AI yanıtları için alttaki uyarıya tıklayarak API key ekleyebilirsiniz.</div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Quick Questions -->
                         <div class="ai-quick-questions">
                             <button class="quick-question" data-question="En popüler hileleriniz hangileri?">🌟 En popüler hileleriniz?</button>
                             <button class="quick-question" data-question="Nasıl VIP üye olabilirim?">👑 VIP üyelik nasıl alınır?</button>
@@ -256,18 +273,12 @@
                             <button class="quick-question" data-question="HWID spoofer nedir?">🔄 HWID Spoofer nedir?</button>
                         </div>
                         
-                        <!-- Input Alanı -->
                         <div class="ai-chat-input-area">
                             <textarea id="chatInput" class="ai-chat-input" placeholder="Mesajınızı yazın... (Enter gönder, Shift+Enter satır atlar)" rows="1"></textarea>
-                            <button id="sendMessageBtn" class="ai-send-btn">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                            <button id="clearChatBtn" class="ai-clear-btn">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                            <button id="sendMessageBtn" class="ai-send-btn"><i class="fas fa-paper-plane"></i></button>
+                            <button id="clearChatBtn" class="ai-clear-btn"><i class="fas fa-trash-alt"></i></button>
                         </div>
                         
-                        <!-- API Key Uyarısı -->
                         <div class="ai-api-warning" id="aiApiWarning">
                             ⚠️ <strong>Demo Modu Aktif</strong> | Gerçek AI yanıtları için 
                             <a href="#" onclick="showAIApiGuide()" style="color:#f59e0b; text-decoration:underline;">API Key ekleyin</a>
@@ -286,31 +297,15 @@
         <section id="virustotal" class="vt-section">
             <div class="section-container">
                 <div class="vt-container">
-                    <div class="vt-title">
-                        <i class="fas fa-shield-virus" style="color: #a855f7;"></i>
-                        <span class="gradient-text">VirusTotal</span> Scanner
-                    </div>
+                    <div class="vt-title"><i class="fas fa-shield-virus" style="color: #a855f7;"></i><span class="gradient-text">VirusTotal</span> Scanner</div>
                     <div class="vt-sub">Dosya veya Link analizi yapın (API Key gerektirir)</div>
                     <div class="vt-input-group">
                         <input type="text" id="vt-input" class="vt-input" placeholder="URL veya Hash girin...">
-                        <select id="vt-type" class="vt-type-select">
-                            <option value="url">URL</option>
-                            <option value="hash">Hash (MD5/SHA1/SHA256)</option>
-                        </select>
+                        <select id="vt-type" class="vt-type-select"><option value="url">URL</option><option value="hash">Hash (MD5/SHA1/SHA256)</option></select>
                         <button id="vt-scan-btn" class="vt-btn"><i class="fas fa-search"></i> Analiz Et</button>
                     </div>
-                    <div id="vt-loader" class="vt-loader">
-                        <div class="vt-spinner"></div>
-                        <span>VirusTotal'da taranıyor...</span>
-                    </div>
-                    <div id="vt-result" class="vt-result">
-                        <div id="vt-stats"></div>
-                        <div id="vt-detections"></div>
-                        <div id="vt-engines"></div>
-                    </div>
-                    <div id="vt-api-warning" style="margin-top: 15px; text-align: center; font-size: 0.7rem; color: #f59e0b; display: none;">
-                        ⚠️ API Key ayarlanmamış! VirusTotal.com/gui/join-us adresinden üye olup API key alın.
-                    </div>
+                    <div id="vt-loader" class="vt-loader"><div class="vt-spinner"></div><span>VirusTotal'da taranıyor...</span></div>
+                    <div id="vt-result" class="vt-result"><div id="vt-stats"></div><div id="vt-detections"></div><div id="vt-engines"></div></div>
                 </div>
             </div>
         </section>
@@ -328,56 +323,93 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
-    
-    <!-- API Guide Popup için script -->
-    <script>
-    function showAIApiGuide() {
-        const modal = document.createElement('div');
-        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); z-index:40000; display:flex; justify-content:center; align-items:center;';
-        modal.innerHTML = `
-            <div style="background:linear-gradient(135deg,#0a0a14,#0f0f1e); border:1px solid rgba(168,85,247,0.4); border-radius:28px; width:500px; max-width:90%; padding:35px;">
-                <div style="text-align:center; margin-bottom:20px;">
-                    <div style="width:60px; height:60px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
-                        <i class="fas fa-key" style="font-size:1.8rem; color:white;"></i>
-                    </div>
-                    <h3 style="color:white;">AI API Key Ekleme</h3>
+    <!-- LOGIN/REGISTER MODAL -->
+    <div id="auth-modal" class="auth-modal" style="display:none;">
+        <div class="auth-modal-content">
+            <div class="auth-modal-header">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Giriş Yap</button>
+                    <button class="auth-tab" data-tab="register">Kayıt Ol</button>
                 </div>
-                <div style="color:#aaa; font-size:0.85rem; margin-bottom:20px;">
-                    <p>Gerçek AI yanıtları için bir API anahtarı girmelisiniz.</p>
-                    <br>
-                    <p><strong>🔑 Ücretsiz API Seçenekleri:</strong></p>
-                    <ul style="margin-left:20px; margin-top:10px;">
-                        <li>• <a href="https://openrouter.ai/" target="_blank" style="color:#a855f7;">OpenRouter</a> (Çoklu model desteği)</li>
-                        <li>• <a href="https://console.groq.com/" target="_blank" style="color:#a855f7;">Groq</a> (Hızlı ve ücretsiz)</li>
-                        <li>• <a href="https://cohere.com/" target="_blank" style="color:#a855f7;">Cohere</a> (Ücretsiz deneme)</li>
-                    </ul>
-                    <br>
-                    <p><strong>📝 Nasıl eklenir?</strong><br>API key\'inizi aşağıya yapıştırın ve kaydedin.</p>
-                </div>
-                <input type="password" id="apiKeyInput" placeholder="API Key girin..." style="width:100%; padding:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(168,85,247,0.3); border-radius:12px; color:white; margin-bottom:15px;">
-                <button id="saveApiKeyBtn" style="width:100%; padding:12px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border:none; border-radius:12px; color:white; font-weight:700; cursor:pointer;">Kaydet ve Kullan</button>
-                <div id="apiSaveMessage" style="margin-top:10px; text-align:center; font-size:0.75rem;"></div>
+                <button class="auth-close" onclick="closeAuthModal()">&times;</button>
             </div>
-        `;
-        document.body.appendChild(modal);
-        
-        document.getElementById('saveApiKeyBtn').onclick = () => {
-            const apiKey = document.getElementById('apiKeyInput').value.trim();
-            if (apiKey) {
-                localStorage.setItem('legante_api_key', apiKey);
-                document.getElementById('apiSaveMessage').innerHTML = '<span style="color:#22c55e;">✅ API key kaydedildi! Sayfayı yenileyin.</span>';
-                setTimeout(() => {
-                    modal.remove();
-                    location.reload();
-                }, 1500);
-            } else {
-                document.getElementById('apiSaveMessage').innerHTML = '<span style="color:#ef4444;">❌ Lütfen bir API key girin!</span>';
-            }
-        };
-        
-        modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
-    }
-    </script>
+            <div class="auth-modal-body">
+                <!-- Login Form -->
+                <div id="login-form" class="auth-form active">
+                    <div class="auth-input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="login-email" placeholder="E-posta adresiniz">
+                    </div>
+                    <div class="auth-input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" placeholder="Şifreniz">
+                    </div>
+                    <button onclick="handleLogin()" class="auth-submit-btn">Giriş Yap</button>
+                    <div class="auth-info">Misafir olarak devam etmek için kapat butonuna tıklayın.</div>
+                </div>
+                <!-- Register Form -->
+                <div id="register-form" class="auth-form">
+                    <div class="auth-input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="register-name" placeholder="Adınız Soyadınız">
+                    </div>
+                    <div class="auth-input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="register-email" placeholder="E-posta adresiniz">
+                    </div>
+                    <div class="auth-input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="register-password" placeholder="Şifreniz">
+                    </div>
+                    <div class="auth-input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="register-confirm" placeholder="Şifrenizi tekrar girin">
+                    </div>
+                    <button onclick="handleRegister()" class="auth-submit-btn">Kayıt Ol</button>
+                    <div class="auth-info">Kayıt olarak tüm özelliklere erişebilirsiniz.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER PROFILE MODAL -->
+    <div id="profile-modal" class="profile-modal" style="display:none;">
+        <div class="profile-modal-content">
+            <div class="profile-modal-header">
+                <h3><i class="fas fa-user-circle"></i> Profilim</h3>
+                <button class="profile-close" onclick="closeProfileModal()">&times;</button>
+            </div>
+            <div class="profile-modal-body">
+                <div class="profile-avatar-section">
+                    <img id="profile-avatar" src="https://ui-avatars.com/api/?background=6c5ce7&color=fff&rounded=true&bold=true&size=80" alt="">
+                    <div class="profile-info">
+                        <h4 id="profile-name">Kullanıcı Adı</h4>
+                        <p id="profile-email">email@example.com</p>
+                        <span id="profile-member-since" class="profile-badge">Üye: -</span>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="stat-value" id="profile-orders">0</div>
+                        <div class="stat-label">Toplam Sipariş</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="stat-value" id="profile-spent">0₺</div>
+                        <div class="stat-label">Toplam Harcama</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="stat-value" id="profile-status">Misafir</div>
+                        <div class="stat-label">Üyelik Tipi</div>
+                    </div>
+                </div>
+                <div class="profile-orders-section">
+                    <h4><i class="fas fa-shopping-bag"></i> Son Siparişlerim</h4>
+                    <div id="profile-orders-list" class="profile-orders-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
