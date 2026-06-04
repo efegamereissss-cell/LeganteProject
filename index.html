@@ -6,26 +6,922 @@
     <title>Legante Project | Premium Hile Market + AI Chat Tools</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ========== RESET ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #06060b;
+            color: #ffffff;
+            margin-left: 280px;
+            overflow-x: hidden;
+        }
+        
+        /* ========== SOL PANEL ========== */
+        #side-panel {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(6, 6, 11, 0.98);
+            backdrop-filter: blur(30px);
+            border-right: 1px solid rgba(168, 85, 247, 0.3);
+            z-index: 9999;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .panel-logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .panel-logo-main { font-size: 1.2rem; font-weight: 800; }
+        .panel-logo-sub { font-size: 0.6rem; color: #c084fc; letter-spacing: 4px; }
+        
+        .panel-status {
+            background: rgba(34,197,94,0.15);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+        }
+        
+        .panel-menu, .panel-extra { padding: 0 15px; }
+        
+        .menu-label {
+            color: #5a5a70;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 20px 0 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .access-btn {
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            border: none;
+            border-radius: 20px;
+            padding: 5px 12px;
+            color: white;
+            font-size: 0.65rem;
+            cursor: pointer;
+        }
+        
+        .side-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #a0a0b8;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .side-nav-link:hover {
+            background: rgba(168, 85, 247, 0.15);
+            color: white;
+        }
+        
+        .side-nav-link.active {
+            background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(168,85,247,0.2));
+            color: #c084fc;
+            border-left: 3px solid #c084fc;
+        }
+        
+        .side-nav-link i:first-child { width: 28px; }
+        .link-arrow { margin-left: auto; font-size: 0.7rem; opacity: 0; transition: all 0.3s; }
+        .side-nav-link:hover .link-arrow { opacity: 1; transform: translateX(5px); }
+        .side-nav-link.locked { opacity: 0.5; pointer-events: none; }
+        
+        .panel-footer {
+            margin-top: auto;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .discord-card {
+            background: rgba(88,101,242,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .discord-header { font-size: 0.8rem; margin-bottom: 10px; color: #5865F2; }
+        .discord-btn {
+            display: inline-block;
+            background: #5865F2;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .panel-version { text-align: center; font-size: 0.6rem; color: #5a5a70; }
+        
+        /* ========== HEADER ========== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 280px;
+            width: calc(100% - 280px);
+            z-index: 1000;
+        }
+        
+        .nav-top-bar {
+            background: rgba(108, 92, 231, 0.08);
+            border-bottom: 1px solid rgba(108, 92, 231, 0.1);
+            padding: 8px 0;
+            font-size: 0.8rem;
+        }
+        
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .top-bar-social { display: flex; align-items: center; gap: 15px; }
+        .top-bar-social a { color: #a0a0b8; transition: all 0.3s; }
+        .top-bar-social a:hover { color: #5865F2; }
+        
+        .navbar {
+            padding: 15px 0;
+            background: rgba(6, 6, 11, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(108, 92, 231, 0.15);
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .logo-main { font-size: 1.2rem; font-weight: 800; line-height: 1; }
+        .logo-sub { font-size: 0.65rem; font-weight: 600; color: #c084fc; letter-spacing: 5px; }
+        
+        .btn-nav {
+            background: #5865F2;
+            color: #fff;
+            padding: 10px 18px;
+            font-size: 0.85rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .auth-nav-btn {
+            background: rgba(108, 92, 231, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        
+        /* ========== HERO ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 100px;
+            padding-bottom: 60px;
+        }
+        
+        .section-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+            width: 100%;
+        }
+        
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(168, 85, 247, 0.08);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            padding: 8px 18px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+        }
+        
+        .badge-dot {
+            width: 7px; height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.5); }
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #6c5ce7, #a855f7, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+            color: #a0a0b8;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            color: #fff;
+        }
+        
+        .btn-primary:hover { transform: translateY(-3px); }
+        .btn-outline {
+            background: transparent;
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn-outline:hover { border-color: rgba(255, 255, 255, 0.4); }
+        .btn-lg { padding: 16px 32px; font-size: 1rem; }
+        
+        .hero-stats-mini {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .mini-stat { text-align: center; }
+        .mini-number { display: block; font-size: 1.2rem; font-weight: 800; color: #c084fc; }
+        .mini-label { font-size: 0.7rem; color: #5a5a70; text-transform: uppercase; }
+        .mini-divider { width: 1px; height: 25px; background: rgba(255, 255, 255, 0.08); }
+        
+        /* ========== SECTIONS ========== */
+        section { padding: 80px 0; }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-tag {
+            display: inline-block;
+            background: rgba(108, 92, 231, 0.1);
+            color: #c084fc;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            margin-bottom: 18px;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .section-description {
+            color: #a0a0b8;
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        
+        .feature-card {
+            background: rgba(15, 15, 30, 0.7);
+            border: 1px solid rgba(108, 92, 231, 0.15);
+            border-radius: 24px;
+            padding: 35px 28px;
+            transition: all 0.5s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 40px rgba(108, 92, 231, 0.3);
+        }
+        
+        .feature-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(168,85,247,0.2));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #c084fc;
+            margin-bottom: 22px;
+        }
+        
+        .feature-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
+        .feature-card p { color: #a0a0b8; font-size: 0.88rem; line-height: 1.6; }
+        
+        /* Market */
+        .market-categories {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .market-cat-btn {
+            background: rgba(15, 15, 30, 0.8);
+            border: 1px solid rgba(108, 92, 231, 0.15);
+            color: #a0a0b8;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        
+        .market-cat-btn.active {
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            color: #fff;
+        }
+        
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        
+        .market-item {
+            background: rgba(15, 15, 30, 0.7);
+            border: 1px solid rgba(108, 92, 231, 0.15);
+            border-radius: 24px;
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .market-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        
+        .badge-premium { background: linear-gradient(135deg, #6c5ce7, #a855f7); }
+        .badge-hot { background: linear-gradient(135deg, #f97316, #ef4444); }
+        
+        .market-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(168,85,247,0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 1.6rem;
+            color: #c084fc;
+        }
+        
+        .market-features { text-align: left; margin: 20px 0; }
+        .market-features li { padding: 5px 0; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; list-style: none; }
+        .market-features li i { color: #22c55e; }
+        .market-price { font-size: 1.8rem; font-weight: 900; margin: 15px 0; }
+        .market-price span { font-size: 0.8rem; font-weight: 500; color: #5a5a70; }
+        
+        .btn-block { width: 100%; }
+        .btn-sm { padding: 10px 18px; font-size: 0.8rem; }
+        
+        .hidden { display: none; }
+        
+        /* AI Chat */
+        .ai-chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(15, 15, 30, 0.7);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        
+        .ai-model-selector {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            flex-wrap: wrap;
+        }
+        
+        .ai-model-btn {
+            background: rgba(15, 15, 30, 0.8);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            color: #a0a0b8;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .ai-model-btn.active {
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            color: #fff;
+        }
+        
+        .ai-chat-window {
+            display: flex;
+            flex-direction: column;
+            height: 450px;
+        }
+        
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .chat-message {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .user-message .message-avatar {
+            background: rgba(108, 92, 231, 0.2);
+        }
+        
+        .message-content {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 14px;
+        }
+        
+        .message-sender {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #c084fc;
+            margin-bottom: 5px;
+        }
+        
+        .message-text { font-size: 0.9rem; line-height: 1.6; }
+        
+        .ai-quick-questions {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            flex-wrap: wrap;
+        }
+        
+        .quick-question {
+            background: rgba(108, 92, 231, 0.1);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            color: #a0a0b8;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .ai-chat-input-area {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+        }
+        
+        .ai-chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            border-radius: 14px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: none;
+        }
+        
+        .ai-send-btn, .ai-clear-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .ai-send-btn {
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            color: white;
+        }
+        
+        .ai-clear-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #c084fc;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+        
+        /* Modal */
+        .auth-modal, .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 50000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .auth-modal-content, .profile-modal-content {
+            background: linear-gradient(135deg, #0a0a14, #0f0f1e);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 28px;
+            width: 450px;
+            max-width: 90%;
+        }
+        
+        .profile-modal-content { width: 550px; max-height: 80vh; overflow-y: auto; }
+        
+        .auth-modal-header, .profile-modal-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .auth-tabs { display: flex; gap: 20px; }
+        .auth-tab {
+            background: none;
+            border: none;
+            color: #5a5a70;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .auth-tab.active { color: #c084fc; border-bottom: 2px solid #c084fc; }
+        .auth-close, .profile-close { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        
+        .auth-modal-body, .profile-modal-body { padding: 30px 25px; }
+        
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        
+        .auth-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+        }
+        
+        .auth-input-group input {
+            background: none;
+            border: none;
+            color: white;
+            width: 100%;
+            outline: none;
+        }
+        
+        .auth-submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .auth-info { text-align: center; font-size: 0.7rem; color: #5a5a70; margin-top: 20px; }
+        
+        /* User Dropdown */
+        .user-profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 50px;
+            background: rgba(108,92,231,0.15);
+        }
+        
+        .user-avatar-small {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 280px;
+            background: linear-gradient(135deg, #0a0a14, #0f0f1e);
+            border: 1px solid rgba(168,85,247,0.3);
+            border-radius: 16px;
+            padding: 15px;
+            z-index: 20000;
+            display: none;
+        }
+        
+        .user-dropdown.show { display: block; }
+        
+        .dropdown-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .dropdown-header img { width: 45px; height: 45px; border-radius: 50%; }
+        .user-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            color: #a0a0b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        
+        .user-dropdown a:hover { color: #c084fc; }
+        .dropdown-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 10px 0; }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0a0a14;
+            border: 1px solid #a855f7;
+            border-radius: 12px;
+            padding: 12px 20px;
+            z-index: 60000;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .profile-stat { flex: 1; text-align: center; }
+        .profile-stat .stat-value { font-size: 1.5rem; font-weight: 800; color: #c084fc; }
+        .profile-stat .stat-label { font-size: 0.7rem; color: #5a5a70; }
+        
+        .profile-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar-section img { width: 80px; height: 80px; border-radius: 50%; }
+        
+        /* Footer */
+        .footer {
+            border-top: 1px solid rgba(108, 92, 231, 0.15);
+            padding: 50px 0 20px;
+            margin-top: 40px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .footer-social { display: flex; gap: 10px; margin-top: 15px; }
+        .footer-social a {
+            width: 35px;
+            height: 35px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .footer-links h4 { margin-bottom: 15px; }
+        .footer-links ul li { margin-bottom: 8px; list-style: none; }
+        .footer-links ul li a { color: #5a5a70; text-decoration: none; font-size: 0.85rem; }
+        .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 30px; font-size: 0.75rem; color: #5a5a70; }
+        
+        /* Responsive */
+        #mobile-menu-btn {
+            position: fixed;
+            left: 15px;
+            top: 15px;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10001;
+        }
+        
+        #mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9998;
+            display: none;
+        }
+        
+        @media (max-width: 992px) {
+            body { margin-left: 0; }
+            .header { left: 0; width: 100%; }
+            #side-panel { transform: translateX(-100%); transition: transform 0.3s; }
+            #side-panel.mobile-open { transform: translateX(0); }
+            #mobile-menu-btn { display: flex; }
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero-visual { display: none; }
+            .features-grid, .market-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .features-grid, .market-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: 2.5rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-
-    <!-- CUSTOM CURSOR -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-
-    <!-- PARTICLE BACKGROUND -->
-    <div class="particles"></div>
-
-    <!-- ANIMATED BACKGROUND -->
-    <div class="bg-animation">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <div class="gradient-orb orb-3"></div>
-        <div class="gradient-orb orb-4"></div>
-        <div class="gradient-orb orb-5"></div>
-        <div class="grid-overlay"></div>
-    </div>
 
     <!-- SOL PANEL -->
     <div id="side-panel">
@@ -45,7 +941,7 @@
         
         <div class="panel-menu">
             <div class="menu-label">MENÜ</div>
-            <ul id="side-nav-menu">
+            <ul style="list-style: none;">
                 <li><a href="#home" class="side-nav-link" data-section="home"><i class="fas fa-home"></i><span>Ana Sayfa</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#features" class="side-nav-link" data-section="features"><i class="fas fa-star"></i><span>Özellikler</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#market" class="side-nav-link" data-section="market"><i class="fas fa-store"></i><span>Market</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
@@ -57,11 +953,11 @@
         </div>
 
         <div class="panel-extra">
-            <div class="menu-label" style="margin-top:20px;">
+            <div class="menu-label">
                 <span>🛠️ EXTRA TOOLS</span>
                 <button id="access-extra-btn" class="access-btn"><i class="fas fa-key"></i> ERİŞ</button>
             </div>
-            <ul id="extra-tools-menu">
+            <ul style="list-style: none;">
                 <li><a href="#" id="sms-bomber-link" class="side-nav-link locked"><i class="fas fa-lock"></i><span>SMS Bomber (Kilitli)</span></a></li>
                 <li><a href="#" id="token-checker-link" class="side-nav-link locked"><i class="fas fa-lock"></i><span>Token Checker (Kilitli)</span></a></li>
                 <li><a href="#" id="ip-locator-link" class="side-nav-link locked"><i class="fas fa-lock"></i><span>IP Locator (Kilitli)</span></a></li>
@@ -81,7 +977,7 @@
         </div>
     </div>
 
-    <!-- MOBILE MENU BUTTON -->
+    <!-- MOBILE MENU -->
     <div id="mobile-menu-btn"><i class="fas fa-bars"></i></div>
     <div id="mobile-overlay"></div>
 
@@ -91,12 +987,10 @@
             <div class="nav-container">
                 <div class="top-bar-text"><i class="fas fa-bolt"></i> 50+ Hile Aktif • 500+ Mutlu Üye • 7/24 Destek • 🤖 AI Chat Tools Aktif</div>
                 <div class="top-bar-social">
-                    <!-- Login/Register Buttons (Misafir modunda gösterilir) -->
                     <div id="guest-header-buttons">
                         <button class="auth-nav-btn" onclick="openAuthModal('login')"><i class="fas fa-sign-in-alt"></i> Giriş</button>
                         <button class="auth-nav-btn" onclick="openAuthModal('register')"><i class="fas fa-user-plus"></i> Kayıt</button>
                     </div>
-                    <!-- User Profile (Giriş yapınca gösterilir) -->
                     <div id="user-header-profile" style="display:none;">
                         <div class="user-profile-trigger" onclick="toggleUserMenu()">
                             <img id="user-avatar-small" class="user-avatar-small" src="https://ui-avatars.com/api/?background=6c5ce7&color=fff&rounded=true&bold=true" alt="">
@@ -114,7 +1008,6 @@
                             <div class="dropdown-divider"></div>
                             <a href="#" onclick="showUserProfile(); return false;"><i class="fas fa-user"></i> Profilim</a>
                             <a href="#" onclick="showUserOrders(); return false;"><i class="fas fa-shopping-bag"></i> Siparişlerim</a>
-                            <a href="#" onclick="showUserSettings(); return false;"><i class="fas fa-cog"></i> Ayarlar</a>
                             <div class="dropdown-divider"></div>
                             <a href="#" onclick="logout(); return false;" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a>
                         </div>
@@ -130,7 +1023,7 @@
                     <div class="logo-text"><span class="logo-main">LEGANTE</span><span class="logo-sub">PROJECT</span></div>
                 </a>
                 <div class="nav-actions">
-                    <a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-nav"><i class="fab fa-discord"></i><span>Discord</span></a>
+                    <a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn-nav"><i class="fab fa-discord"></i><span>Discord</span></a>
                 </div>
             </div>
         </nav>
@@ -146,7 +1039,7 @@
                         <h1 class="hero-title">Oyun Deneyimini<br><span class="gradient-text">Zirveye Taşı</span></h1>
                         <p class="hero-description">Legante Project ile rakiplerine fark at. En güvenli, en güncel ve en kapsamlı hile arşiviyle tanış. <strong>50'den fazla</strong> özel hile ve <strong>Yapay Zeka destekli</strong> asistan seni bekliyor.</p>
                         <div class="hero-cta">
-                            <a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-primary btn-lg"><i class="fab fa-discord"></i> Discord'a Katıl<span class="btn-glow"></span></a>
+                            <a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-primary btn-lg"><i class="fab fa-discord"></i> Discord'a Katıl</a>
                             <a href="#market" class="btn btn-outline btn-lg"><i class="fas fa-store"></i> Markete Git</a>
                             <a href="#ai-tools" class="btn btn-outline btn-lg"><i class="fas fa-robot"></i> AI Sohbet</a>
                         </div>
@@ -162,126 +1055,125 @@
                     </div>
                     <div class="hero-visual">
                         <div class="hero-card-wrapper">
-                            <div class="hero-card-glow"></div>
-                            <div class="hero-card"><div class="card-glass"><div class="card-header"><div class="card-dots"><span></span><span></span><span></span></div><span class="card-title">Legante Dashboard</span><span class="card-version">v3.0.0</span></div><div class="card-body"><div class="card-stat"><div class="card-stat-icon"><i class="fas fa-shield-halved"></i></div><div><span class="cs-value">Aktif</span><span class="cs-label">Anti-Ban Koruması</span></div></div><div class="card-stat"><div class="card-stat-icon"><i class="fas fa-bolt"></i></div><div><span class="cs-value">78%</span><span class="cs-label">Sistem Performansı</span></div></div><div class="card-progress"><div class="progress-bar"><div class="progress-fill"></div></div><div class="progress-info"><span class="progress-text">🟢 Sistem Aktif</span><span class="progress-percent">%100</span></div></div><div class="card-users"><div class="user-avatars"><div class="avatar"><i class="fas fa-user"></i></div><div class="avatar"><i class="fas fa-user"></i></div><div class="avatar"><i class="fas fa-user"></i></div><div class="avatar"><i class="fas fa-user"></i></div><div class="avatar-more">+196</div></div><span class="online-text">🟢 Çevrimiçi</span></div></div></div></div>
-                            <div class="floating-element floating-badge-1"><i class="fas fa-check-circle"></i> Premium</div>
-                            <div class="floating-element floating-badge-2"><i class="fas fa-lock"></i> Güvenli</div>
-                            <div class="floating-element floating-badge-3"><i class="fas fa-sync-alt"></i> Güncel</div>
+                            <div class="hero-card">
+                                <div class="card-glass">
+                                    <div class="card-header">
+                                        <div class="card-dots"><span></span><span></span><span></span></div>
+                                        <span class="card-title">Legante Dashboard</span>
+                                        <span class="card-version">v3.0.0</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card-stat"><div class="card-stat-icon"><i class="fas fa-shield-halved"></i></div><div><span>Anti-Ban Koruması</span><span> Aktif</span></div></div>
+                                        <div class="card-stat"><div class="card-stat-icon"><i class="fas fa-bolt"></i></div><div><span>Sistem Performansı</span><span> %78</span></div></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="scroll-indicator"><span>Aşağı Kaydır</span><div class="scroll-mouse"><div class="scroll-wheel"></div></div></div>
         </section>
 
         <!-- FEATURES -->
-        <section id="features" class="features">
+        <section id="features">
             <div class="section-container">
                 <div class="section-header"><span class="section-tag">ÖZELLİKLER</span><h2 class="section-title">Neden <span class="gradient-text">Legante Project?</span></h2><p class="section-description">Sektördeki en iyi hile deneyimini sunmak için her detayı düşündük.</p></div>
                 <div class="features-grid">
-                    <div class="feature-card"><div class="feature-card-inner"><div class="feature-icon-wrapper"><div class="feature-icon"><i class="fas fa-database"></i></div></div><h3>50+ Özel Hile</h3><p>Valorant, CS2, Fortnite, PUBG, Apex Legends ve daha fazlası.</p><a href="https://discord.gg/bM6SZcNmzW" class="feature-link"><span>Discord'da İncele</span><i class="fas fa-arrow-right"></i></a></div></div>
-                    <div class="feature-card"><div class="feature-card-inner"><div class="feature-icon-wrapper"><div class="feature-icon"><i class="fas fa-shield-virus"></i></div></div><h3>Anti-Ban Koruması</h3><p>Gelişmiş şifreleme ve spoof teknolojisi ile ban riskini minimuma indiriyoruz.</p><a href="https://discord.gg/bM6SZcNmzW" class="feature-link"><span>Discord'da İncele</span><i class="fas fa-arrow-right"></i></a></div></div>
-                    <div class="feature-card"><div class="feature-card-inner"><div class="feature-icon-wrapper"><div class="feature-icon"><i class="fas fa-sync-alt"></i></div></div><h3>Anlık Güncelleme</h3><p>Oyun güncellemeleriyle eş zamanlı olarak hilelerimizi sürekli güncel tutuyoruz.</p><a href="https://discord.gg/bM6SZcNmzW" class="feature-link"><span>Discord'da İncele</span><i class="fas fa-arrow-right"></i></a></div></div>
-                    <div class="feature-card"><div class="feature-card-inner"><div class="feature-icon-wrapper"><div class="feature-icon"><i class="fas fa-headset"></i></div></div><h3>7/24 Canlı Destek</h3><p>Discord üzerinden anlık destek ekibimizle sorunlarınıza çözüm buluyoruz.</p><a href="https://discord.gg/bM6SZcNmzW" class="feature-link"><span>Discord'da İncele</span><i class="fas fa-arrow-right"></i></a></div></div>
-                    <div class="feature-card"><div class="feature-card-inner"><div class="feature-icon-wrapper"><div class="feature-icon"><i class="fas fa-gauge-high"></i></div></div><h3>Yüksek Performans</h3><p>Optimize edilmiş kod yapısı ile FPS kaybı yaşamadan hileleri kullanabilirsiniz.</p><a href="https://discord.gg/bM6SZcNmzW" class="feature-link"><span>Discord'da İncele</span><i class="fas fa-arrow-right"></i></a></div></div>
-                    <div class="feature-card"><div class="feature-card-inner"><div class="feature-icon-wrapper"><div class="feature-icon"><i class="fas fa-robot"></i></div></div><h3>AI Chat Tools</h3><p>GPT-4, Claude, Gemini ve Llama modelleri ile sohbet edin, sorularınıza anında yanıt alın.</p><a href="#ai-tools" class="feature-link"><span>Hemen Dene</span><i class="fas fa-arrow-right"></i></a></div></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-database"></i></div><h3>50+ Özel Hile</h3><p>Valorant, CS2, Fortnite, PUBG, Apex Legends ve daha fazlası.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-virus"></i></div><h3>Anti-Ban Koruması</h3><p>Gelişmiş şifreleme ve spoof teknolojisi ile ban riskini minimuma indiriyoruz.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-sync-alt"></i></div><h3>Anlık Güncelleme</h3><p>Oyun güncellemeleriyle eş zamanlı olarak hilelerimizi sürekli güncel tutuyoruz.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-headset"></i></div><h3>7/24 Canlı Destek</h3><p>Discord üzerinden anlık destek ekibimizle sorunlarınıza çözüm buluyoruz.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-gauge-high"></i></div><h3>Yüksek Performans</h3><p>Optimize edilmiş kod yapısı ile FPS kaybı yaşamadan hileleri kullanabilirsiniz.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-robot"></i></div><h3>AI Chat Tools</h3><p>GPT-4, Claude, Gemini ve Llama modelleri ile sohbet edin.</p></div>
                 </div>
             </div>
         </section>
 
         <!-- MARKET -->
-        <section id="market" class="market">
+        <section id="market">
             <div class="section-container">
-                <div class="section-header"><span class="section-tag">MARKET</span><h2 class="section-title">Legante <span class="gradient-text">Market</span></h2><p class="section-description">İhtiyacın olan her şey burada! Kategorilere göz at, hemen satın al.</p></div>
-                <div class="market-categories"><button class="market-cat-btn active" data-category="all"><i class="fas fa-th-large"></i> Tümü</button><button class="market-cat-btn" data-category="vip"><i class="fas fa-crown"></i> VIP</button><button class="market-cat-btn" data-category="booster"><i class="fas fa-rocket"></i> Booster</button><button class="market-cat-btn" data-category="special"><i class="fas fa-star"></i> Özel Üye</button><button class="market-cat-btn" data-category="other"><i class="fas fa-ellipsis-h"></i> Diğer</button></div>
+                <div class="section-header"><span class="section-tag">MARKET</span><h2 class="section-title">Legante <span class="gradient-text">Market</span></h2><p class="section-description">İhtiyacın olan her şey burada!</p></div>
+                <div class="market-categories">
+                    <button class="market-cat-btn active" data-category="all">Tümü</button>
+                    <button class="market-cat-btn" data-category="vip">VIP</button>
+                    <button class="market-cat-btn" data-category="booster">Booster</button>
+                </div>
                 <div class="market-grid">
-                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-premium">PREMIUM</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 1</h3><p>Temel VIP avantajları</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 5 hile erişimi</li><li><i class="fas fa-check"></i> Öncelikli destek</li></ul><div class="market-price">₺79<span>/ay</span></div><button onclick="handlePurchase('VIP 1', 79)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
-                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-hot">POPÜLER</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 2</h3><p>Gelişmiş VIP paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol + renk</li><li><i class="fas fa-check"></i> 15 hile erişimi</li><li><i class="fas fa-check"></i> Özel VIP kanal</li></ul><div class="market-price">₺149<span>/ay</span></div><button onclick="handlePurchase('VIP 2', 149)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
-                    <div class="market-item" data-category="vip"><div class="market-item-glow"></div><div class="market-badge badge-ultimate">ULTIMATE</div><div class="market-icon"><i class="fas fa-gem"></i></div><h3>VIP 3</h3><p>Tam VIP deneyimi</p><ul class="market-features"><li><i class="fas fa-check"></i> Full yetkili rol</li><li><i class="fas fa-check"></i> 50+ hile erişimi</li><li><i class="fas fa-check"></i> Beta sürümler</li></ul><div class="market-price">₺249<span>/ay</span></div><button onclick="handlePurchase('VIP 3', 249)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
-                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 1</h3><p>Başlangıç boost paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> 4 saat boost</li><li><i class="fas fa-check"></i> Sunucu önceliği</li><li><i class="fas fa-check"></i> Boost rozeti</li></ul><div class="market-price">₺39<span>/tek</span></div><button onclick="handlePurchase('Boost 1', 39)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
-                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 2</h3><p>Profesyonel boost</p><ul class="market-features"><li><i class="fas fa-check"></i> 8 saat boost</li><li><i class="fas fa-check"></i> Boost kanalı erişimi</li><li><i class="fas fa-check"></i> Özel emoji kullanımı</li></ul><div class="market-price">₺69<span>/tek</span></div><button onclick="handlePurchase('Boost 2', 69)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
-                    <div class="market-item" data-category="booster"><div class="market-item-glow"></div><div class="market-badge badge-boost">BOOST</div><div class="market-icon"><i class="fas fa-fire"></i></div><h3>Boost 3</h3><p>Ultra boost paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> 16 saat boost</li><li><i class="fas fa-check"></i> Sunucu seviye atlama</li><li><i class="fas fa-check"></i> Boost leaderboard</li></ul><div class="market-price">₺119<span>/tek</span></div><button onclick="handlePurchase('Boost 3', 119)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
-                    <div class="market-item" data-category="special"><div class="market-item-glow"></div><div class="market-badge badge-special">ÖZEL</div><div class="market-icon"><i class="fas fa-star"></i></div><h3>Özel Üye 1</h3><p>Özel statü başlangıç</p><ul class="market-features"><li><i class="fas fa-check"></i> Özel üye rolü</li><li><i class="fas fa-check"></i> İsim değiştirme</li><li><i class="fas fa-check"></i> Özel oda erişimi</li></ul><div class="market-price">₺99<span>/ay</span></div><button onclick="handlePurchase('Özel Üye 1', 99)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
-                    <div class="market-item" data-category="special"><div class="market-item-glow"></div><div class="market-badge badge-special">ÖZEL</div><div class="market-icon"><i class="fas fa-medal"></i></div><h3>Özel Üye 2</h3><p>Elit üye paketi</p><ul class="market-features"><li><i class="fas fa-check"></i> Elit üye rozeti</li><li><i class="fas fa-check"></i> Özel etkinlik katılımı</li><li><i class="fas fa-check"></i> Admin ile iletişim</li></ul><div class="market-price">₺179<span>/ay</span></div><button onclick="handlePurchase('Özel Üye 2', 179)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
-                    <div class="market-item" data-category="other"><div class="market-item-glow"></div><div class="market-badge badge-other">DİĞER</div><div class="market-icon"><i class="fas fa-key"></i></div><h3>HWID Spoofer</h3><p>Kalıcı ban çözümü</p><ul class="market-features"><li><i class="fas fa-check"></i> HWID resetleme</li><li><i class="fas fa-check"></i> Sınırsız kullanım</li><li><i class="fas fa-check"></i> Kurulum desteği</li></ul><div class="market-price">₺199<span>/ömür boyu</span></div><button onclick="handlePurchase('HWID Spoofer', 199)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="vip"><div class="market-badge badge-premium">PREMIUM</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 1</h3><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 5 hile erişimi</li></ul><div class="market-price">₺79<span>/ay</span></div><button onclick="handlePurchase('VIP 1', 79)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="vip"><div class="market-badge badge-hot">POPÜLER</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 2</h3><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 15 hile erişimi</li></ul><div class="market-price">₺149<span>/ay</span></div><button onclick="handlePurchase('VIP 2', 149)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="vip"><div class="market-badge badge-premium">ULTIMATE</div><div class="market-icon"><i class="fas fa-gem"></i></div><h3>VIP 3</h3><ul class="market-features"><li><i class="fas fa-check"></i> Full yetkili rol</li><li><i class="fas fa-check"></i> 50+ hile erişimi</li></ul><div class="market-price">₺249<span>/ay</span></div><button onclick="handlePurchase('VIP 3', 249)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-badge badge-hot">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 1</h3><ul class="market-features"><li><i class="fas fa-check"></i> 4 saat boost</li><li><i class="fas fa-check"></i> Sunucu önceliği</li></ul><div class="market-price">₺39<span>/tek</span></div><button onclick="handlePurchase('Boost 1', 39)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 2</h3><ul class="market-features"><li><i class="fas fa-check"></i> 8 saat boost</li><li><i class="fas fa-check"></i> Özel kanal</li></ul><div class="market-price">₺69<span>/tek</span></div><button onclick="handlePurchase('Boost 2', 69)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-icon"><i class="fas fa-fire"></i></div><h3>Boost 3</h3><ul class="market-features"><li><i class="fas fa-check"></i> 16 saat boost</li><li><i class="fas fa-check"></i> Liderlik tablosu</li></ul><div class="market-price">₺119<span>/tek</span></div><button onclick="handlePurchase('Boost 3', 119)" class="btn btn-primary btn-block btn-sm">Satın Al</button></div>
                 </div>
             </div>
         </section>
 
         <!-- STATS -->
-        <section id="stats" class="stats">
-            <div class="section-container"><div class="stats-wrapper"><div class="stats-grid"><div class="stat-item"><div class="stat-icon"><i class="fas fa-cube"></i></div><div class="stat-content"><span class="stat-number">50</span><span class="stat-suffix">+</span></div><span class="stat-label">Özel Hile</span></div><div class="stat-item"><div class="stat-icon"><i class="fas fa-user-group"></i></div><div class="stat-content"><span class="stat-number">500</span><span class="stat-suffix">+</span></div><span class="stat-label">Mutlu Üye</span></div><div class="stat-item"><div class="stat-icon"><i class="fas fa-heart"></i></div><div class="stat-content"><span class="stat-number">99</span><span class="stat-suffix">%</span></div><span class="stat-label">Memnuniyet</span></div><div class="stat-item"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-content"><span class="stat-number">24</span><span class="stat-suffix">/7</span></div><span class="stat-label">Canlı Destek</span></div></div></div></div>
+        <section id="stats">
+            <div class="section-container">
+                <div class="stats-wrapper" style="background:rgba(10,10,20,0.8); border-radius:32px; padding:50px; text-align:center;">
+                    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:30px;">
+                        <div><div class="stat-icon"><i class="fas fa-cube"></i></div><div style="font-size:2.5rem; font-weight:900;">50<span style="font-size:1.3rem;">+</span></div><div style="color:#5a5a70;">Özel Hile</div></div>
+                        <div><div class="stat-icon"><i class="fas fa-user-group"></i></div><div style="font-size:2.5rem; font-weight:900;">500<span style="font-size:1.3rem;">+</span></div><div style="color:#5a5a70;">Mutlu Üye</div></div>
+                        <div><div class="stat-icon"><i class="fas fa-heart"></i></div><div style="font-size:2.5rem; font-weight:900;">99<span style="font-size:1.3rem;">%</span></div><div style="color:#5a5a70;">Memnuniyet</div></div>
+                        <div><div class="stat-icon"><i class="fas fa-clock"></i></div><div style="font-size:2.5rem; font-weight:900;">24<span style="font-size:1.3rem;">/7</span></div><div style="color:#5a5a70;">Canlı Destek</div></div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- PRICING -->
-        <section id="pricing" class="pricing">
+        <section id="pricing">
             <div class="section-container">
-                <div class="section-header"><span class="section-tag">PAKETLER</span><h2 class="section-title">Senin İçin En <span class="gradient-text">Uygun Paket</span></h2><p class="section-description">İhtiyacına uygun paketi seç, hemen kullanmaya başla.</p></div>
-                <div class="pricing-grid">
-                    <div class="pricing-card"><div class="pricing-header"><h3>Başlangıç</h3><p>Temel özellikler</p></div><div class="pricing-price"><span class="price">₺149</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> 5 Hile Erişimi</li><li><i class="fas fa-check"></i> Temel Koruma</li><li><i class="fas fa-check"></i> E-posta Desteği</li><li><i class="fas fa-times"></i> Öncelikli Güncelleme</li></ul><button onclick="handlePurchase('Başlangıç Paketi', 149)" class="btn btn-outline btn-block">Başla</button></div>
-                    <div class="pricing-card popular"><div class="popular-badge">EN POPÜLER</div><div class="pricing-header"><h3>Premium</h3><p>Tam erişim paketi</p></div><div class="pricing-price"><span class="price">₺299</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> 50+ Hile Erişimi</li><li><i class="fas fa-check"></i> Gelişmiş Koruma</li><li><i class="fas fa-check"></i> 7/24 Canlı Destek</li><li><i class="fas fa-check"></i> Öncelikli Güncelleme</li></ul><button onclick="handlePurchase('Premium Paketi', 299)" class="btn btn-primary btn-block">Hemen Katıl</button></div>
-                    <div class="pricing-card"><div class="pricing-header"><h3>Ultimate</h3><p>Özel müşteri paketi</p></div><div class="pricing-price"><span class="price">₺599</span><span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> Sınırsız Hile Erişimi</li><li><i class="fas fa-check"></i> Ultra Koruma</li><li><i class="fas fa-check"></i> Özel Destek Ekibi</li><li><i class="fas fa-check"></i> Beta Sürümler</li></ul><button onclick="handlePurchase('Ultimate Paketi', 599)" class="btn btn-outline btn-block">Başla</button></div>
+                <div class="section-header"><span class="section-tag">PAKETLER</span><h2 class="section-title">Senin İçin En <span class="gradient-text">Uygun Paket</span></h2></div>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:25px;">
+                    <div style="background:rgba(15,15,30,0.7); border-radius:24px; padding:40px 30px; text-align:center;"><h3>Başlangıç</h3><div style="font-size:2.5rem; font-weight:900; margin:20px 0;">₺149<span style="font-size:1rem;">/ay</span></div><ul style="list-style:none; margin:20px 0;"><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> 5 Hile Erişimi</li><li style="padding:8px 0;"><i class="fas fa-times" style="color:#ef4444;"></i> Öncelikli Destek</li></ul><button onclick="handlePurchase('Başlangıç', 149)" class="btn btn-outline btn-block">Başla</button></div>
+                    <div style="background:rgba(25,15,45,0.7); border-radius:24px; padding:40px 30px; text-align:center; border:1px solid rgba(168,85,247,0.3); transform:scale(1.02);"><div style="position:absolute; margin-top:-55px; background:linear-gradient(135deg,#6c5ce7,#a855f7); padding:5px 20px; border-radius:50px; font-size:0.7rem;">EN POPÜLER</div><h3>Premium</h3><div style="font-size:2.5rem; font-weight:900; margin:20px 0;">₺299<span style="font-size:1rem;">/ay</span></div><ul style="list-style:none; margin:20px 0;"><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> 50+ Hile Erişimi</li><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> 7/24 Destek</li></ul><button onclick="handlePurchase('Premium', 299)" class="btn btn-primary btn-block">Hemen Katıl</button></div>
+                    <div style="background:rgba(15,15,30,0.7); border-radius:24px; padding:40px 30px; text-align:center;"><h3>Ultimate</h3><div style="font-size:2.5rem; font-weight:900; margin:20px 0;">₺599<span style="font-size:1rem;">/ay</span></div><ul style="list-style:none; margin:20px 0;"><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> Sınırsız Erişim</li><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> Beta Sürümler</li></ul><button onclick="handlePurchase('Ultimate', 599)" class="btn btn-outline btn-block">Başla</button></div>
                 </div>
             </div>
         </section>
 
         <!-- TESTIMONIALS -->
-        <section id="testimonials" class="testimonials">
+        <section id="testimonials">
             <div class="section-container">
-                <div class="section-header"><span class="section-tag">YORUMLAR</span><h2 class="section-title">Üyelerimiz <span class="gradient-text">Ne Diyor?</span></h2><p class="section-description">Topluluğumuzun Legante Project hakkındaki düşünceleri.</p></div>
-                <div class="testimonials-grid">
-                    <div class="testimonial-card"><div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testimonial-text">"Legante Project sayesinde oyunlarda çok daha başarılıyım. AI asistan gerçekten çok yardımcı!"</p><div class="testimonial-author"><div class="author-avatar"><i class="fas fa-user-circle"></i></div><div class="author-info"><h4>Ahmet Y.</h4><span>VIP Üye</span></div></div></div>
-                    <div class="testimonial-card"><div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testimonial-text">"Diğer sunucularda hep toksik insanlar vardı ama Legante'de herkes birbirine saygılı. AI desteği muhteşem!"</p><div class="testimonial-author"><div class="author-avatar"><i class="fas fa-user-circle"></i></div><div class="author-info"><h4>Mehmet K.</h4><span>Elite Üye</span></div></div></div>
-                    <div class="testimonial-card"><div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testimonial-text">"50'den fazla hile seçeneği ve AI sohbet asistanı. Tam aradığım şey buydu, iyi ki varsınız!"</p><div class="testimonial-author"><div class="author-avatar"><i class="fas fa-user-circle"></i></div><div class="author-info"><h4>Ayşe D.</h4><span>Premium Üye</span></div></div></div>
+                <div class="section-header"><span class="section-tag">YORUMLAR</span><h2 class="section-title">Üyelerimiz <span class="gradient-text">Ne Diyor?</span></h2></div>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:25px;">
+                    <div style="background:rgba(15,15,30,0.7); border-radius:24px; padding:32px;"><div style="color:#fbbf24; margin-bottom:15px;"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p>"Legante Project sayesinde oyunlarda çok daha başarılıyım!"</p><div style="margin-top:20px;"><strong>Ahmet Y.</strong><span style="color:#c084fc; display:block; font-size:0.75rem;">VIP Üye</span></div></div>
+                    <div style="background:rgba(15,15,30,0.7); border-radius:24px; padding:32px;"><div style="color:#fbbf24; margin-bottom:15px;"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p>"AI asistan gerçekten çok yardımcı! Harika bir topluluk."</p><div style="margin-top:20px;"><strong>Mehmet K.</strong><span style="color:#c084fc; display:block; font-size:0.75rem;">Elite Üye</span></div></div>
+                    <div style="background:rgba(15,15,30,0.7); border-radius:24px; padding:32px;"><div style="color:#fbbf24; margin-bottom:15px;"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p>"50+ hile seçeneği ve sürekli güncellemeler, iyi ki varsınız!"</p><div style="margin-top:20px;"><strong>Ayşe D.</strong><span style="color:#c084fc; display:block; font-size:0.75rem;">Premium Üye</span></div></div>
                 </div>
             </div>
         </section>
 
-        <!-- AI CHAT TOOLS SECTION -->
-        <section id="ai-tools" class="ai-tools-section">
+        <!-- AI CHAT TOOLS -->
+        <section id="ai-tools">
             <div class="section-container">
-                <div class="section-header">
-                    <span class="section-tag">🤖 YAPAY ZEKA</span>
-                    <h2 class="section-title"><span class="gradient-text">AI Chat Tools</span> ile Tanış</h2>
-                    <p class="section-description">Gelişmiş yapay zeka modelleri ile sohbet edin, sorularınızı yanıtlayın.</p>
-                </div>
-                
+                <div class="section-header"><span class="section-tag">🤖 YAPAY ZEKA</span><h2 class="section-title"><span class="gradient-text">AI Chat Tools</span> ile Tanış</h2></div>
                 <div class="ai-chat-container">
                     <div class="ai-model-selector">
-                        <button class="ai-model-btn active" data-model="gpt"><i class="fas fa-robot"></i> GPT-4</button>
-                        <button class="ai-model-btn" data-model="claude"><i class="fas fa-brain"></i> Claude</button>
-                        <button class="ai-model-btn" data-model="gemini"><i class="fas fa-star-of-life"></i> Gemini</button>
-                        <button class="ai-model-btn" data-model="llama"><i class="fas fa-fire"></i> Llama</button>
+                        <button class="ai-model-btn active" data-model="gpt">GPT-4</button>
+                        <button class="ai-model-btn" data-model="claude">Claude</button>
+                        <button class="ai-model-btn" data-model="gemini">Gemini</button>
+                        <button class="ai-model-btn" data-model="llama">Llama</button>
                     </div>
-                    
                     <div class="ai-chat-window">
                         <div class="ai-chat-messages" id="chatMessages">
                             <div class="chat-message ai-message">
                                 <div class="message-avatar"><i class="fas fa-robot"></i></div>
-                                <div class="message-content">
-                                    <div class="message-sender">Legante AI</div>
-                                    <div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? Oyunlar, hileler veya herhangi bir konuda sorularını bekliyorum! 🎮<br><br>💡 <strong>İpucu:</strong> Gerçek AI yanıtları için alttaki uyarıya tıklayarak API key ekleyebilirsiniz.</div>
-                                </div>
+                                <div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? 🎮</div></div>
                             </div>
                         </div>
-                        
                         <div class="ai-quick-questions">
-                            <button class="quick-question" data-question="En popüler hileleriniz hangileri?">🌟 En popüler hileleriniz?</button>
-                            <button class="quick-question" data-question="Nasıl VIP üye olabilirim?">👑 VIP üyelik nasıl alınır?</button>
-                            <button class="quick-question" data-question="Anti-ban koruması var mı?">🛡️ Anti-ban güvenliği nedir?</button>
-                            <button class="quick-question" data-question="Fiyat listesi nedir?">💰 Güncel fiyatlar</button>
-                            <button class="quick-question" data-question="HWID spoofer nedir?">🔄 HWID Spoofer nedir?</button>
+                            <button class="quick-question" data-question="En popüler hileleriniz hangileri?">🌟 Popüler hileler</button>
+                            <button class="quick-question" data-question="Nasıl VIP üye olabilirim?">👑 VIP üyelik</button>
+                            <button class="quick-question" data-question="Fiyat listesi nedir?">💰 Fiyatlar</button>
                         </div>
-                        
                         <div class="ai-chat-input-area">
-                            <textarea id="chatInput" class="ai-chat-input" placeholder="Mesajınızı yazın... (Enter gönder, Shift+Enter satır atlar)" rows="1"></textarea>
+                            <textarea id="chatInput" class="ai-chat-input" placeholder="Mesajınızı yazın..." rows="1"></textarea>
                             <button id="sendMessageBtn" class="ai-send-btn"><i class="fas fa-paper-plane"></i></button>
                             <button id="clearChatBtn" class="ai-clear-btn"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        
-                        <div class="ai-api-warning" id="aiApiWarning">
-                            ⚠️ <strong>Demo Modu Aktif</strong> | Gerçek AI yanıtları için 
-                            <a href="#" onclick="showAIApiGuide()" style="color:#f59e0b; text-decoration:underline;">API Key ekleyin</a>
                         </div>
                     </div>
                 </div>
@@ -289,23 +1181,12 @@
         </section>
 
         <!-- CTA -->
-        <section class="cta">
-            <div class="section-container"><div class="cta-wrapper"><div class="cta-content"><h2>Hemen Aramıza Katıl!</h2><p>Discord sunucumuza katıl, 50+ özel hileye eriş ve saygılı topluluğun bir parçası ol! Ayrıca AI asistanımız her zaman yanında.</p><div class="cta-buttons"><a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-white btn-lg"><i class="fab fa-discord"></i> Discord'a Katıl</a><a href="#ai-tools" class="btn btn-outline btn-lg"><i class="fas fa-robot"></i> AI Asistanı Dene</a></div></div><div class="cta-visual"><i class="fab fa-discord cta-icon"></i></div></div></div>
-        </section>
-
-        <!-- VIRUSTOTAL SECTION -->
-        <section id="virustotal" class="vt-section">
+        <section>
             <div class="section-container">
-                <div class="vt-container">
-                    <div class="vt-title"><i class="fas fa-shield-virus" style="color: #a855f7;"></i><span class="gradient-text">VirusTotal</span> Scanner</div>
-                    <div class="vt-sub">Dosya veya Link analizi yapın (API Key gerektirir)</div>
-                    <div class="vt-input-group">
-                        <input type="text" id="vt-input" class="vt-input" placeholder="URL veya Hash girin...">
-                        <select id="vt-type" class="vt-type-select"><option value="url">URL</option><option value="hash">Hash (MD5/SHA1/SHA256)</option></select>
-                        <button id="vt-scan-btn" class="vt-btn"><i class="fas fa-search"></i> Analiz Et</button>
-                    </div>
-                    <div id="vt-loader" class="vt-loader"><div class="vt-spinner"></div><span>VirusTotal'da taranıyor...</span></div>
-                    <div id="vt-result" class="vt-result"><div id="vt-stats"></div><div id="vt-detections"></div><div id="vt-engines"></div></div>
+                <div style="background:linear-gradient(135deg,rgba(108,92,231,0.12),rgba(168,85,247,0.08)); border-radius:32px; padding:50px; text-align:center;">
+                    <h2 style="font-size:2rem;">Hemen Aramıza Katıl!</h2>
+                    <p style="margin:15px 0;">Discord sunucumuza katıl, 50+ özel hileye eriş!</p>
+                    <a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-primary btn-lg"><i class="fab fa-discord"></i> Discord'a Katıl</a>
                 </div>
             </div>
         </section>
@@ -314,102 +1195,401 @@
     <footer class="footer">
         <div class="section-container">
             <div class="footer-grid">
-                <div class="footer-brand"><div class="footer-logo"><i class="fas fa-crown"></i><span>LEGANTE <span class="gradient-text">PROJECT</span></span></div><p>Premium hile platformu. Güvenli, güncel ve kaliteli hizmet + AI destek.</p><div class="footer-social"><a href="https://discord.gg/bM6SZcNmzW" target="_blank"><i class="fab fa-discord"></i></a><a href="#"><i class="fab fa-youtube"></i></a><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-instagram"></i></a></div></div>
-                <div class="footer-links"><h4>Hızlı Erişim</h4><ul><li><a href="#home">Ana Sayfa</a></li><li><a href="#features">Özellikler</a></li><li><a href="#market">Market</a></li><li><a href="#pricing">Paketler</a></li><li><a href="#testimonials">Yorumlar</a></li><li><a href="#ai-tools">AI Chat Tools</a></li></ul></div>
-                <div class="footer-links"><h4>Market</h4><ul><li><a href="#market">VIP Üyelik</a></li><li><a href="#market">Booster</a></li><li><a href="#market">Özel Üye</a></li><li><a href="#market">Diğer Ürünler</a></li></ul></div>
-                <div class="footer-newsletter"><h4>Discord Sunucumuz</h4><p>Hemen katıl, gelişmelerden haberdar ol!</p><a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-primary btn-sm"><i class="fab fa-discord"></i> Katıl</a></div>
+                <div><div class="footer-logo"><i class="fas fa-crown"></i><span>LEGANTE PROJECT</span></div><p>Premium hile platformu. Güvenli, güncel ve kaliteli hizmet.</p><div class="footer-social"><a href="https://discord.gg/bM6SZcNmzW"><i class="fab fa-discord"></i></a></div></div>
+                <div class="footer-links"><h4>Hızlı Erişim</h4><ul><li><a href="#home">Ana Sayfa</a></li><li><a href="#features">Özellikler</a></li><li><a href="#market">Market</a></li><li><a href="#pricing">Paketler</a></li></ul></div>
+                <div class="footer-links"><h4>Market</h4><ul><li><a href="#market">VIP Üyelik</a></li><li><a href="#market">Booster</a></li><li><a href="#market">Diğer Ürünler</a></li></ul></div>
+                <div><h4>Discord Sunucumuz</h4><p>Hemen katıl!</p><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-sm">Katıl</a></div>
             </div>
-            <div class="footer-bottom"><p>&copy; 2024 Legante Project. Tüm hakları saklıdır. | Powered by Legante Team + AI</p></div>
+            <div class="footer-bottom"><p>&copy; 2024 Legante Project. Tüm hakları saklıdır.</p></div>
         </div>
     </footer>
 
-    <!-- LOGIN/REGISTER MODAL -->
+    <!-- LOGIN MODAL -->
     <div id="auth-modal" class="auth-modal" style="display:none;">
         <div class="auth-modal-content">
             <div class="auth-modal-header">
-                <div class="auth-tabs">
-                    <button class="auth-tab active" data-tab="login">Giriş Yap</button>
-                    <button class="auth-tab" data-tab="register">Kayıt Ol</button>
-                </div>
+                <div class="auth-tabs"><button class="auth-tab active" data-tab="login">Giriş Yap</button><button class="auth-tab" data-tab="register">Kayıt Ol</button></div>
                 <button class="auth-close" onclick="closeAuthModal()">&times;</button>
             </div>
             <div class="auth-modal-body">
-                <!-- Login Form -->
                 <div id="login-form" class="auth-form active">
-                    <div class="auth-input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="login-email" placeholder="E-posta adresiniz">
-                    </div>
-                    <div class="auth-input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="login-password" placeholder="Şifreniz">
-                    </div>
+                    <div class="auth-input-group"><i class="fas fa-envelope"></i><input type="email" id="login-email" placeholder="E-posta"></div>
+                    <div class="auth-input-group"><i class="fas fa-lock"></i><input type="password" id="login-password" placeholder="Şifre"></div>
                     <button onclick="handleLogin()" class="auth-submit-btn">Giriş Yap</button>
-                    <div class="auth-info">Misafir olarak devam etmek için kapat butonuna tıklayın.</div>
                 </div>
-                <!-- Register Form -->
                 <div id="register-form" class="auth-form">
-                    <div class="auth-input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="register-name" placeholder="Adınız Soyadınız">
-                    </div>
-                    <div class="auth-input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="register-email" placeholder="E-posta adresiniz">
-                    </div>
-                    <div class="auth-input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="register-password" placeholder="Şifreniz">
-                    </div>
-                    <div class="auth-input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="register-confirm" placeholder="Şifrenizi tekrar girin">
-                    </div>
+                    <div class="auth-input-group"><i class="fas fa-user"></i><input type="text" id="register-name" placeholder="Adınız"></div>
+                    <div class="auth-input-group"><i class="fas fa-envelope"></i><input type="email" id="register-email" placeholder="E-posta"></div>
+                    <div class="auth-input-group"><i class="fas fa-lock"></i><input type="password" id="register-password" placeholder="Şifre"></div>
+                    <div class="auth-input-group"><i class="fas fa-lock"></i><input type="password" id="register-confirm" placeholder="Şifre tekrar"></div>
                     <button onclick="handleRegister()" class="auth-submit-btn">Kayıt Ol</button>
-                    <div class="auth-info">Kayıt olarak tüm özelliklere erişebilirsiniz.</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- USER PROFILE MODAL -->
+    <!-- PROFILE MODAL -->
     <div id="profile-modal" class="profile-modal" style="display:none;">
         <div class="profile-modal-content">
-            <div class="profile-modal-header">
-                <h3><i class="fas fa-user-circle"></i> Profilim</h3>
-                <button class="profile-close" onclick="closeProfileModal()">&times;</button>
-            </div>
+            <div class="profile-modal-header"><h3><i class="fas fa-user-circle"></i> Profilim</h3><button class="profile-close" onclick="closeProfileModal()">&times;</button></div>
             <div class="profile-modal-body">
-                <div class="profile-avatar-section">
-                    <img id="profile-avatar" src="https://ui-avatars.com/api/?background=6c5ce7&color=fff&rounded=true&bold=true&size=80" alt="">
-                    <div class="profile-info">
-                        <h4 id="profile-name">Kullanıcı Adı</h4>
-                        <p id="profile-email">email@example.com</p>
-                        <span id="profile-member-since" class="profile-badge">Üye: -</span>
-                    </div>
-                </div>
-                <div class="profile-stats">
-                    <div class="profile-stat">
-                        <div class="stat-value" id="profile-orders">0</div>
-                        <div class="stat-label">Toplam Sipariş</div>
-                    </div>
-                    <div class="profile-stat">
-                        <div class="stat-value" id="profile-spent">0₺</div>
-                        <div class="stat-label">Toplam Harcama</div>
-                    </div>
-                    <div class="profile-stat">
-                        <div class="stat-value" id="profile-status">Misafir</div>
-                        <div class="stat-label">Üyelik Tipi</div>
-                    </div>
-                </div>
-                <div class="profile-orders-section">
-                    <h4><i class="fas fa-shopping-bag"></i> Son Siparişlerim</h4>
-                    <div id="profile-orders-list" class="profile-orders-list"></div>
-                </div>
+                <div class="profile-avatar-section"><img id="profile-avatar" src=""><div><h4 id="profile-name"></h4><p id="profile-email"></p></div></div>
+                <div class="profile-stats"><div class="profile-stat"><div class="stat-value" id="profile-orders">0</div><div class="stat-label">Sipariş</div></div><div class="profile-stat"><div class="stat-value" id="profile-spent">0₺</div><div class="stat-label">Harcama</div></div></div>
+                <h4>Siparişlerim</h4>
+                <div id="profile-orders-list"></div>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // ========== LOGIN/REGISTER SYSTEM ==========
+        let currentUser = null;
+        
+        function loadUsers() {
+            const users = localStorage.getItem('legante_users');
+            if (!users) {
+                localStorage.setItem('legante_users', JSON.stringify([]));
+            }
+            return JSON.parse(localStorage.getItem('legante_users') || '[]');
+        }
+        
+        function saveUsers(users) {
+            localStorage.setItem('legante_users', JSON.stringify(users));
+        }
+        
+        function loadCurrentUser() {
+            const savedUser = localStorage.getItem('legante_current_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUIForLoggedInUser();
+            } else {
+                updateUIForGuest();
+            }
+        }
+        
+        function updateUIForLoggedInUser() {
+            document.getElementById('guest-header-buttons').style.display = 'none';
+            document.getElementById('user-header-profile').style.display = 'block';
+            if (currentUser) {
+                document.getElementById('user-name-display').innerText = currentUser.name.split(' ')[0];
+                document.getElementById('dropdown-name').innerText = currentUser.name;
+                document.getElementById('dropdown-email').innerText = currentUser.email;
+            }
+        }
+        
+        function updateUIForGuest() {
+            document.getElementById('guest-header-buttons').style.display = 'flex';
+            document.getElementById('user-header-profile').style.display = 'none';
+        }
+        
+        function openAuthModal(tab = 'login') {
+            document.getElementById('auth-modal').style.display = 'flex';
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            if (tab === 'login') {
+                document.querySelector('.auth-tab[data-tab="login"]').classList.add('active');
+                document.getElementById('login-form').classList.add('active');
+            } else {
+                document.querySelector('.auth-tab[data-tab="register"]').classList.add('active');
+                document.getElementById('register-form').classList.add('active');
+            }
+        }
+        
+        function closeAuthModal() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+        
+        document.querySelectorAll('.auth-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                document.getElementById(`${target}-form`).classList.add('active');
+            });
+        });
+        
+        function showNotification(msg, type = 'info') {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.innerHTML = msg;
+            notif.style.borderColor = type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#a855f7';
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+        
+        function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const users = loadUsers();
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) {
+                currentUser = { ...user };
+                delete currentUser.password;
+                localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
+                updateUIForLoggedInUser();
+                closeAuthModal();
+                showNotification(`Hoş geldiniz, ${user.name}!`, 'success');
+            } else {
+                showNotification('E-posta veya şifre hatalı!', 'error');
+            }
+        }
+        
+        function handleRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
+            
+            if (!name || !email || !password) {
+                showNotification('Tüm alanları doldurun!', 'error');
+                return;
+            }
+            if (password !== confirm) {
+                showNotification('Şifreler eşleşmiyor!', 'error');
+                return;
+            }
+            
+            const users = loadUsers();
+            if (users.find(u => u.email === email)) {
+                showNotification('Bu e-posta zaten kayıtlı!', 'error');
+                return;
+            }
+            
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                password: password,
+                memberSince: new Date().toISOString().split('T')[0],
+                orders: [],
+                totalSpent: 0
+            };
+            users.push(newUser);
+            saveUsers(users);
+            
+            currentUser = { ...newUser };
+            delete currentUser.password;
+            localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
+            updateUIForLoggedInUser();
+            closeAuthModal();
+            showNotification(`Başarıyla kayıt oldunuz!`, 'success');
+        }
+        
+        function logout() {
+            localStorage.removeItem('legante_current_user');
+            currentUser = null;
+            updateUIForGuest();
+            showNotification('Çıkış yapıldı!', 'info');
+        }
+        
+        function toggleUserMenu() {
+            document.getElementById('user-dropdown-menu').classList.toggle('show');
+        }
+        
+        function showUserProfile() {
+            document.getElementById('user-dropdown-menu').classList.remove('show');
+            updateProfileModal();
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+        
+        function showUserOrders() {
+            showUserProfile();
+        }
+        
+        function closeProfileModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+        
+        function updateProfileModal() {
+            if (!currentUser) return;
+            document.getElementById('profile-name').innerText = currentUser.name;
+            document.getElementById('profile-email').innerText = currentUser.email;
+            document.getElementById('profile-avatar').src = `https://ui-avatars.com/api/?background=6c5ce7&color=fff&rounded=true&bold=true&size=80&name=${encodeURIComponent(currentUser.name)}`;
+            document.getElementById('profile-orders').innerText = currentUser.orders?.length || 0;
+            document.getElementById('profile-spent').innerText = `${currentUser.totalSpent || 0}₺`;
+            
+            const ordersList = document.getElementById('profile-orders-list');
+            if (currentUser.orders && currentUser.orders.length > 0) {
+                ordersList.innerHTML = currentUser.orders.slice().reverse().map(order => `<div style="padding:10px; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:10px;"><strong>${order.productName}</strong><br><small>${order.price}₺ - ${new Date(order.date).toLocaleDateString('tr-TR')}</small></div>`).join('');
+            } else {
+                ordersList.innerHTML = '<div style="text-align:center; color:#5a5a70;">Henüz siparişiniz yok.</div>';
+            }
+        }
+        
+        function handlePurchase(productName, price) {
+            if (!currentUser) {
+                showNotification('Satın almak için giriş yapın!', 'warning');
+                setTimeout(() => openAuthModal('login'), 500);
+                return;
+            }
+            
+            const order = { id: Date.now(), productName, price, date: new Date().toISOString() };
+            const users = loadUsers();
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                if (!users[userIndex].orders) users[userIndex].orders = [];
+                users[userIndex].orders.push(order);
+                users[userIndex].totalSpent = (users[userIndex].totalSpent || 0) + price;
+                saveUsers(users);
+                currentUser = { ...users[userIndex] };
+                delete currentUser.password;
+                localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
+                showNotification(`${productName} satın alındı! 🎉`, 'success');
+            }
+        }
+        
+        // ========== MARKET FILTER ==========
+        document.querySelectorAll('.market-cat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.market-cat-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const category = btn.getAttribute('data-category');
+                document.querySelectorAll('.market-item').forEach(item => {
+                    if (category === 'all' || item.getAttribute('data-category') === category) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            });
+        });
+        
+        // ========== MOBILE MENU ==========
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const sidePanel = document.getElementById('side-panel');
+        const overlay = document.getElementById('mobile-overlay');
+        
+        if (mobileBtn) {
+            mobileBtn.onclick = () => {
+                sidePanel.classList.toggle('mobile-open');
+                overlay.style.display = sidePanel.classList.contains('mobile-open') ? 'block' : 'none';
+            };
+        }
+        if (overlay) {
+            overlay.onclick = () => {
+                sidePanel.classList.remove('mobile-open');
+                overlay.style.display = 'none';
+            };
+        }
+        
+        // ========== AI CHAT ==========
+        let currentAIModel = 'gpt';
+        
+        document.querySelectorAll('.ai-model-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.ai-model-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentAIModel = btn.getAttribute('data-model');
+                addAIMessage(`✨ Model ${btn.innerText} olarak değiştirildi.`);
+            });
+        });
+        
+        function addAIMessage(text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message ai-message';
+            msgDiv.innerHTML = `<div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">${text}</div></div>`;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function addUserMessage(text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message user-message';
+            msgDiv.innerHTML = `<div class="message-avatar"><i class="fas fa-user"></i></div><div class="message-content"><div class="message-sender">Siz</div><div class="message-text">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function getAIReply(message) {
+            const msg = message.toLowerCase();
+            if (msg.includes('merhaba') || msg.includes('selam')) return 'Merhaba! 😊 Size nasıl yardımcı olabilirim?';
+            if (msg.includes('vip')) return 'VIP üyeliklerimiz: VIP 1 (79₺/ay), VIP 2 (149₺/ay), VIP 3 (249₺/ay). Detaylı bilgi için market bölümüne bakabilirsiniz!';
+            if (msg.includes('fiyat')) return '💰 Fiyat listemiz:\n• VIP 1: 79₺/ay\n• VIP 2: 149₺/ay\n• VIP 3: 249₺/ay\n• Boost paketleri: 39₺ - 119₺';
+            if (msg.includes('hile')) return '50+ premium hile çeşidimiz var! Valorant, CS2, Fortnite, PUBG, Apex Legends ve daha fazlası. Hangi oyunla ilgileniyorsunuz? 🎮';
+            if (msg.includes('güvenlik') || msg.includes('ban')) return 'Gelişmiş anti-ban sistemi ve HWID spoofing teknolojisi kullanıyoruz. Güvenlik önlemlerimiz en üst seviyededir! 🔒';
+            if (msg.includes('destek')) return '7/24 canlı Discord desteğimiz var! Sunucumuza katılıp anlık yardım alabilirsiniz. 💬';
+            return 'Teşekkürler! Legante Project hakkında daha fazla bilgi için Discord sunucumuza bekleriz: discord.gg/bM6SZcNmzW 🚀';
+        }
+        
+        document.getElementById('sendMessageBtn').addEventListener('click', () => {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            addUserMessage(message);
+            input.value = '';
+            setTimeout(() => {
+                addAIMessage(getAIReply(message));
+            }, 500);
+        });
+        
+        document.getElementById('clearChatBtn').addEventListener('click', () => {
+            document.getElementById('chatMessages').innerHTML = `<div class="chat-message ai-message"><div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? 🎮</div></div></div>`;
+        });
+        
+        document.querySelectorAll('.quick-question').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const question = btn.getAttribute('data-question');
+                document.getElementById('chatInput').value = question;
+                document.getElementById('sendMessageBtn').click();
+            });
+        });
+        
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('sendMessageBtn').click();
+            }
+        });
+        
+        // EXTRA TOOLS (Demo)
+        let extraUnlocked = false;
+        document.getElementById('access-extra-btn').addEventListener('click', () => {
+            if (!extraUnlocked) {
+                const key = prompt('Extra Tools erişim key girin:');
+                if (key === 'LEGANTE2024') {
+                    extraUnlocked = true;
+                    alert('Extra Tools açıldı!');
+                } else {
+                    alert('Geçersiz key!');
+                }
+            } else {
+                alert('Extra Tools zaten aktif!');
+            }
+        });
+        
+        // Smooth Scroll
+        document.querySelectorAll('.side-nav-link[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    if (window.innerWidth <= 992) {
+                        sidePanel.classList.remove('mobile-open');
+                        overlay.style.display = 'none';
+                    }
+                }
+            });
+        });
+        
+        // Active Link
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) current = section.getAttribute('id');
+            });
+            document.querySelectorAll('.side-nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) link.classList.add('active');
+            });
+        });
+        
+        loadCurrentUser();
+    </script>
 </body>
 </html>
