@@ -1,7 +1,7 @@
-﻿// ========== EXTRA TOOLS - TAM FONKSİYONEL ==========
+﻿// ========== EXTRA TOOLS - TAM FONKSİYONEL (KEY ZORUNLU) ==========
 let extraUnlocked = localStorage.getItem('legante_extra_unlocked') === 'true';
 
-// Key ile açma
+// Key ile açma modalı
 function openKeyModal() {
     const modalHtml = `
         <div id="key-modal" class="modal-overlay">
@@ -27,6 +27,7 @@ function openKeyModal() {
             extraUnlocked = true;
             localStorage.setItem('legante_extra_unlocked', 'true');
             document.getElementById('key-modal').remove();
+            updateExtraToolsUI();
             showNotification('🔓 Extra Tools erişimi açıldı!', 'success');
         } else {
             document.getElementById('key-error').style.display = 'block';
@@ -35,12 +36,83 @@ function openKeyModal() {
     };
 }
 
+// Extra Tools butonu
 document.getElementById('access-extra-btn').onclick = () => {
     if (extraUnlocked) {
         showNotification('Extra Tools zaten aktif!', 'info');
     } else {
         openKeyModal();
     }
+};
+
+// UI güncelleme (kilit simgeleri)
+function updateExtraToolsUI() {
+    const tools = ['sms', 'token', 'ip', 'pass', 'hash', 'port', 'vt'];
+    tools.forEach(tool => {
+        const link = document.getElementById(`tool-${tool}`);
+        if (link) {
+            if (extraUnlocked) {
+                link.style.opacity = '1';
+                link.style.pointerEvents = 'auto';
+                const icon = link.querySelector('i:first-child');
+                if (icon && icon.classList.contains('fa-lock')) {
+                    icon.classList.remove('fa-lock');
+                    icon.classList.add('fa-chevron-right');
+                }
+            } else {
+                link.style.opacity = '0.6';
+                link.style.pointerEvents = 'auto';
+                const icon = link.querySelector('i:first-child');
+                if (icon && !icon.classList.contains('fa-lock')) {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-lock');
+                }
+            }
+        }
+    });
+}
+
+// Tool linkleri - KEY KONTROLÜ İLE
+document.getElementById('tool-sms').onclick = (e) => { 
+    e.preventDefault(); 
+    if (!extraUnlocked) { openKeyModal(); return; }
+    openSMSBomber(); 
+};
+
+document.getElementById('tool-token').onclick = (e) => { 
+    e.preventDefault(); 
+    if (!extraUnlocked) { openKeyModal(); return; }
+    openTokenChecker(); 
+};
+
+document.getElementById('tool-ip').onclick = (e) => { 
+    e.preventDefault(); 
+    if (!extraUnlocked) { openKeyModal(); return; }
+    openIPLocator(); 
+};
+
+document.getElementById('tool-pass').onclick = (e) => { 
+    e.preventDefault(); 
+    if (!extraUnlocked) { openKeyModal(); return; }
+    openPasswordGenerator(); 
+};
+
+document.getElementById('tool-hash').onclick = (e) => { 
+    e.preventDefault(); 
+    if (!extraUnlocked) { openKeyModal(); return; }
+    openHashTool(); 
+};
+
+document.getElementById('tool-port').onclick = (e) => { 
+    e.preventDefault(); 
+    if (!extraUnlocked) { openKeyModal(); return; }
+    openPortScanner(); 
+};
+
+document.getElementById('tool-vt').onclick = (e) => { 
+    e.preventDefault(); 
+    if (!extraUnlocked) { openKeyModal(); return; }
+    openVirusTotal(); 
 };
 
 function closeToolModal() {
@@ -395,15 +467,6 @@ function openVirusTotal() {
     };
 }
 
-// Tool linklerine tıklama
-document.getElementById('tool-sms').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openSMSBomber(); };
-document.getElementById('tool-token').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openTokenChecker(); };
-document.getElementById('tool-ip').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openIPLocator(); };
-document.getElementById('tool-pass').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openPasswordGenerator(); };
-document.getElementById('tool-hash').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openHashTool(); };
-document.getElementById('tool-port').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openPortScanner(); };
-document.getElementById('tool-vt').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openVirusTotal(); };
-
 // ========== SEPET SİSTEMİ ==========
 let cart = JSON.parse(localStorage.getItem('legante_cart') || '[]');
 
@@ -413,22 +476,26 @@ function saveCart() {
 }
 
 function updateCartUI() {
-    document.getElementById('cart-count').innerText = cart.length;
+    const cartCount = document.getElementById('cart-count');
     const cartItemsDiv = document.getElementById('cart-items');
     const cartTotalSpan = document.getElementById('cart-total');
     
+    if (cartCount) cartCount.innerText = cart.length;
+    
     if (cart.length === 0) {
-        cartItemsDiv.innerHTML = '<div class="empty-cart">Sepetiniz boş</div>';
-        cartTotalSpan.innerText = '0₺';
+        if (cartItemsDiv) cartItemsDiv.innerHTML = '<div class="empty-cart">Sepetiniz boş</div>';
+        if (cartTotalSpan) cartTotalSpan.innerText = '0₺';
         return;
     }
     
     let total = 0;
-    cartItemsDiv.innerHTML = cart.map((item, index) => {
-        total += item.price;
-        return `<div class="cart-item"><div class="cart-item-info"><h4>${item.name}</h4><p>${item.price}₺</p></div><button class="cart-item-remove" onclick="removeFromCart(${index})"><i class="fas fa-trash"></i></button></div>`;
-    }).join('');
-    cartTotalSpan.innerText = total + '₺';
+    if (cartItemsDiv) {
+        cartItemsDiv.innerHTML = cart.map((item, index) => {
+            total += item.price;
+            return `<div class="cart-item"><div class="cart-item-info"><h4>${item.name}</h4><p>${item.price}₺</p></div><button class="cart-item-remove" onclick="removeFromCart(${index})"><i class="fas fa-trash"></i></button></div>`;
+        }).join('');
+    }
+    if (cartTotalSpan) cartTotalSpan.innerText = total + '₺';
 }
 
 function addToCart(name, price) {
@@ -447,6 +514,7 @@ function removeFromCart(index) {
 
 function toggleCart(open) {
     const modal = document.getElementById('cart-modal');
+    if (!modal) return;
     if (open === true) modal.classList.add('open');
     else if (open === false) modal.classList.remove('open');
     else modal.classList.toggle('open');
@@ -472,20 +540,27 @@ function saveUsers(users) { localStorage.setItem('legante_users', JSON.stringify
 
 function loadCurrentUser() {
     const saved = localStorage.getItem('legante_current_user');
+    const guestButtons = document.getElementById('guest-header-buttons');
+    const userProfile = document.getElementById('user-header-profile');
+    
     if (saved) {
         currentUser = JSON.parse(saved);
-        document.getElementById('guest-header-buttons').style.display = 'none';
+        if (guestButtons) guestButtons.style.display = 'none';
+        if (userProfile) userProfile.style.display = 'block';
     } else {
-        document.getElementById('guest-header-buttons').style.display = 'flex';
+        if (guestButtons) guestButtons.style.display = 'flex';
+        if (userProfile) userProfile.style.display = 'none';
     }
 }
 
 function openAuthModal() {
-    document.getElementById('auth-modal').style.display = 'flex';
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closeAuthModal() {
-    document.getElementById('auth-modal').style.display = 'none';
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.style.display = 'none';
 }
 
 function switchAuthTab(tab) {
@@ -495,15 +570,15 @@ function switchAuthTab(tab) {
     const registerBtn = document.querySelector('.auth-tab-btn:last-child');
     
     if (tab === 'login') {
-        loginForm.style.display = 'block';
-        registerForm.style.display = 'none';
-        loginBtn.style.color = '#c084fc';
-        registerBtn.style.color = '#5a5a70';
+        if (loginForm) loginForm.style.display = 'block';
+        if (registerForm) registerForm.style.display = 'none';
+        if (loginBtn) loginBtn.style.color = '#c084fc';
+        if (registerBtn) registerBtn.style.color = '#5a5a70';
     } else {
-        loginForm.style.display = 'none';
-        registerForm.style.display = 'block';
-        loginBtn.style.color = '#5a5a70';
-        registerBtn.style.color = '#c084fc';
+        if (loginForm) loginForm.style.display = 'none';
+        if (registerForm) registerForm.style.display = 'block';
+        if (loginBtn) loginBtn.style.color = '#5a5a70';
+        if (registerBtn) registerBtn.style.color = '#c084fc';
     }
 }
 
@@ -517,15 +592,18 @@ function showNotification(msg, type) {
 }
 
 function handleLogin() {
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
+    const email = document.getElementById('login-email')?.value.trim();
+    const password = document.getElementById('login-password')?.value;
     const users = loadUsers();
     const user = users.find(u => u.email === email && u.password === password);
     if (user) {
         currentUser = { ...user };
         delete currentUser.password;
         localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
-        document.getElementById('guest-header-buttons').style.display = 'none';
+        const guestButtons = document.getElementById('guest-header-buttons');
+        const userProfile = document.getElementById('user-header-profile');
+        if (guestButtons) guestButtons.style.display = 'none';
+        if (userProfile) userProfile.style.display = 'block';
         closeAuthModal();
         showNotification(`Hoş geldiniz, ${user.name}!`, 'success');
     } else {
@@ -534,21 +612,27 @@ function handleLogin() {
 }
 
 function handleRegister() {
-    const name = document.getElementById('register-name').value.trim();
-    const email = document.getElementById('register-email').value.trim();
-    const password = document.getElementById('register-password').value;
-    const confirm = document.getElementById('register-confirm').value;
+    const name = document.getElementById('register-name')?.value.trim();
+    const email = document.getElementById('register-email')?.value.trim();
+    const password = document.getElementById('register-password')?.value;
+    const confirm = document.getElementById('register-confirm')?.value;
+    
     if (!name || !email || !password) { showNotification('Tüm alanları doldurun!', 'error'); return; }
     if (password !== confirm) { showNotification('Şifreler eşleşmiyor!', 'error'); return; }
+    
     const users = loadUsers();
     if (users.find(u => u.email === email)) { showNotification('Bu e-posta zaten kayıtlı!', 'error'); return; }
+    
     const newUser = { id: Date.now(), name, email, password, orders: [], totalSpent: 0 };
     users.push(newUser);
     saveUsers(users);
     currentUser = { ...newUser };
     delete currentUser.password;
     localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
-    document.getElementById('guest-header-buttons').style.display = 'none';
+    const guestButtons = document.getElementById('guest-header-buttons');
+    const userProfile = document.getElementById('user-header-profile');
+    if (guestButtons) guestButtons.style.display = 'none';
+    if (userProfile) userProfile.style.display = 'block';
     closeAuthModal();
     showNotification(`Başarıyla kayıt oldunuz!`, 'success');
 }
@@ -560,8 +644,11 @@ document.querySelectorAll('.market-cat-btn').forEach(btn => {
         btn.classList.add('active');
         const category = btn.getAttribute('data-category');
         document.querySelectorAll('.market-item').forEach(item => {
-            if (category === 'all' || item.getAttribute('data-category') === category) item.classList.remove('hidden');
-            else item.classList.add('hidden');
+            if (category === 'all' || item.getAttribute('data-category') === category) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
         });
     });
 });
@@ -570,11 +657,23 @@ document.querySelectorAll('.market-cat-btn').forEach(btn => {
 const mobileBtn = document.getElementById('mobile-menu-btn');
 const sidePanel = document.getElementById('side-panel');
 const overlay = document.getElementById('mobile-overlay');
-if (mobileBtn) mobileBtn.onclick = () => { sidePanel.classList.toggle('mobile-open'); overlay.style.display = sidePanel.classList.contains('mobile-open') ? 'block' : 'none'; };
-if (overlay) overlay.onclick = () => { sidePanel.classList.remove('mobile-open'); overlay.style.display = 'none'; };
+
+if (mobileBtn) {
+    mobileBtn.onclick = () => {
+        if (sidePanel) sidePanel.classList.toggle('mobile-open');
+        if (overlay) overlay.style.display = sidePanel?.classList.contains('mobile-open') ? 'block' : 'none';
+    };
+}
+if (overlay) {
+    overlay.onclick = () => {
+        if (sidePanel) sidePanel.classList.remove('mobile-open');
+        if (overlay) overlay.style.display = 'none';
+    };
+}
 
 // ========== AI CHAT ==========
 let currentModel = 'gpt';
+
 document.querySelectorAll('.ai-model-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.ai-model-btn').forEach(b => b.classList.remove('active'));
@@ -586,6 +685,7 @@ document.querySelectorAll('.ai-model-btn').forEach(btn => {
 
 function addAIMessage(text) {
     const messages = document.getElementById('chatMessages');
+    if (!messages) return;
     const msg = document.createElement('div');
     msg.className = 'chat-message ai-message';
     msg.innerHTML = `<div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">${text}</div></div>`;
@@ -595,6 +695,7 @@ function addAIMessage(text) {
 
 function addUserMessage(text) {
     const messages = document.getElementById('chatMessages');
+    if (!messages) return;
     const msg = document.createElement('div');
     msg.className = 'chat-message user-message';
     msg.innerHTML = `<div class="message-avatar"><i class="fas fa-user"></i></div><div class="message-content"><div class="message-sender">Siz</div><div class="message-text">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
@@ -611,27 +712,47 @@ function getAIResponse(msg) {
     return 'Teşekkürler! Legante Project hakkında daha fazla bilgi için Discord sunucumuza bekleriz: discord.gg/bM6SZcNmzW 🚀';
 }
 
-document.getElementById('sendMessageBtn').addEventListener('click', () => {
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-    addUserMessage(msg);
-    input.value = '';
-    setTimeout(() => addAIMessage(getAIResponse(msg)), 500);
-});
+const sendBtn = document.getElementById('sendMessageBtn');
+if (sendBtn) {
+    sendBtn.addEventListener('click', () => {
+        const input = document.getElementById('chatInput');
+        const msg = input?.value.trim();
+        if (!msg) return;
+        addUserMessage(msg);
+        if (input) input.value = '';
+        setTimeout(() => addAIMessage(getAIResponse(msg)), 500);
+    });
+}
 
-document.getElementById('clearChatBtn').addEventListener('click', () => {
-    document.getElementById('chatMessages').innerHTML = `<div class="chat-message ai-message"><div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? 🎮</div></div></div>`;
-});
+const clearBtn = document.getElementById('clearChatBtn');
+if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+        const messages = document.getElementById('chatMessages');
+        if (messages) {
+            messages.innerHTML = `<div class="chat-message ai-message"><div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? 🎮</div></div></div>`;
+        }
+    });
+}
 
 document.querySelectorAll('.quick-question').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.getElementById('chatInput').value = btn.getAttribute('data-question');
-        document.getElementById('sendMessageBtn').click();
+        const input = document.getElementById('chatInput');
+        if (input) {
+            input.value = btn.getAttribute('data-question');
+            sendBtn?.click();
+        }
     });
 });
 
-document.getElementById('chatInput').addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('sendMessageBtn').click(); } });
+const chatInput = document.getElementById('chatInput');
+if (chatInput) {
+    chatInput.addEventListener('keypress', (e) => { 
+        if (e.key === 'Enter' && !e.shiftKey) { 
+            e.preventDefault(); 
+            sendBtn?.click(); 
+        } 
+    });
+}
 
 // ========== SMOOTH SCROLL & ACTIVE LINK ==========
 document.querySelectorAll('.side-nav-link[href^="#"]').forEach(anchor => {
@@ -640,7 +761,10 @@ document.querySelectorAll('.side-nav-link[href^="#"]').forEach(anchor => {
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
             target.scrollIntoView({ behavior: 'smooth' });
-            if (window.innerWidth <= 992) { sidePanel.classList.remove('mobile-open'); overlay.style.display = 'none'; }
+            if (window.innerWidth <= 992 && sidePanel && overlay) {
+                sidePanel.classList.remove('mobile-open');
+                overlay.style.display = 'none';
+            }
         }
     });
 });
@@ -648,10 +772,22 @@ document.querySelectorAll('.side-nav-link[href^="#"]').forEach(anchor => {
 window.addEventListener('scroll', () => {
     const sections = document.querySelectorAll('section[id]');
     let current = '';
-    sections.forEach(section => { if (scrollY >= section.offsetTop - 100) current = section.getAttribute('id'); });
-    document.querySelectorAll('.side-nav-link').forEach(link => { link.classList.remove('active'); if (link.getAttribute('href') === `#${current}`) link.classList.add('active'); });
+    sections.forEach(section => {
+        if (scrollY >= section.offsetTop - 100) current = section.getAttribute('id');
+    });
+    document.querySelectorAll('.side-nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) link.classList.add('active');
+    });
 });
 
-// Başlangıç
+// Modal dışına tıklayınca kapatma
+document.addEventListener('click', (e) => {
+    const authModal = document.getElementById('auth-modal');
+    if (authModal && e.target === authModal) closeAuthModal();
+});
+
+// Sayfa yüklendiğinde
 loadCurrentUser();
 updateCartUI();
+updateExtraToolsUI();
