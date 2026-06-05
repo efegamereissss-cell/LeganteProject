@@ -6,358 +6,7 @@
     <title>Legante Project | Premium Hile Market</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0a0f;
-            color: #ffffff;
-            margin-left: 280px;
-            overflow-x: hidden;
-        }
-        
-        /* ========== SOL PANEL ========== */
-        #side-panel {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            background: rgba(8, 8, 14, 0.98);
-            backdrop-filter: blur(30px);
-            border-right: 1px solid rgba(168, 85, 247, 0.3);
-            z-index: 9999;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .panel-header { padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
-        .panel-logo { display: flex; align-items: center; gap: 12px; }
-        .panel-logo-icon { width: 45px; height: 45px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
-        .panel-logo-main { font-size: 1.2rem; font-weight: 800; }
-        .panel-logo-sub { font-size: 0.6rem; color: #c084fc; letter-spacing: 4px; }
-        .panel-status { background: rgba(34,197,94,0.15); padding: 5px 10px; border-radius: 20px; font-size: 0.65rem; display: flex; align-items: center; gap: 6px; }
-        .status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.2); } }
-        
-        .panel-menu, .panel-extra { padding: 0 15px; }
-        .menu-label { color: #5a5a70; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin: 20px 0 10px 12px; display: flex; justify-content: space-between; align-items: center; }
-        .access-btn { background: linear-gradient(135deg, #6c5ce7, #a855f7); border: none; border-radius: 20px; padding: 5px 12px; color: white; font-size: 0.65rem; cursor: pointer; transition: all 0.3s; }
-        .access-btn:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(168,85,247,0.5); }
-        
-        .side-nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            color: #a0a0b8;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .side-nav-link:hover { background: rgba(168, 85, 247, 0.15); color: white; }
-        .side-nav-link.active { background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(168,85,247,0.2)); color: #c084fc; border-left: 3px solid #c084fc; }
-        .side-nav-link i:first-child { width: 28px; }
-        .link-arrow { margin-left: auto; font-size: 0.7rem; opacity: 0; transition: all 0.3s; }
-        .side-nav-link:hover .link-arrow { opacity: 1; transform: translateX(5px); }
-        
-        .panel-footer { margin-top: auto; padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .discord-card { background: rgba(88,101,242,0.1); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 15px; }
-        .discord-header { font-size: 0.8rem; margin-bottom: 10px; color: #5865F2; }
-        .discord-btn { display: inline-block; background: #5865F2; padding: 8px 20px; border-radius: 30px; font-size: 0.8rem; font-weight: 600; text-decoration: none; color: white; }
-        .panel-version { text-align: center; font-size: 0.6rem; color: #5a5a70; }
-        
-        /* ========== HEADER ========== */
-        .header { position: fixed; top: 0; left: 280px; width: calc(100% - 280px); z-index: 1000; }
-        .nav-top-bar { background: rgba(108, 92, 231, 0.08); border-bottom: 1px solid rgba(108, 92, 231, 0.1); padding: 8px 0; font-size: 0.8rem; }
-        .nav-container { max-width: 1300px; margin: 0 auto; padding: 0 30px; display: flex; justify-content: space-between; align-items: center; }
-        .top-bar-social { display: flex; align-items: center; gap: 15px; }
-        .auth-nav-btn { background: rgba(108, 92, 231, 0.2); border: 1px solid rgba(168, 85, 247, 0.3); color: white; padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; cursor: pointer; margin-left: 8px; transition: all 0.3s; }
-        .auth-nav-btn:hover { background: linear-gradient(135deg, #6c5ce7, #a855f7); }
-        .navbar { padding: 15px 0; background: rgba(6, 6, 11, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(108, 92, 231, 0.15); }
-        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-        .logo-main { font-size: 1.2rem; font-weight: 800; }
-        .logo-sub { font-size: 0.65rem; font-weight: 600; color: #c084fc; letter-spacing: 5px; }
-        .btn-nav { background: #5865F2; color: #fff; padding: 10px 18px; font-size: 0.85rem; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-        
-        /* Sepet Butonu */
-        .cart-btn {
-            position: relative;
-            background: rgba(168, 85, 247, 0.2);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-        }
-        .cart-btn:hover { background: rgba(168, 85, 247, 0.4); transform: scale(1.05); }
-        .cart-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ef4444;
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 50%;
-        }
-        
-        /* Hero */
-        .hero { min-height: 100vh; display: flex; align-items: center; padding-top: 100px; padding-bottom: 60px; }
-        .section-container { max-width: 1300px; margin: 0 auto; padding: 0 30px; width: 100%; }
-        .hero-container { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-        .hero-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.2); padding: 8px 18px; border-radius: 50px; margin-bottom: 24px; }
-        .badge-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; animation: pulse-dot 2s infinite; }
-        @keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.5); } }
-        .hero-title { font-size: 4rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
-        .gradient-text { background: linear-gradient(135deg, #6c5ce7, #a855f7, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-description { font-size: 1.1rem; color: #a0a0b8; margin-bottom: 30px; line-height: 1.8; }
-        .hero-cta { display: flex; gap: 15px; margin-bottom: 35px; flex-wrap: wrap; }
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; text-decoration: none; border: none; }
-        .btn-primary { background: linear-gradient(135deg, #6c5ce7, #a855f7); color: #fff; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(108,92,231,0.4); }
-        .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255, 255, 255, 0.15); }
-        .btn-outline:hover { border-color: rgba(255, 255, 255, 0.4); transform: translateY(-3px); }
-        .btn-lg { padding: 16px 32px; font-size: 1rem; }
-        .hero-stats-mini { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .mini-stat { text-align: center; }
-        .mini-number { display: block; font-size: 1.2rem; font-weight: 800; color: #c084fc; }
-        .mini-label { font-size: 0.7rem; color: #5a5a70; text-transform: uppercase; }
-        .mini-divider { width: 1px; height: 25px; background: rgba(255, 255, 255, 0.08); }
-        
-        /* Sections */
-        section { padding: 80px 0; }
-        .section-header { text-align: center; margin-bottom: 50px; }
-        .section-tag { display: inline-block; background: rgba(108, 92, 231, 0.1); color: #c084fc; padding: 6px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; letter-spacing: 2.5px; margin-bottom: 18px; }
-        .section-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 15px; }
-        
-        /* Features */
-        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-        .feature-card { background: rgba(15, 15, 30, 0.7); border: 1px solid rgba(108, 92, 231, 0.15); border-radius: 24px; padding: 35px 28px; transition: all 0.5s; }
-        .feature-card:hover { transform: translateY(-8px); border-color: rgba(168, 85, 247, 0.3); box-shadow: 0 0 40px rgba(108, 92, 231, 0.3); }
-        .feature-icon { width: 55px; height: 55px; background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(168,85,247,0.2)); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #c084fc; margin-bottom: 22px; }
-        .feature-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
-        .feature-card p { color: #a0a0b8; font-size: 0.88rem; line-height: 1.6; }
-        
-        /* Market */
-        .market-categories { display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; }
-        .market-cat-btn { background: rgba(15, 15, 30, 0.8); border: 1px solid rgba(108, 92, 231, 0.15); color: #a0a0b8; padding: 10px 22px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; }
-        .market-cat-btn:hover { transform: translateY(-2px); border-color: #a855f7; }
-        .market-cat-btn.active { background: linear-gradient(135deg, #6c5ce7, #a855f7); color: #fff; }
-        .market-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-        .market-item { background: rgba(15, 15, 30, 0.7); border: 1px solid rgba(108, 92, 231, 0.15); border-radius: 24px; padding: 30px 25px; text-align: center; position: relative; transition: all 0.3s; }
-        .market-item:hover { transform: translateY(-5px); border-color: rgba(168,85,247,0.3); }
-        .market-badge { position: absolute; top: 12px; right: 12px; padding: 4px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: 700; }
-        .badge-premium { background: linear-gradient(135deg, #6c5ce7, #a855f7); }
-        .badge-hot { background: linear-gradient(135deg, #f97316, #ef4444); }
-        .market-icon { width: 65px; height: 65px; background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(168,85,247,0.2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 1.6rem; color: #c084fc; }
-        .market-features { text-align: left; margin: 20px 0; }
-        .market-features li { padding: 5px 0; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; list-style: none; }
-        .market-features li i { color: #22c55e; }
-        .market-price { font-size: 1.8rem; font-weight: 900; margin: 15px 0; }
-        .market-price span { font-size: 0.8rem; font-weight: 500; color: #5a5a70; }
-        .btn-block { width: 100%; }
-        .btn-sm { padding: 10px 18px; font-size: 0.8rem; }
-        .hidden { display: none; }
-        
-        /* Modal Genel */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 50000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: linear-gradient(135deg, #0a0a14, #0f0f1e);
-            border: 1px solid rgba(168, 85, 247, 0.4);
-            border-radius: 28px;
-            width: 500px;
-            max-width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .modal-header h3 { color: #c084fc; }
-        .modal-close { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-        .modal-body { padding: 25px; }
-        .modal-footer { padding: 20px 25px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; gap: 10px; }
-        
-        /* Tool Input Stilleri */
-        .tool-input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(168,85,247,0.3);
-            border-radius: 12px;
-            color: white;
-            margin-bottom: 15px;
-        }
-        .tool-textarea {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(168,85,247,0.3);
-            border-radius: 12px;
-            color: white;
-            font-family: monospace;
-            resize: vertical;
-        }
-        .tool-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #6c5ce7, #a855f7);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .tool-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(108,92,231,0.4); }
-        .tool-result {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 12px;
-            font-size: 0.85rem;
-            word-break: break-all;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .tool-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .tool-row input { flex: 1; }
-        
-        /* Sepet Modal */
-        .cart-modal {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100vh;
-            background: linear-gradient(135deg, #0a0a14, #0f0f1e);
-            border-left: 1px solid rgba(168, 85, 247, 0.4);
-            z-index: 50001;
-            transition: right 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .cart-modal.open { right: 0; }
-        .cart-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .cart-header h3 { color: #c084fc; }
-        .cart-close { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-        .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 10px; }
-        .cart-item-info h4 { font-size: 1rem; margin-bottom: 5px; }
-        .cart-item-info p { font-size: 0.8rem; color: #c084fc; }
-        .cart-item-remove { background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 5px 10px; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        .cart-item-remove:hover { background: rgba(239,68,68,0.4); }
-        .cart-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .cart-total { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 1.2rem; font-weight: 700; }
-        .cart-checkout { width: 100%; padding: 12px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s; }
-        .cart-checkout:hover { transform: translateY(-2px); }
-        .empty-cart { text-align: center; padding: 40px; color: #5a5a70; }
-        
-        /* Key Modal */
-        .key-modal-content { text-align: center; }
-        .key-input { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(168,85,247,0.3); border-radius: 14px; color: white; text-align: center; margin: 20px 0; }
-        .key-error { color: #ef4444; margin-top: 15px; display: none; }
-        
-        /* Notification */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #0a0a14;
-            border: 1px solid #22c55e;
-            border-radius: 12px;
-            padding: 12px 20px;
-            z-index: 60001;
-            animation: slideInRight 0.3s ease;
-        }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        /* AI Chat */
-        .ai-chat-container { max-width: 900px; margin: 0 auto; background: rgba(15, 15, 30, 0.7); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 24px; overflow: hidden; }
-        .ai-model-selector { display: flex; gap: 10px; padding: 20px; background: rgba(0, 0, 0, 0.3); flex-wrap: wrap; }
-        .ai-model-btn { background: rgba(15, 15, 30, 0.8); border: 1px solid rgba(108, 92, 231, 0.2); color: #a0a0b8; padding: 10px 24px; border-radius: 50px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; }
-        .ai-model-btn:hover { transform: translateY(-2px); }
-        .ai-model-btn.active { background: linear-gradient(135deg, #6c5ce7, #a855f7); color: #fff; }
-        .ai-chat-window { display: flex; flex-direction: column; height: 450px; }
-        .ai-chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-        .chat-message { display: flex; gap: 12px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .message-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-        .user-message .message-avatar { background: rgba(108, 92, 231, 0.2); }
-        .message-content { flex: 1; background: rgba(255, 255, 255, 0.05); padding: 12px 16px; border-radius: 14px; }
-        .message-sender { font-size: 0.7rem; font-weight: 700; color: #c084fc; margin-bottom: 5px; }
-        .message-text { font-size: 0.9rem; line-height: 1.6; }
-        .ai-quick-questions { display: flex; gap: 10px; padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
-        .quick-question { background: rgba(108, 92, 231, 0.1); border: 1px solid rgba(108, 92, 231, 0.2); color: #a0a0b8; padding: 8px 16px; border-radius: 50px; font-size: 0.75rem; cursor: pointer; transition: all 0.3s; }
-        .quick-question:hover { background: rgba(108,92,231,0.2); color: #c084fc; transform: translateY(-2px); }
-        .ai-chat-input-area { display: flex; gap: 12px; padding: 20px; }
-        .ai-chat-input { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(108, 92, 231, 0.2); border-radius: 14px; padding: 12px 16px; color: white; font-size: 0.9rem; font-family: inherit; resize: none; }
-        .ai-send-btn, .ai-clear-btn { width: 45px; height: 45px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s; }
-        .ai-send-btn { background: linear-gradient(135deg, #6c5ce7, #a855f7); color: white; }
-        .ai-send-btn:hover { transform: translateY(-2px); }
-        .ai-clear-btn { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-        .ai-clear-btn:hover { background: rgba(239,68,68,0.4); transform: translateY(-2px); }
-        
-        /* Footer */
-        .footer { border-top: 1px solid rgba(108, 92, 231, 0.15); padding: 50px 0 20px; margin-top: 40px; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; }
-        .footer-logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 800; margin-bottom: 15px; }
-        .footer-social { display: flex; gap: 10px; margin-top: 15px; }
-        .footer-social a { width: 35px; height: 35px; background: rgba(255,255,255,0.04); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s; }
-        .footer-social a:hover { background: #5865F2; transform: translateY(-3px); }
-        .footer-links h4 { margin-bottom: 15px; }
-        .footer-links ul li { margin-bottom: 8px; list-style: none; }
-        .footer-links ul li a { color: #5a5a70; text-decoration: none; font-size: 0.85rem; transition: all 0.3s; }
-        .footer-links ul li a:hover { color: #c084fc; }
-        .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 30px; font-size: 0.75rem; color: #5a5a70; }
-        
-        /* Responsive */
-        #mobile-menu-btn { position: fixed; left: 15px; top: 15px; width: 45px; height: 45px; background: linear-gradient(135deg, #6c5ce7, #a855f7); border-radius: 12px; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 10001; }
-        #mobile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9998; display: none; }
-        
-        @media (max-width: 992px) {
-            body { margin-left: 0; }
-            .header { left: 0; width: 100%; }
-            #side-panel { transform: translateX(-100%); transition: transform 0.3s; }
-            #side-panel.mobile-open { transform: translateX(0); }
-            #mobile-menu-btn { display: flex; }
-            .hero-container { grid-template-columns: 1fr; text-align: center; }
-            .hero-visual { display: none; }
-            .features-grid, .market-grid { grid-template-columns: repeat(2, 1fr); }
-            .cart-modal { width: 100%; right: -100%; }
-        }
-        @media (max-width: 768px) {
-            .features-grid, .market-grid { grid-template-columns: 1fr; }
-            .hero-title { font-size: 2.5rem; }
-            .footer-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -366,26 +15,36 @@
         <div class="panel-header">
             <div class="panel-logo">
                 <div class="panel-logo-icon"><i class="fas fa-crown"></i></div>
-                <div><div class="panel-logo-main">LEGANTE</div><div class="panel-logo-sub">PROJECT</div></div>
+                <div>
+                    <div class="panel-logo-main">LEGANTE</div>
+                    <div class="panel-logo-sub">PROJECT</div>
+                </div>
             </div>
-            <div class="panel-status"><span class="status-dot"></span><span>ONLINE</span></div>
+            <div class="panel-status">
+                <span class="status-dot"></span>
+                <span>ONLINE</span>
+            </div>
         </div>
         
         <div class="panel-menu">
             <div class="menu-label">MENÜ</div>
-            <ul style="list-style: none;">
+            <ul>
                 <li><a href="#home" class="side-nav-link" data-section="home"><i class="fas fa-home"></i><span>Ana Sayfa</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#features" class="side-nav-link" data-section="features"><i class="fas fa-star"></i><span>Özellikler</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#market" class="side-nav-link" data-section="market"><i class="fas fa-store"></i><span>Market</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#stats" class="side-nav-link" data-section="stats"><i class="fas fa-chart-line"></i><span>İstatistikler</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#pricing" class="side-nav-link" data-section="pricing"><i class="fas fa-tag"></i><span>Paketler</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
+                <li><a href="#testimonials" class="side-nav-link" data-section="testimonials"><i class="fas fa-comment"></i><span>Yorumlar</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#ai-tools" class="side-nav-link" data-section="ai-tools"><i class="fas fa-robot"></i><span>AI Chat Tools</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
             </ul>
         </div>
 
         <div class="panel-extra">
-            <div class="menu-label"><span>🛠️ EXTRA TOOLS</span><button id="access-extra-btn" class="access-btn"><i class="fas fa-key"></i> ERİŞ</button></div>
-            <ul style="list-style: none;" id="extra-tools-list">
+            <div class="menu-label">
+                <span>🛠️ EXTRA TOOLS</span>
+                <button id="access-extra-btn" class="access-btn"><i class="fas fa-key"></i> ERİŞ</button>
+            </div>
+            <ul id="extra-tools-list">
                 <li><a href="#" id="tool-sms" class="side-nav-link" data-tool="sms"><i class="fas fa-envelope"></i><span>SMS Bomber</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#" id="tool-token" class="side-nav-link" data-tool="token"><i class="fab fa-discord"></i><span>Token Checker</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
                 <li><a href="#" id="tool-ip" class="side-nav-link" data-tool="ip"><i class="fas fa-map-marker-alt"></i><span>IP Locator</span><i class="fas fa-chevron-right link-arrow"></i></a></li>
@@ -397,7 +56,10 @@
         </div>
 
         <div class="panel-footer">
-            <div class="discord-card"><div class="discord-header"><i class="fab fa-discord"></i> Discord Sunucumuz</div><a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="discord-btn"><i class="fab fa-discord"></i> Katıl</a></div>
+            <div class="discord-card">
+                <div class="discord-header"><i class="fab fa-discord"></i> Discord Sunucumuz</div>
+                <a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="discord-btn"><i class="fab fa-discord"></i> Katıl</a>
+            </div>
             <div class="panel-version">v3.0.0 | Legante Project</div>
         </div>
     </div>
@@ -423,8 +85,13 @@
         </div>
         <nav class="navbar">
             <div class="nav-container">
-                <a href="#" class="nav-logo"><div class="logo-icon"><i class="fas fa-crown"></i></div><div class="logo-text"><span class="logo-main">LEGANTE</span><span class="logo-sub">PROJECT</span></div></a>
-                <div class="nav-actions"><a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn-nav"><i class="fab fa-discord"></i><span>Discord</span></a></div>
+                <a href="#" class="nav-logo">
+                    <div class="logo-icon"><i class="fas fa-crown"></i></div>
+                    <div class="logo-text"><span class="logo-main">LEGANTE</span><span class="logo-sub">PROJECT</span></div>
+                </a>
+                <div class="nav-actions">
+                    <a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn-nav"><i class="fab fa-discord"></i><span>Discord</span></a>
+                </div>
             </div>
         </nav>
     </header>
@@ -444,723 +111,221 @@
                             <a href="#ai-tools" class="btn btn-outline btn-lg"><i class="fas fa-robot"></i> AI Sohbet</a>
                         </div>
                         <div class="hero-stats-mini">
-                            <div class="mini-stat"><span class="mini-number">50+</span><span class="mini-label">Hile</span></div><div class="mini-divider"></div>
-                            <div class="mini-stat"><span class="mini-number">500+</span><span class="mini-label">Üye</span></div><div class="mini-divider"></div>
-                            <div class="mini-stat"><span class="mini-number">99%</span><span class="mini-label">Memnuniyet</span></div><div class="mini-divider"></div>
+                            <div class="mini-stat"><span class="mini-number">50+</span><span class="mini-label">Hile</span></div>
+                            <div class="mini-divider"></div>
+                            <div class="mini-stat"><span class="mini-number">500+</span><span class="mini-label">Üye</span></div>
+                            <div class="mini-divider"></div>
+                            <div class="mini-stat"><span class="mini-number">99%</span><span class="mini-label">Memnuniyet</span></div>
+                            <div class="mini-divider"></div>
                             <div class="mini-stat"><span class="mini-number">24/7</span><span class="mini-label">Destek</span></div>
                         </div>
                     </div>
-                    <div class="hero-visual"><div class="hero-card-wrapper"><div class="hero-card"><div class="card-glass"><div class="card-header"><div class="card-dots"><span></span><span></span><span></span></div><span class="card-title">Legante Dashboard</span><span class="card-version">v3.0.0</span></div><div class="card-body"><div class="card-stat"><div class="card-stat-icon"><i class="fas fa-shield-halved"></i></div><div><span>Anti-Ban Koruması</span><span> Aktif</span></div></div><div class="card-stat"><div class="card-stat-icon"><i class="fas fa-bolt"></i></div><div><span>Sistem Performansı</span><span> %78</span></div></div></div></div></div></div></div>
+                    <div class="hero-visual">
+                        <div class="hero-card-wrapper">
+                            <div class="hero-card">
+                                <div class="card-glass">
+                                    <div class="card-header">
+                                        <div class="card-dots"><span></span><span></span><span></span></div>
+                                        <span class="card-title">Legante Dashboard</span>
+                                        <span class="card-version">v3.0.0</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card-stat"><div class="card-stat-icon"><i class="fas fa-shield-halved"></i></div><div><span>Anti-Ban Koruması</span><span> Aktif</span></div></div>
+                                        <div class="card-stat"><div class="card-stat-icon"><i class="fas fa-bolt"></i></div><div><span>Sistem Performansı</span><span> %78</span></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- FEATURES -->
-        <section id="features"><div class="section-container"><div class="section-header"><span class="section-tag">ÖZELLİKLER</span><h2 class="section-title">Neden <span class="gradient-text">Legante Project?</span></h2></div><div class="features-grid"><div class="feature-card"><div class="feature-icon"><i class="fas fa-database"></i></div><h3>50+ Özel Hile</h3><p>Valorant, CS2, Fortnite, PUBG, Apex Legends ve daha fazlası.</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-virus"></i></div><h3>Anti-Ban Koruması</h3><p>Gelişmiş şifreleme ve spoof teknolojisi ile ban riskini minimuma indiriyoruz.</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-sync-alt"></i></div><h3>Anlık Güncelleme</h3><p>Oyun güncellemeleriyle eş zamanlı olarak hilelerimizi sürekli güncel tutuyoruz.</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-headset"></i></div><h3>7/24 Canlı Destek</h3><p>Discord üzerinden anlık destek ekibimizle sorunlarınıza çözüm buluyoruz.</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-gauge-high"></i></div><h3>Yüksek Performans</h3><p>Optimize edilmiş kod yapısı ile FPS kaybı yaşamadan hileleri kullanabilirsiniz.</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-robot"></i></div><h3>AI Chat Tools</h3><p>GPT-4, Claude, Gemini ve Llama modelleri ile sohbet edin.</p></div></div></div></section>
+        <section id="features">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">ÖZELLİKLER</span>
+                    <h2 class="section-title">Neden <span class="gradient-text">Legante Project?</span></h2>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-database"></i></div><h3>50+ Özel Hile</h3><p>Valorant, CS2, Fortnite, PUBG, Apex Legends ve daha fazlası.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-virus"></i></div><h3>Anti-Ban Koruması</h3><p>Gelişmiş şifreleme ve spoof teknolojisi ile ban riskini minimuma indiriyoruz.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-sync-alt"></i></div><h3>Anlık Güncelleme</h3><p>Oyun güncellemeleriyle eş zamanlı olarak hilelerimizi sürekli güncel tutuyoruz.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-headset"></i></div><h3>7/24 Canlı Destek</h3><p>Discord üzerinden anlık destek ekibimizle sorunlarınıza çözüm buluyoruz.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-gauge-high"></i></div><h3>Yüksek Performans</h3><p>Optimize edilmiş kod yapısı ile FPS kaybı yaşamadan hileleri kullanabilirsiniz.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="fas fa-robot"></i></div><h3>AI Chat Tools</h3><p>GPT-4, Claude, Gemini ve Llama modelleri ile sohbet edin.</p></div>
+                </div>
+            </div>
+        </section>
 
         <!-- MARKET -->
-        <section id="market"><div class="section-container"><div class="section-header"><span class="section-tag">MARKET</span><h2 class="section-title">Legante <span class="gradient-text">Market</span></h2></div><div class="market-categories"><button class="market-cat-btn active" data-category="all">Tümü</button><button class="market-cat-btn" data-category="vip">VIP</button><button class="market-cat-btn" data-category="booster">Booster</button></div><div class="market-grid"><div class="market-item" data-category="vip"><div class="market-badge badge-premium">PREMIUM</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 1</h3><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 5 hile erişimi</li></ul><div class="market-price">₺79<span>/ay</span></div><button onclick="addToCart('VIP 1', 79)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div><div class="market-item" data-category="vip"><div class="market-badge badge-hot">POPÜLER</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 2</h3><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 15 hile erişimi</li></ul><div class="market-price">₺149<span>/ay</span></div><button onclick="addToCart('VIP 2', 149)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div><div class="market-item" data-category="vip"><div class="market-badge badge-premium">ULTIMATE</div><div class="market-icon"><i class="fas fa-gem"></i></div><h3>VIP 3</h3><ul class="market-features"><li><i class="fas fa-check"></i> Full yetkili rol</li><li><i class="fas fa-check"></i> 50+ hile erişimi</li></ul><div class="market-price">₺249<span>/ay</span></div><button onclick="addToCart('VIP 3', 249)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div><div class="market-item" data-category="booster"><div class="market-badge badge-hot">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 1</h3><ul class="market-features"><li><i class="fas fa-check"></i> 4 saat boost</li><li><i class="fas fa-check"></i> Sunucu önceliği</li></ul><div class="market-price">₺39<span>/tek</span></div><button onclick="addToCart('Boost 1', 39)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div><div class="market-item" data-category="booster"><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 2</h3><ul class="market-features"><li><i class="fas fa-check"></i> 8 saat boost</li><li><i class="fas fa-check"></i> Özel kanal</li></ul><div class="market-price">₺69<span>/tek</span></div><button onclick="addToCart('Boost 2', 69)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div><div class="market-item" data-category="booster"><div class="market-icon"><i class="fas fa-fire"></i></div><h3>Boost 3</h3><ul class="market-features"><li><i class="fas fa-check"></i> 16 saat boost</li><li><i class="fas fa-check"></i> Liderlik tablosu</li></ul><div class="market-price">₺119<span>/tek</span></div><button onclick="addToCart('Boost 3', 119)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div></div></div></section>
+        <section id="market">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">MARKET</span>
+                    <h2 class="section-title">Legante <span class="gradient-text">Market</span></h2>
+                </div>
+                <div class="market-categories">
+                    <button class="market-cat-btn active" data-category="all">Tümü</button>
+                    <button class="market-cat-btn" data-category="vip">VIP</button>
+                    <button class="market-cat-btn" data-category="booster">Booster</button>
+                </div>
+                <div class="market-grid">
+                    <div class="market-item" data-category="vip"><div class="market-badge badge-premium">PREMIUM</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 1</h3><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 5 hile erişimi</li></ul><div class="market-price">₺79<span>/ay</span></div><button onclick="addToCart('VIP 1', 79)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div>
+                    <div class="market-item" data-category="vip"><div class="market-badge badge-hot">POPÜLER</div><div class="market-icon"><i class="fas fa-crown"></i></div><h3>VIP 2</h3><ul class="market-features"><li><i class="fas fa-check"></i> Özel rol</li><li><i class="fas fa-check"></i> 15 hile erişimi</li></ul><div class="market-price">₺149<span>/ay</span></div><button onclick="addToCart('VIP 2', 149)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div>
+                    <div class="market-item" data-category="vip"><div class="market-badge badge-premium">ULTIMATE</div><div class="market-icon"><i class="fas fa-gem"></i></div><h3>VIP 3</h3><ul class="market-features"><li><i class="fas fa-check"></i> Full yetkili rol</li><li><i class="fas fa-check"></i> 50+ hile erişimi</li></ul><div class="market-price">₺249<span>/ay</span></div><button onclick="addToCart('VIP 3', 249)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-badge badge-hot">BOOST</div><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 1</h3><ul class="market-features"><li><i class="fas fa-check"></i> 4 saat boost</li><li><i class="fas fa-check"></i> Sunucu önceliği</li></ul><div class="market-price">₺39<span>/tek</span></div><button onclick="addToCart('Boost 1', 39)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-icon"><i class="fas fa-rocket"></i></div><h3>Boost 2</h3><ul class="market-features"><li><i class="fas fa-check"></i> 8 saat boost</li><li><i class="fas fa-check"></i> Özel kanal</li></ul><div class="market-price">₺69<span>/tek</span></div><button onclick="addToCart('Boost 2', 69)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div>
+                    <div class="market-item" data-category="booster"><div class="market-icon"><i class="fas fa-fire"></i></div><h3>Boost 3</h3><ul class="market-features"><li><i class="fas fa-check"></i> 16 saat boost</li><li><i class="fas fa-check"></i> Liderlik tablosu</li></ul><div class="market-price">₺119<span>/tek</span></div><button onclick="addToCart('Boost 3', 119)" class="btn btn-primary btn-block btn-sm">Sepete Ekle</button></div>
+                </div>
+            </div>
+        </section>
 
         <!-- STATS -->
-        <section id="stats"><div class="section-container"><div class="stats-wrapper" style="background:rgba(10,10,20,0.8); border-radius:32px; padding:50px; text-align:center;"><div style="display:grid; grid-template-columns:repeat(4,1fr); gap:30px;"><div><div class="stat-icon"><i class="fas fa-cube"></i></div><div style="font-size:2.5rem; font-weight:900;">50<span style="font-size:1.3rem;">+</span></div><div style="color:#5a5a70;">Özel Hile</div></div><div><div class="stat-icon"><i class="fas fa-user-group"></i></div><div style="font-size:2.5rem; font-weight:900;">500<span style="font-size:1.3rem;">+</span></div><div style="color:#5a5a70;">Mutlu Üye</div></div><div><div class="stat-icon"><i class="fas fa-heart"></i></div><div style="font-size:2.5rem; font-weight:900;">99<span style="font-size:1.3rem;">%</span></div><div style="color:#5a5a70;">Memnuniyet</div></div><div><div class="stat-icon"><i class="fas fa-clock"></i></div><div style="font-size:2.5rem; font-weight:900;">24<span style="font-size:1.3rem;">/7</span></div><div style="color:#5a5a70;">Canlı Destek</div></div></div></div></div></section>
+        <section id="stats">
+            <div class="section-container">
+                <div class="stats-wrapper">
+                    <div class="stats-grid">
+                        <div class="stat-item"><div class="stat-icon"><i class="fas fa-cube"></i></div><div class="stat-number">50<span class="stat-suffix">+</span></div><span class="stat-label">Özel Hile</span></div>
+                        <div class="stat-item"><div class="stat-icon"><i class="fas fa-user-group"></i></div><div class="stat-number">500<span class="stat-suffix">+</span></div><span class="stat-label">Mutlu Üye</span></div>
+                        <div class="stat-item"><div class="stat-icon"><i class="fas fa-heart"></i></div><div class="stat-number">99<span class="stat-suffix">%</span></div><span class="stat-label">Memnuniyet</span></div>
+                        <div class="stat-item"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-number">24<span class="stat-suffix">/7</span></div><span class="stat-label">Canlı Destek</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- PRICING -->
-        <section id="pricing"><div class="section-container"><div class="section-header"><span class="section-tag">PAKETLER</span><h2 class="section-title">Senin İçin En <span class="gradient-text">Uygun Paket</span></h2></div><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:25px;"><div style="background:rgba(15,15,30,0.7); border-radius:24px; padding:40px 30px; text-align:center;"><h3>Başlangıç</h3><div style="font-size:2.5rem; font-weight:900; margin:20px 0;">₺149<span style="font-size:1rem;">/ay</span></div><ul style="list-style:none; margin:20px 0;"><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> 5 Hile Erişimi</li><li style="padding:8px 0;"><i class="fas fa-times" style="color:#ef4444;"></i> Öncelikli Destek</li></ul><button onclick="addToCart('Başlangıç Paketi', 149)" class="btn btn-outline btn-block">Sepete Ekle</button></div><div style="background:rgba(25,15,45,0.7); border-radius:24px; padding:40px 30px; text-align:center; border:1px solid rgba(168,85,247,0.3); transform:scale(1.02); position:relative;"><div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#6c5ce7,#a855f7); padding:5px 20px; border-radius:50px; font-size:0.7rem;">EN POPÜLER</div><h3>Premium</h3><div style="font-size:2.5rem; font-weight:900; margin:20px 0;">₺299<span style="font-size:1rem;">/ay</span></div><ul style="list-style:none; margin:20px 0;"><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> 50+ Hile Erişimi</li><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> 7/24 Destek</li></ul><button onclick="addToCart('Premium Paketi', 299)" class="btn btn-primary btn-block">Sepete Ekle</button></div><div style="background:rgba(15,15,30,0.7); border-radius:24px; padding:40px 30px; text-align:center;"><h3>Ultimate</h3><div style="font-size:2.5rem; font-weight:900; margin:20px 0;">₺599<span style="font-size:1rem;">/ay</span></div><ul style="list-style:none; margin:20px 0;"><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> Sınırsız Erişim</li><li style="padding:8px 0;"><i class="fas fa-check" style="color:#22c55e;"></i> Beta Sürümler</li></ul><button onclick="addToCart('Ultimate Paketi', 599)" class="btn btn-outline btn-block">Sepete Ekle</button></div></div></div></section>
+        <section id="pricing">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">PAKETLER</span>
+                    <h2 class="section-title">Senin İçin En <span class="gradient-text">Uygun Paket</span></h2>
+                </div>
+                <div class="pricing-grid">
+                    <div class="pricing-card"><h3>Başlangıç</h3><div class="pricing-price">₺149<span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> 5 Hile Erişimi</li><li><i class="fas fa-times"></i> Öncelikli Destek</li></ul><button onclick="addToCart('Başlangıç Paketi', 149)" class="btn btn-outline btn-block">Sepete Ekle</button></div>
+                    <div class="pricing-card popular"><div class="popular-badge">EN POPÜLER</div><h3>Premium</h3><div class="pricing-price">₺299<span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> 50+ Hile Erişimi</li><li><i class="fas fa-check"></i> 7/24 Destek</li></ul><button onclick="addToCart('Premium Paketi', 299)" class="btn btn-primary btn-block">Sepete Ekle</button></div>
+                    <div class="pricing-card"><h3>Ultimate</h3><div class="pricing-price">₺599<span class="period">/ay</span></div><ul class="pricing-features"><li><i class="fas fa-check"></i> Sınırsız Erişim</li><li><i class="fas fa-check"></i> Beta Sürümler</li></ul><button onclick="addToCart('Ultimate Paketi', 599)" class="btn btn-outline btn-block">Sepete Ekle</button></div>
+                </div>
+            </div>
+        </section>
 
-        <!-- AI CHAT -->
-        <section id="ai-tools"><div class="section-container"><div class="section-header"><span class="section-tag">🤖 YAPAY ZEKA</span><h2 class="section-title"><span class="gradient-text">AI Chat Tools</span> ile Tanış</h2></div><div class="ai-chat-container"><div class="ai-model-selector"><button class="ai-model-btn active" data-model="gpt">GPT-4</button><button class="ai-model-btn" data-model="claude">Claude</button><button class="ai-model-btn" data-model="gemini">Gemini</button><button class="ai-model-btn" data-model="llama">Llama</button></div><div class="ai-chat-window"><div class="ai-chat-messages" id="chatMessages"><div class="chat-message ai-message"><div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? 🎮</div></div></div></div><div class="ai-quick-questions"><button class="quick-question" data-question="En popüler hileleriniz hangileri?">🌟 Popüler hileler</button><button class="quick-question" data-question="Nasıl VIP üye olabilirim?">👑 VIP üyelik</button><button class="quick-question" data-question="Fiyat listesi nedir?">💰 Fiyatlar</button></div><div class="ai-chat-input-area"><textarea id="chatInput" class="ai-chat-input" placeholder="Mesajınızı yazın..." rows="1"></textarea><button id="sendMessageBtn" class="ai-send-btn"><i class="fas fa-paper-plane"></i></button><button id="clearChatBtn" class="ai-clear-btn"><i class="fas fa-trash-alt"></i></button></div></div></div></div></section>
+        <!-- TESTIMONIALS -->
+        <section id="testimonials">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">YORUMLAR</span>
+                    <h2 class="section-title">Üyelerimiz <span class="gradient-text">Ne Diyor?</span></h2>
+                </div>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card"><div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testimonial-text">"Legante Project sayesinde oyunlarda çok daha başarılıyım!"</p><div class="testimonial-author"><div class="author-avatar"><i class="fas fa-user-circle"></i></div><div><h4>Ahmet Y.</h4><span>VIP Üye</span></div></div></div>
+                    <div class="testimonial-card"><div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testimonial-text">"AI asistan gerçekten çok yardımcı! Harika bir topluluk."</p><div class="testimonial-author"><div class="author-avatar"><i class="fas fa-user-circle"></i></div><div><h4>Mehmet K.</h4><span>Elite Üye</span></div></div></div>
+                    <div class="testimonial-card"><div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="testimonial-text">"50+ hile seçeneği ve sürekli güncellemeler, iyi ki varsınız!"</p><div class="testimonial-author"><div class="author-avatar"><i class="fas fa-user-circle"></i></div><div><h4>Ayşe D.</h4><span>Premium Üye</span></div></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI CHAT TOOLS -->
+        <section id="ai-tools">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">🤖 YAPAY ZEKA</span>
+                    <h2 class="section-title"><span class="gradient-text">AI Chat Tools</span> ile Tanış</h2>
+                </div>
+                <div class="ai-chat-container">
+                    <div class="ai-model-selector">
+                        <button class="ai-model-btn active" data-model="gpt">GPT-4</button>
+                        <button class="ai-model-btn" data-model="claude">Claude</button>
+                        <button class="ai-model-btn" data-model="gemini">Gemini</button>
+                        <button class="ai-model-btn" data-model="llama">Llama</button>
+                    </div>
+                    <div class="ai-chat-window">
+                        <div class="ai-chat-messages" id="chatMessages">
+                            <div class="chat-message ai-message">
+                                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                                <div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? 🎮</div></div>
+                            </div>
+                        </div>
+                        <div class="ai-quick-questions">
+                            <button class="quick-question" data-question="En popüler hileleriniz hangileri?">🌟 Popüler hileler</button>
+                            <button class="quick-question" data-question="Nasıl VIP üye olabilirim?">👑 VIP üyelik</button>
+                            <button class="quick-question" data-question="Fiyat listesi nedir?">💰 Fiyatlar</button>
+                        </div>
+                        <div class="ai-chat-input-area">
+                            <textarea id="chatInput" class="ai-chat-input" placeholder="Mesajınızı yazın..." rows="1"></textarea>
+                            <button id="sendMessageBtn" class="ai-send-btn"><i class="fas fa-paper-plane"></i></button>
+                            <button id="clearChatBtn" class="ai-clear-btn"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- CTA -->
-        <section><div class="section-container"><div style="background:linear-gradient(135deg,rgba(108,92,231,0.12),rgba(168,85,247,0.08)); border-radius:32px; padding:50px; text-align:center;"><h2 style="font-size:2rem;">Hemen Aramıza Katıl!</h2><p style="margin:15px 0;">Discord sunucumuza katıl, 50+ özel hileye eriş!</p><a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-primary btn-lg"><i class="fab fa-discord"></i> Discord'a Katıl</a></div></div></section>
+        <section class="cta">
+            <div class="section-container">
+                <div class="cta-wrapper">
+                    <div class="cta-content">
+                        <h2>Hemen Aramıza Katıl!</h2>
+                        <p>Discord sunucumuza katıl, 50+ özel hileye eriş!</p>
+                        <a href="https://discord.gg/bM6SZcNmzW" target="_blank" class="btn btn-primary btn-lg"><i class="fab fa-discord"></i> Discord'a Katıl</a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <footer class="footer"><div class="section-container"><div class="footer-grid"><div><div class="footer-logo"><i class="fas fa-crown"></i><span>LEGANTE PROJECT</span></div><p>Premium hile platformu. Güvenli, güncel ve kaliteli hizmet.</p><div class="footer-social"><a href="https://discord.gg/bM6SZcNmzW"><i class="fab fa-discord"></i></a></div></div><div class="footer-links"><h4>Hızlı Erişim</h4><ul><li><a href="#home">Ana Sayfa</a></li><li><a href="#features">Özellikler</a></li><li><a href="#market">Market</a></li><li><a href="#pricing">Paketler</a></li></ul></div><div class="footer-links"><h4>Market</h4><ul><li><a href="#market">VIP Üyelik</a></li><li><a href="#market">Booster</a></li></ul></div><div><h4>Discord Sunucumuz</h4><p>Hemen katıl!</p><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-sm">Katıl</a></div></div><div class="footer-bottom"><p>&copy; 2024 Legante Project. Tüm hakları saklıdır.</p></div></div></footer>
+    <footer class="footer">
+        <div class="section-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo"><i class="fas fa-crown"></i><span>LEGANTE PROJECT</span></div>
+                    <p>Premium hile platformu. Güvenli, güncel ve kaliteli hizmet.</p>
+                    <div class="footer-social"><a href="https://discord.gg/bM6SZcNmzW"><i class="fab fa-discord"></i></a></div>
+                </div>
+                <div class="footer-links"><h4>Hızlı Erişim</h4><ul><li><a href="#home">Ana Sayfa</a></li><li><a href="#features">Özellikler</a></li><li><a href="#market">Market</a></li><li><a href="#pricing">Paketler</a></li></ul></div>
+                <div class="footer-links"><h4>Market</h4><ul><li><a href="#market">VIP Üyelik</a></li><li><a href="#market">Booster</a></li></ul></div>
+                <div class="footer-newsletter"><h4>Discord Sunucumuz</h4><p>Hemen katıl!</p><a href="https://discord.gg/bM6SZcNmzW" class="btn btn-primary btn-sm">Katıl</a></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2024 Legante Project. Tüm hakları saklıdır.</p></div>
+        </div>
+    </footer>
 
     <!-- SEPET MODAL -->
-    <div id="cart-modal" class="cart-modal"><div class="cart-header"><h3><i class="fas fa-shopping-cart"></i> Sepetim</h3><button class="cart-close" onclick="toggleCart()">&times;</button></div><div id="cart-items" class="cart-items"><div class="empty-cart">Sepetiniz boş</div></div><div class="cart-footer"><div class="cart-total"><span>Toplam:</span><span id="cart-total">0₺</span></div><button class="cart-checkout" onclick="checkout()">Satın Al</button></div></div>
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart-header"><h3><i class="fas fa-shopping-cart"></i> Sepetim</h3><button class="cart-close" onclick="toggleCart()">&times;</button></div>
+        <div id="cart-items" class="cart-items"><div class="empty-cart">Sepetiniz boş</div></div>
+        <div class="cart-footer"><div class="cart-total"><span>Toplam:</span><span id="cart-total">0₺</span></div><button class="cart-checkout" onclick="checkout()">Satın Al</button></div>
+    </div>
 
     <!-- LOGIN MODAL -->
-    <div id="auth-modal" class="modal-overlay" style="display:none;"><div class="modal-content"><div class="modal-header"><div><button class="auth-tab-btn" onclick="switchAuthTab('login')" style="background:none; border:none; color:#c084fc; font-size:1rem; font-weight:600; margin-right:20px; cursor:pointer;">Giriş Yap</button><button class="auth-tab-btn" onclick="switchAuthTab('register')" style="background:none; border:none; color:#5a5a70; font-size:1rem; font-weight:600; cursor:pointer;">Kayıt Ol</button></div><button class="modal-close" onclick="closeAuthModal()">&times;</button></div><div class="modal-body"><div id="login-form"><input type="email" id="login-email" class="tool-input" placeholder="E-posta adresiniz"><input type="password" id="login-password" class="tool-input" placeholder="Şifreniz"><button onclick="handleLogin()" class="tool-btn">Giriş Yap</button></div><div id="register-form" style="display:none;"><input type="text" id="register-name" class="tool-input" placeholder="Adınız Soyadınız"><input type="email" id="register-email" class="tool-input" placeholder="E-posta adresiniz"><input type="password" id="register-password" class="tool-input" placeholder="Şifreniz"><input type="password" id="register-confirm" class="tool-input" placeholder="Şifrenizi tekrar girin"><button onclick="handleRegister()" class="tool-btn">Kayıt Ol</button></div></div></div></div>
+    <div id="auth-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <button class="auth-tab-btn" onclick="switchAuthTab('login')" style="background:none; border:none; color:#c084fc; font-size:1rem; font-weight:600; margin-right:20px; cursor:pointer;">Giriş Yap</button>
+                    <button class="auth-tab-btn" onclick="switchAuthTab('register')" style="background:none; border:none; color:#5a5a70; font-size:1rem; font-weight:600; cursor:pointer;">Kayıt Ol</button>
+                </div>
+                <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="login-form">
+                    <input type="email" id="login-email" class="tool-input" placeholder="E-posta adresiniz">
+                    <input type="password" id="login-password" class="tool-input" placeholder="Şifreniz">
+                    <button onclick="handleLogin()" class="tool-btn">Giriş Yap</button>
+                </div>
+                <div id="register-form" style="display:none;">
+                    <input type="text" id="register-name" class="tool-input" placeholder="Adınız Soyadınız">
+                    <input type="email" id="register-email" class="tool-input" placeholder="E-posta adresiniz">
+                    <input type="password" id="register-password" class="tool-input" placeholder="Şifreniz">
+                    <input type="password" id="register-confirm" class="tool-input" placeholder="Şifrenizi tekrar girin">
+                    <button onclick="handleRegister()" class="tool-btn">Kayıt Ol</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        // ========== EXTRA TOOLS - TAM FONKSİYONEL ==========
-        let extraUnlocked = localStorage.getItem('legante_extra_unlocked') === 'true';
-        
-        // Key ile açma
-        function openKeyModal() {
-            const modalHtml = `
-                <div id="key-modal" class="modal-overlay">
-                    <div class="modal-content key-modal-content">
-                        <div style="text-align:center">
-                            <div style="width:60px; height:60px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
-                                <i class="fas fa-key" style="font-size:1.8rem; color:white;"></i>
-                            </div>
-                            <h3>Extra Tools</h3>
-                            <p>7 premium araca erişmek için key girin</p>
-                            <input type="password" id="key-input" class="key-input" placeholder="KEY GİRİN">
-                            <button id="key-submit" class="tool-btn">ERİŞİM SAĞLA</button>
-                            <div id="key-error" class="key-error">❌ Geçersiz Key!</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            document.getElementById('key-submit').onclick = () => {
-                const key = document.getElementById('key-input').value.toUpperCase().trim();
-                if (key === "LEGANTE2024") {
-                    extraUnlocked = true;
-                    localStorage.setItem('legante_extra_unlocked', 'true');
-                    document.getElementById('key-modal').remove();
-                    showNotification('🔓 Extra Tools erişimi açıldı!', 'success');
-                    updateExtraToolsUI();
-                } else {
-                    document.getElementById('key-error').style.display = 'block';
-                    setTimeout(() => document.getElementById('key-error').style.display = 'none', 2000);
-                }
-            };
-        }
-        
-        function updateExtraToolsUI() {
-            const tools = ['sms', 'token', 'ip', 'pass', 'hash', 'port', 'vt'];
-            tools.forEach(tool => {
-                const link = document.getElementById(`tool-${tool}`);
-                if (link) {
-                    if (extraUnlocked) {
-                        link.style.opacity = '1';
-                        link.style.pointerEvents = 'auto';
-                    } else {
-                        link.style.opacity = '0.5';
-                        link.style.pointerEvents = 'auto';
-                    }
-                }
-            });
-        }
-        
-        document.getElementById('access-extra-btn').onclick = () => {
-            if (extraUnlocked) {
-                showNotification('Extra Tools zaten aktif!', 'info');
-            } else {
-                openKeyModal();
-            }
-        };
-        
-        // ========== 1. SMS BOMBER ==========
-        function openSMSBomber() {
-            const modalHtml = `
-                <div id="tool-modal" class="modal-overlay">
-                    <div class="modal-content">
-                        <div class="modal-header"><h3><i class="fas fa-envelope"></i> SMS Bomber</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                        <div class="modal-body">
-                            <input type="text" id="sms-phone" class="tool-input" placeholder="Telefon Numarası: 905551234567">
-                            <div class="tool-row">
-                                <input type="number" id="sms-count" class="tool-input" placeholder="SMS Sayısı" value="10">
-                                <input type="number" id="sms-delay" class="tool-input" placeholder="Gecikme (ms)" value="500">
-                            </div>
-                            <button id="start-sms" class="tool-btn"><i class="fas fa-play"></i> SMS GÖNDERMEYE BAŞLA</button>
-                            <div id="sms-result" class="tool-result"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            document.getElementById('start-sms').onclick = async () => {
-                const phone = document.getElementById('sms-phone').value.trim();
-                const count = parseInt(document.getElementById('sms-count').value) || 10;
-                const delay = parseInt(document.getElementById('sms-delay').value) || 500;
-                const resultDiv = document.getElementById('sms-result');
-                
-                if (!phone || phone.length < 10) {
-                    resultDiv.innerHTML = '<span style="color:#ef4444;">❌ Geçersiz telefon numarası!</span>';
-                    return;
-                }
-                
-                resultDiv.innerHTML = '<span style="color:#f59e0b;">🚀 SMS gönderiliyor...</span>';
-                let sent = 0;
-                
-                for (let i = 0; i < count; i++) {
-                    try {
-                        // Demo API çağrısı - gerçekte burası çalışmaz, demo amaçlı
-                        resultDiv.innerHTML = `<span style="color:#22c55e;">✅ ${sent + 1}/${count} SMS gönderildi: +${phone}</span>`;
-                        sent++;
-                        await new Promise(r => setTimeout(r, delay));
-                    } catch(e) {}
-                }
-                resultDiv.innerHTML = `<span style="color:#22c55e;">✅ SMS Bomb tamamlandı! Toplam: ${sent} SMS gönderildi.</span>`;
-            };
-        }
-        
-        // ========== 2. TOKEN CHECKER ==========
-        function openTokenChecker() {
-            const modalHtml = `
-                <div id="tool-modal" class="modal-overlay">
-                    <div class="modal-content">
-                        <div class="modal-header"><h3><i class="fab fa-discord"></i> Discord Token Checker</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                        <div class="modal-body">
-                            <textarea id="tokens-input" class="tool-textarea" rows="5" placeholder="Discord tokenlerinizi her satıra bir tane olacak şekilde yapıştırın..."></textarea>
-                            <button id="check-tokens" class="tool-btn"><i class="fas fa-search"></i> TOKENLERİ KONTROL ET</button>
-                            <div id="token-result" class="tool-result"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            document.getElementById('check-tokens').onclick = async () => {
-                const tokens = document.getElementById('tokens-input').value.split('\n').filter(t => t.trim().length > 0);
-                const resultDiv = document.getElementById('token-result');
-                
-                if (tokens.length === 0) {
-                    resultDiv.innerHTML = '<span style="color:#ef4444;">❌ Token giriniz!</span>';
-                    return;
-                }
-                
-                resultDiv.innerHTML = '<span style="color:#f59e0b;">🔍 Tokenler kontrol ediliyor...</span>';
-                let valid = 0, invalid = 0;
-                let results = [];
-                
-                for (let i = 0; i < Math.min(tokens.length, 10); i++) {
-                    const token = tokens[i].trim();
-                    try {
-                        const res = await fetch('https://discord.com/api/v9/users/@me', {
-                            headers: { 'Authorization': token }
-                        });
-                        if (res.ok) {
-                            const data = await res.json();
-                            valid++;
-                            results.push(`<span style="color:#22c55e;">✅ GEÇERLİ: ${data.username}#${data.discriminator} (${data.id})</span>`);
-                        } else {
-                            invalid++;
-                            results.push(`<span style="color:#ef4444;">❌ GEÇERSİZ: ${token.substring(0, 20)}...</span>`);
-                        }
-                    } catch(e) {
-                        invalid++;
-                        results.push(`<span style="color:#ef4444;">❌ HATA: ${token.substring(0, 20)}...</span>`);
-                    }
-                    resultDiv.innerHTML = results.slice(-5).join('<br>');
-                    await new Promise(r => setTimeout(r, 500));
-                }
-                
-                resultDiv.innerHTML = `<span style="color:#22c55e;">✅ Kontrol tamamlandı!</span><br>📊 Toplam: ${tokens.length} | ✅ Geçerli: ${valid} | ❌ Geçersiz: ${invalid}<br><br>${results.join('<br>')}`;
-            };
-        }
-        
-        // ========== 3. IP LOCATOR ==========
-        function openIPLocator() {
-            const modalHtml = `
-                <div id="tool-modal" class="modal-overlay">
-                    <div class="modal-content">
-                        <div class="modal-header"><h3><i class="fas fa-map-marker-alt"></i> IP Locator</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                        <div class="modal-body">
-                            <input type="text" id="ip-address" class="tool-input" placeholder="IP Adresi: 8.8.8.8">
-                            <button id="locate-ip" class="tool-btn"><i class="fas fa-search-location"></i> KONUM BUL</button>
-                            <div id="ip-result" class="tool-result"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            document.getElementById('locate-ip').onclick = async () => {
-                const ip = document.getElementById('ip-address').value.trim();
-                const resultDiv = document.getElementById('ip-result');
-                
-                if (!ip) {
-                    resultDiv.innerHTML = '<span style="color:#ef4444;">❌ IP adresi giriniz!</span>';
-                    return;
-                }
-                
-                resultDiv.innerHTML = '<span style="color:#f59e0b;">📍 Konum aranıyor...</span>';
-                
-                try {
-                    const res = await fetch(`https://ipapi.co/${ip}/json/`);
-                    const data = await res.json();
-                    if (data.error) throw new Error();
-                    
-                    resultDiv.innerHTML = `
-                        <span style="color:#22c55e;">✅ IP: ${data.ip}</span><br>
-                        📍 Ülke: ${data.country_name} (${data.country_code})<br>
-                        🏙️ Şehir: ${data.city || 'Bilinmiyor'}<br>
-                        📮 Posta Kodu: ${data.postal || 'Bilinmiyor'}<br>
-                        🌐 ISP: ${data.org || 'Bilinmiyor'}<br>
-                        📍 Koordinat: ${data.latitude}, ${data.longitude}
-                    `;
-                } catch(e) {
-                    resultDiv.innerHTML = '<span style="color:#ef4444;">❌ IP adresi bulunamadı veya geçersiz!</span>';
-                }
-            };
-        }
-        
-        // ========== 4. PASSWORD GENERATOR ==========
-        function openPasswordGenerator() {
-            const modalHtml = `
-                <div id="tool-modal" class="modal-overlay">
-                    <div class="modal-content">
-                        <div class="modal-header"><h3><i class="fas fa-key"></i> Password Generator</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                        <div class="modal-body">
-                            <div class="tool-row">
-                                <input type="number" id="pass-length" class="tool-input" value="12" min="6" max="32">
-                                <select id="pass-type" class="tool-input">
-                                    <option value="all">Tüm Karakterler</option>
-                                    <option value="alpha">Sadece Harfler</option>
-                                    <option value="numeric">Sadece Sayılar</option>
-                                    <option value="alnum">Harf + Sayı</option>
-                                </select>
-                            </div>
-                            <button id="generate-pass" class="tool-btn"><i class="fas fa-sync-alt"></i> ŞİFRE OLUŞTUR</button>
-                            <div id="pass-result" class="tool-result"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            document.getElementById('generate-pass').onclick = () => {
-                const length = parseInt(document.getElementById('pass-length').value) || 12;
-                const type = document.getElementById('pass-type').value;
-                const resultDiv = document.getElementById('pass-result');
-                
-                let chars = '';
-                if (type === 'all') chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_+-=';
-                else if (type === 'alpha') chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-                else if (type === 'numeric') chars = '23456789';
-                else chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
-                
-                let password = '';
-                for (let i = 0; i < length; i++) {
-                    password += chars[Math.floor(Math.random() * chars.length)];
-                }
-                
-                resultDiv.innerHTML = `
-                    <div style="font-family:monospace; font-size:1.2rem; word-break:break-all; background:rgba(0,0,0,0.3); padding:15px; border-radius:10px;">${password}</div>
-                    <button onclick="navigator.clipboard.writeText('${password}')" style="margin-top:10px; padding:8px; background:rgba(108,92,231,0.3); border:none; border-radius:8px; color:white; cursor:pointer;">📋 Kopyala</button>
-                `;
-            };
-            document.getElementById('generate-pass').click();
-        }
-        
-        // ========== 5. HASH TOOL ==========
-        function openHashTool() {
-            const modalHtml = `
-                <div id="tool-modal" class="modal-overlay">
-                    <div class="modal-content">
-                        <div class="modal-header"><h3><i class="fas fa-fingerprint"></i> Hash Tool</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                        <div class="modal-body">
-                            <textarea id="hash-input" class="tool-textarea" rows="3" placeholder="Metin girin..."></textarea>
-                            <div class="tool-row">
-                                <button id="hash-md5" class="tool-btn" style="flex:1">MD5</button>
-                                <button id="hash-sha1" class="tool-btn" style="flex:1">SHA-1</button>
-                                <button id="hash-sha256" class="tool-btn" style="flex:1">SHA-256</button>
-                            </div>
-                            <div id="hash-result" class="tool-result"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            async function computeHash(algo, text) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(text);
-                const hashBuffer = await crypto.subtle.digest(algo, data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            }
-            
-            document.getElementById('hash-md5').onclick = async () => {
-                const text = document.getElementById('hash-input').value;
-                if (!text) { document.getElementById('hash-result').innerHTML = '<span style="color:#ef4444;">Metin girin!</span>'; return; }
-                const hash = await computeHash('MD5', text);
-                document.getElementById('hash-result').innerHTML = `<span style="color:#22c55e;">MD5:</span><br><code style="word-break:break-all;">${hash}</code>`;
-            };
-            document.getElementById('hash-sha1').onclick = async () => {
-                const text = document.getElementById('hash-input').value;
-                if (!text) { document.getElementById('hash-result').innerHTML = '<span style="color:#ef4444;">Metin girin!</span>'; return; }
-                const hash = await computeHash('SHA-1', text);
-                document.getElementById('hash-result').innerHTML = `<span style="color:#22c55e;">SHA-1:</span><br><code style="word-break:break-all;">${hash}</code>`;
-            };
-            document.getElementById('hash-sha256').onclick = async () => {
-                const text = document.getElementById('hash-input').value;
-                if (!text) { document.getElementById('hash-result').innerHTML = '<span style="color:#ef4444;">Metin girin!</span>'; return; }
-                const hash = await computeHash('SHA-256', text);
-                document.getElementById('hash-result').innerHTML = `<span style="color:#22c55e;">SHA-256:</span><br><code style="word-break:break-all;">${hash}</code>`;
-            };
-        }
-        
-        // ========== 6. PORT SCANNER ==========
-        function openPortScanner() {
-            const modalHtml = `
-                <div id="tool-modal" class="modal-overlay">
-                    <div class="modal-content">
-                        <div class="modal-header"><h3><i class="fas fa-network-wired"></i> Port Scanner</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                        <div class="modal-body">
-                            <input type="text" id="scan-ip" class="tool-input" placeholder="IP Adresi">
-                            <div class="tool-row">
-                                <input type="number" id="start-port" class="tool-input" placeholder="Başlangıç" value="1">
-                                <input type="number" id="end-port" class="tool-input" placeholder="Bitiş" value="100">
-                            </div>
-                            <button id="start-scan" class="tool-btn"><i class="fas fa-search"></i> TARAMAYA BAŞLA</button>
-                            <div id="scan-result" class="tool-result"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            document.getElementById('start-scan').onclick = async () => {
-                const ip = document.getElementById('scan-ip').value.trim();
-                const startPort = parseInt(document.getElementById('start-port').value) || 1;
-                const endPort = parseInt(document.getElementById('end-port').value) || 100;
-                const resultDiv = document.getElementById('scan-result');
-                
-                if (!ip) {
-                    resultDiv.innerHTML = '<span style="color:#ef4444;">❌ IP adresi giriniz!</span>';
-                    return;
-                }
-                
-                resultDiv.innerHTML = '<span style="color:#f59e0b;">🔍 Portlar taranıyor...</span>';
-                let openPorts = [];
-                
-                for (let port = startPort; port <= Math.min(endPort, 100); port++) {
-                    try {
-                        const controller = new AbortController();
-                        setTimeout(() => controller.abort(), 800);
-                        await fetch(`http://${ip}:${port}`, { mode: 'no-cors', signal: controller.signal });
-                        openPorts.push(port);
-                        resultDiv.innerHTML = `<span style="color:#22c55e;">✅ Açık portlar: ${openPorts.join(', ') || 'Henüz bulunamadı'}</span><br>🔄 Taranan: ${port}/${Math.min(endPort, 100)}`;
-                    } catch(e) {}
-                    await new Promise(r => setTimeout(r, 100));
-                }
-                
-                if (openPorts.length > 0) {
-                    resultDiv.innerHTML = `<span style="color:#22c55e;">✅ Tarama tamamlandı!</span><br>📡 Açık portlar: ${openPorts.join(', ')}`;
-                } else {
-                    resultDiv.innerHTML = '<span style="color:#ef4444;">❌ Açık port bulunamadı veya hedefe erişilemiyor.</span>';
-                }
-            };
-        }
-        
-        // ========== 7. VIRUSTOTAL ==========
-        function openVirusTotal() {
-            const modalHtml = `
-                <div id="tool-modal" class="modal-overlay">
-                    <div class="modal-content">
-                        <div class="modal-header"><h3><i class="fas fa-shield-virus"></i> VirusTotal Scanner</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                        <div class="modal-body">
-                            <div class="tool-row">
-                                <select id="vt-type" class="tool-input" style="flex:1">
-                                    <option value="url">URL</option>
-                                    <option value="hash">Dosya Hash (MD5/SHA1/SHA256)</option>
-                                </select>
-                            </div>
-                            <textarea id="vt-input" class="tool-textarea" rows="2" placeholder="URL veya Hash girin..."></textarea>
-                            <button id="vt-scan" class="tool-btn"><i class="fas fa-search"></i> ANALİZ ET</button>
-                            <div id="vt-result" class="tool-result"></div>
-                            <div style="font-size:0.7rem; color:#5a5a70; margin-top:10px;">⚠️ Demo modu: VirusTotal API için API key gereklidir. Şu an demo sonuçları gösterilmektedir.</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            
-            document.getElementById('vt-scan').onclick = () => {
-                const input = document.getElementById('vt-input').value.trim();
-                const type = document.getElementById('vt-type').value;
-                const resultDiv = document.getElementById('vt-result');
-                
-                if (!input) {
-                    resultDiv.innerHTML = '<span style="color:#ef4444;">❌ URL veya Hash giriniz!</span>';
-                    return;
-                }
-                
-                resultDiv.innerHTML = '<span style="color:#f59e0b;">🔍 VirusTotal aranıyor...</span>';
-                
-                setTimeout(() => {
-                    if (type === 'url') {
-                        resultDiv.innerHTML = `
-                            <span style="color:#22c55e;">✅ Tarama tamamlandı!</span><br>
-                            🔗 URL: ${input}<br>
-                            🛡️ Güvenlik Durumu: <span style="color:#22c55e;">Temiz</span><br>
-                            📊 70+ antivirüs motoru tarandı, 0 şüpheli bulundu.
-                        `;
-                    } else {
-                        resultDiv.innerHTML = `
-                            <span style="color:#22c55e;">✅ Dosya analizi tamamlandı!</span><br>
-                            🔑 Hash: ${input}<br>
-                            🛡️ Güvenlik Durumu: <span style="color:#22c55e;">Temiz</span><br>
-                            📊 65 antivirüs motoru tarandı, 0 zararlı bulundu.
-                        `;
-                    }
-                }, 1500);
-            };
-        }
-        
-        function closeToolModal() {
-            document.getElementById('tool-modal')?.remove();
-        }
-        
-        // Tool linklerine tıklama
-        document.getElementById('tool-sms').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openSMSBomber(); };
-        document.getElementById('tool-token').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openTokenChecker(); };
-        document.getElementById('tool-ip').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openIPLocator(); };
-        document.getElementById('tool-pass').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openPasswordGenerator(); };
-        document.getElementById('tool-hash').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openHashTool(); };
-        document.getElementById('tool-port').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openPortScanner(); };
-        document.getElementById('tool-vt').onclick = (e) => { e.preventDefault(); if (!extraUnlocked) openKeyModal(); else openVirusTotal(); };
-        
-        // ========== SEPET SİSTEMİ ==========
-        let cart = JSON.parse(localStorage.getItem('legante_cart') || '[]');
-        
-        function saveCart() {
-            localStorage.setItem('legante_cart', JSON.stringify(cart));
-            updateCartUI();
-        }
-        
-        function updateCartUI() {
-            document.getElementById('cart-count').innerText = cart.length;
-            const cartItemsDiv = document.getElementById('cart-items');
-            const cartTotalSpan = document.getElementById('cart-total');
-            
-            if (cart.length === 0) {
-                cartItemsDiv.innerHTML = '<div class="empty-cart">Sepetiniz boş</div>';
-                cartTotalSpan.innerText = '0₺';
-                return;
-            }
-            
-            let total = 0;
-            cartItemsDiv.innerHTML = cart.map((item, index) => {
-                total += item.price;
-                return `<div class="cart-item"><div class="cart-item-info"><h4>${item.name}</h4><p>${item.price}₺</p></div><button class="cart-item-remove" onclick="removeFromCart(${index})"><i class="fas fa-trash"></i></button></div>`;
-            }).join('');
-            cartTotalSpan.innerText = total + '₺';
-        }
-        
-        function addToCart(name, price) {
-            cart.push({ name, price, id: Date.now() });
-            saveCart();
-            showNotification(`🛒 ${name} sepete eklendi!`, 'success');
-            toggleCart(true);
-        }
-        
-        function removeFromCart(index) {
-            const removed = cart[index];
-            cart.splice(index, 1);
-            saveCart();
-            showNotification(`❌ ${removed.name} sepetten kaldırıldı`, 'info');
-        }
-        
-        function toggleCart(open) {
-            const modal = document.getElementById('cart-modal');
-            if (open === true) modal.classList.add('open');
-            else if (open === false) modal.classList.remove('open');
-            else modal.classList.toggle('open');
-        }
-        
-        function checkout() {
-            if (cart.length === 0) {
-                showNotification('Sepetiniz boş!', 'error');
-                return;
-            }
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            showNotification(`✅ Siparişiniz alındı! Toplam: ${total}₺`, 'success');
-            cart = [];
-            saveCart();
-            toggleCart(false);
-        }
-        
-        // ========== LOGIN/REGISTER ==========
-        let currentUser = null;
-        
-        function loadUsers() { return JSON.parse(localStorage.getItem('legante_users') || '[]'); }
-        function saveUsers(users) { localStorage.setItem('legante_users', JSON.stringify(users)); }
-        
-        function loadCurrentUser() {
-            const saved = localStorage.getItem('legante_current_user');
-            if (saved) {
-                currentUser = JSON.parse(saved);
-                document.getElementById('guest-header-buttons').style.display = 'none';
-            } else {
-                document.getElementById('guest-header-buttons').style.display = 'flex';
-            }
-        }
-        
-        function openAuthModal() {
-            document.getElementById('auth-modal').style.display = 'flex';
-        }
-        
-        function closeAuthModal() {
-            document.getElementById('auth-modal').style.display = 'none';
-        }
-        
-        function switchAuthTab(tab) {
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            const loginBtn = document.querySelector('.auth-tab-btn:first-child');
-            const registerBtn = document.querySelector('.auth-tab-btn:last-child');
-            
-            if (tab === 'login') {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-                loginBtn.style.color = '#c084fc';
-                registerBtn.style.color = '#5a5a70';
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-                loginBtn.style.color = '#5a5a70';
-                registerBtn.style.color = '#c084fc';
-            }
-        }
-        
-        function showNotification(msg, type) {
-            const notif = document.createElement('div');
-            notif.className = 'notification';
-            notif.innerHTML = msg;
-            notif.style.borderColor = type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#c084fc';
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 3000);
-        }
-        
-        function handleLogin() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            const users = loadUsers();
-            const user = users.find(u => u.email === email && u.password === password);
-            if (user) {
-                currentUser = { ...user };
-                delete currentUser.password;
-                localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
-                document.getElementById('guest-header-buttons').style.display = 'none';
-                closeAuthModal();
-                showNotification(`Hoş geldiniz, ${user.name}!`, 'success');
-            } else {
-                showNotification('E-posta veya şifre hatalı!', 'error');
-            }
-        }
-        
-        function handleRegister() {
-            const name = document.getElementById('register-name').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const password = document.getElementById('register-password').value;
-            const confirm = document.getElementById('register-confirm').value;
-            if (!name || !email || !password) { showNotification('Tüm alanları doldurun!', 'error'); return; }
-            if (password !== confirm) { showNotification('Şifreler eşleşmiyor!', 'error'); return; }
-            const users = loadUsers();
-            if (users.find(u => u.email === email)) { showNotification('Bu e-posta zaten kayıtlı!', 'error'); return; }
-            const newUser = { id: Date.now(), name, email, password, orders: [], totalSpent: 0 };
-            users.push(newUser);
-            saveUsers(users);
-            currentUser = { ...newUser };
-            delete currentUser.password;
-            localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
-            document.getElementById('guest-header-buttons').style.display = 'none';
-            closeAuthModal();
-            showNotification(`Başarıyla kayıt oldunuz!`, 'success');
-        }
-        
-        // ========== MARKET FILTER ==========
-        document.querySelectorAll('.market-cat-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.market-cat-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const category = btn.getAttribute('data-category');
-                document.querySelectorAll('.market-item').forEach(item => {
-                    if (category === 'all' || item.getAttribute('data-category') === category) item.classList.remove('hidden');
-                    else item.classList.add('hidden');
-                });
-            });
-        });
-        
-        // ========== MOBILE MENU ==========
-        const mobileBtn = document.getElementById('mobile-menu-btn');
-        const sidePanel = document.getElementById('side-panel');
-        const overlay = document.getElementById('mobile-overlay');
-        if (mobileBtn) mobileBtn.onclick = () => { sidePanel.classList.toggle('mobile-open'); overlay.style.display = sidePanel.classList.contains('mobile-open') ? 'block' : 'none'; };
-        if (overlay) overlay.onclick = () => { sidePanel.classList.remove('mobile-open'); overlay.style.display = 'none'; };
-        
-        // ========== AI CHAT ==========
-        let currentModel = 'gpt';
-        document.querySelectorAll('.ai-model-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.ai-model-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentModel = btn.getAttribute('data-model');
-                addAIMessage(`✨ Model ${btn.innerText} olarak değiştirildi.`);
-            });
-        });
-        
-        function addAIMessage(text) {
-            const messages = document.getElementById('chatMessages');
-            const msg = document.createElement('div');
-            msg.className = 'chat-message ai-message';
-            msg.innerHTML = `<div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">${text}</div></div>`;
-            messages.appendChild(msg);
-            messages.scrollTop = messages.scrollHeight;
-        }
-        
-        function addUserMessage(text) {
-            const messages = document.getElementById('chatMessages');
-            const msg = document.createElement('div');
-            msg.className = 'chat-message user-message';
-            msg.innerHTML = `<div class="message-avatar"><i class="fas fa-user"></i></div><div class="message-content"><div class="message-sender">Siz</div><div class="message-text">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
-            messages.appendChild(msg);
-            messages.scrollTop = messages.scrollHeight;
-        }
-        
-        function getAIResponse(msg) {
-            const m = msg.toLowerCase();
-            if (m.includes('merhaba') || m.includes('selam')) return 'Merhaba! 😊 Size nasıl yardımcı olabilirim?';
-            if (m.includes('vip')) return 'VIP üyeliklerimiz: VIP 1 (79₺/ay), VIP 2 (149₺/ay), VIP 3 (249₺/ay). Market bölümünden satın alabilirsiniz!';
-            if (m.includes('fiyat')) return '💰 Fiyat listemiz:\n• VIP 1: 79₺/ay\n• VIP 2: 149₺/ay\n• VIP 3: 249₺/ay\n• Boost paketleri: 39₺ - 119₺';
-            if (m.includes('hile')) return '50+ premium hile çeşidimiz var! Valorant, CS2, Fortnite, PUBG, Apex Legends ve daha fazlası. Hangi oyunla ilgileniyorsunuz? 🎮';
-            return 'Teşekkürler! Legante Project hakkında daha fazla bilgi için Discord sunucumuza bekleriz: discord.gg/bM6SZcNmzW 🚀';
-        }
-        
-        document.getElementById('sendMessageBtn').addEventListener('click', () => {
-            const input = document.getElementById('chatInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-            addUserMessage(msg);
-            input.value = '';
-            setTimeout(() => addAIMessage(getAIResponse(msg)), 500);
-        });
-        
-        document.getElementById('clearChatBtn').addEventListener('click', () => {
-            document.getElementById('chatMessages').innerHTML = `<div class="chat-message ai-message"><div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? 🎮</div></div></div>`;
-        });
-        
-        document.querySelectorAll('.quick-question').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById('chatInput').value = btn.getAttribute('data-question');
-                document.getElementById('sendMessageBtn').click();
-            });
-        });
-        
-        document.getElementById('chatInput').addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('sendMessageBtn').click(); } });
-        
-        // ========== SMOOTH SCROLL & ACTIVE LINK ==========
-        document.querySelectorAll('.side-nav-link[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                    if (window.innerWidth <= 992) { sidePanel.classList.remove('mobile-open'); overlay.style.display = 'none'; }
-                }
-            });
-        });
-        
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('section[id]');
-            let current = '';
-            sections.forEach(section => { if (scrollY >= section.offsetTop - 100) current = section.getAttribute('id'); });
-            document.querySelectorAll('.side-nav-link').forEach(link => { link.classList.remove('active'); if (link.getAttribute('href') === `#${current}`) link.classList.add('active'); });
-        });
-        
-        // Başlangıç
-        loadCurrentUser();
-        updateCartUI();
-        updateExtraToolsUI();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
