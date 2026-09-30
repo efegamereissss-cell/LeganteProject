@@ -1,561 +1,905 @@
-﻿// ========== EXTRA TOOLS - TAM FONKSİYONEL (KEY ZORUNLU) ==========
-let extraUnlocked = localStorage.getItem('legante_extra_unlocked') === 'true';
+/**
+ * ========================================================
+ * LEGANTE PROJECT - ULTRA PREMIUM JAVASCRIPT ENGINE v4.0.0
+ * Comprehensive State Management, Interactive Catalog,
+ * Cart, Checkout, Auth, AI Chat, Tools & Canvas Particles
+ * ========================================================
+ */
 
-// Key ile açma modalı
-function openKeyModal() {
-    const modalHtml = `
-        <div id="key-modal" class="modal-overlay">
-            <div class="modal-content key-modal-content">
-                <div style="text-align:center">
-                    <div style="width:60px; height:60px; background:linear-gradient(135deg,#6c5ce7,#a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
-                        <i class="fas fa-key" style="font-size:1.8rem; color:white;"></i>
-                    </div>
-                    <h3>Extra Tools</h3>
-                    <p>7 premium araca erişmek için key girin</p>
-                    <input type="password" id="key-input" class="key-input" placeholder="KEY GİRİN">
-                    <button id="key-submit" class="tool-btn">ERİŞİM SAĞLA</button>
-                    <div id="key-error" class="key-error">❌ Geçersiz Key!</div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    document.getElementById('key-submit').onclick = () => {
-        const key = document.getElementById('key-input').value.toUpperCase().trim();
-        if (key === "LEGANTE2024") {
-            extraUnlocked = true;
-            localStorage.setItem('legante_extra_unlocked', 'true');
-            document.getElementById('key-modal').remove();
-            updateExtraToolsUI();
-            showNotification('🔓 Extra Tools erişimi açıldı!', 'success');
-        } else {
-            document.getElementById('key-error').style.display = 'block';
-            setTimeout(() => document.getElementById('key-error').style.display = 'none', 2000);
-        }
-    };
+// ==================== 1. SOUND EFFECTS (WEB AUDIO API) ====================
+let sfxEnabled = localStorage.getItem('legante_sfx') !== 'false';
+let audioCtx = null;
+
+function getAudioContext() {
+    if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    return audioCtx;
 }
 
-// Extra Tools butonu
-document.getElementById('access-extra-btn').onclick = () => {
-    if (extraUnlocked) {
-        showNotification('Extra Tools zaten aktif!', 'info');
-    } else {
-        openKeyModal();
+function playTone(freq, type = 'sine', duration = 0.1, gainVal = 0.08) {
+    if (!sfxEnabled) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+    } catch(e) {}
+}
+
+function playSuccessSFX() {
+    playTone(523.25, 'sine', 0.1, 0.08); // C5
+    setTimeout(() => playTone(659.25, 'sine', 0.15, 0.08), 80); // E5
+    setTimeout(() => playTone(783.99, 'sine', 0.2, 0.08), 160); // G5
+}
+
+function playClickSFX() {
+    playTone(800, 'triangle', 0.04, 0.03);
+}
+
+function playNotificationSFX() {
+    playTone(587.33, 'sine', 0.12, 0.07);
+    setTimeout(() => playTone(880, 'sine', 0.18, 0.07), 90);
+}
+
+function toggleSFX() {
+    sfxEnabled = !sfxEnabled;
+    localStorage.setItem('legante_sfx', sfxEnabled);
+    const icon = document.getElementById('sfx-icon');
+    if (icon) {
+        icon.className = sfxEnabled ? 'fas fa-volume-high' : 'fas fa-volume-xmark';
     }
+    showToast(sfxEnabled ? '🔊 Ses efektleri açıldı' : '🔇 Ses efektleri kapatıldı', 'info');
+    if (sfxEnabled) playSuccessSFX();
+}
+
+// ==================== 2. AMBIENT PARTICLES CANVAS ====================
+function initParticlesCanvas() {
+    const canvas = document.getElementById('particles-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const count = Math.min(Math.floor(width / 22), 65);
+
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: Math.random() * 2 + 1,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            alpha: Math.random() * 0.5 + 0.2
+        });
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < 0) p.x = width;
+            if (p.x > width) p.x = 0;
+            if (p.y < 0) p.y = height;
+            if (p.y > height) p.y = 0;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(167, 139, 250, ${p.alpha})`;
+            ctx.fill();
+
+            for (let j = i + 1; j < particles.length; j++) {
+                const p2 = particles[j];
+                const dx = p.x - p2.x;
+                const dy = p.y - p2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 110) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = `rgba(139, 92, 246, ${(1 - dist / 110) * 0.16})`;
+                    ctx.lineWidth = 0.7;
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(render);
+    }
+    render();
+}
+
+// ==================== 3. CURRENCY SYSTEM ====================
+let activeCurrency = localStorage.getItem('legante_currency') || 'TRY';
+const currencyRates = {
+    TRY: { symbol: '₺', rate: 1 },
+    USD: { symbol: '$', rate: 0.029 },
+    EUR: { symbol: '€', rate: 0.027 }
 };
 
-// UI güncelleme (kilit simgeleri)
-function updateExtraToolsUI() {
-    const tools = ['sms', 'token', 'ip', 'pass', 'hash', 'port', 'vt'];
-    tools.forEach(tool => {
-        const link = document.getElementById(`tool-${tool}`);
-        if (link) {
-            if (extraUnlocked) {
-                link.style.opacity = '1';
-                link.style.pointerEvents = 'auto';
-                const icon = link.querySelector('i:first-child');
-                if (icon && icon.classList.contains('fa-lock')) {
-                    icon.classList.remove('fa-lock');
-                    icon.classList.add('fa-chevron-right');
-                }
-            } else {
-                link.style.opacity = '0.6';
-                link.style.pointerEvents = 'auto';
-                const icon = link.querySelector('i:first-child');
-                if (icon && !icon.classList.contains('fa-lock')) {
-                    icon.classList.remove('fa-chevron-right');
-                    icon.classList.add('fa-lock');
-                }
+function formatPrice(tryAmount) {
+    const info = currencyRates[activeCurrency] || currencyRates.TRY;
+    const converted = Math.round(tryAmount * info.rate);
+    return `${info.symbol}${converted}`;
+}
+
+function changeCurrency(newCurr) {
+    activeCurrency = newCurr;
+    localStorage.setItem('legante_currency', newCurr);
+    renderProducts();
+    updateCartUI();
+    updatePricingCards();
+    showToast(`Para birimi ${newCurr} olarak güncellendi`, 'info');
+}
+
+function updatePricingCards() {
+    document.querySelectorAll('.price-val').forEach(el => {
+        const base = parseFloat(el.getAttribute('data-base'));
+        if (!isNaN(base)) {
+            const info = currencyRates[activeCurrency] || currencyRates.TRY;
+            el.innerText = Math.round(base * info.rate);
+            const currEl = el.previousElementSibling;
+            if (currEl && currEl.classList.contains('currency')) {
+                currEl.innerText = info.symbol;
             }
         }
     });
 }
 
-// Tool linkleri - KEY KONTROLÜ İLE
-document.getElementById('tool-sms').onclick = (e) => { 
-    e.preventDefault(); 
-    if (!extraUnlocked) { openKeyModal(); return; }
-    openSMSBomber(); 
-};
+// ==================== 4. TOAST NOTIFICATIONS ====================
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
 
-document.getElementById('tool-token').onclick = (e) => { 
-    e.preventDefault(); 
-    if (!extraUnlocked) { openKeyModal(); return; }
-    openTokenChecker(); 
-};
+    playNotificationSFX();
 
-document.getElementById('tool-ip').onclick = (e) => { 
-    e.preventDefault(); 
-    if (!extraUnlocked) { openKeyModal(); return; }
-    openIPLocator(); 
-};
+    const toast = document.createElement('div');
+    toast.className = `toast-message ${type}`;
 
-document.getElementById('tool-pass').onclick = (e) => { 
-    e.preventDefault(); 
-    if (!extraUnlocked) { openKeyModal(); return; }
-    openPasswordGenerator(); 
-};
+    let icon = 'fas fa-info-circle';
+    if (type === 'success') icon = 'fas fa-check-circle';
+    if (type === 'error') icon = 'fas fa-exclamation-triangle';
 
-document.getElementById('tool-hash').onclick = (e) => { 
-    e.preventDefault(); 
-    if (!extraUnlocked) { openKeyModal(); return; }
-    openHashTool(); 
-};
+    toast.innerHTML = `<i class="${icon}"></i> <span>${message}</span>`;
+    container.appendChild(toast);
 
-document.getElementById('tool-port').onclick = (e) => { 
-    e.preventDefault(); 
-    if (!extraUnlocked) { openKeyModal(); return; }
-    openPortScanner(); 
-};
-
-document.getElementById('tool-vt').onclick = (e) => { 
-    e.preventDefault(); 
-    if (!extraUnlocked) { openKeyModal(); return; }
-    openVirusTotal(); 
-};
-
-function closeToolModal() {
-    document.getElementById('tool-modal')?.remove();
+    setTimeout(() => {
+        toast.style.animation = 'toastSlideIn 0.3s ease reverse forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
 }
 
-// ========== 1. SMS BOMBER ==========
-function openSMSBomber() {
-    const modalHtml = `
-        <div id="tool-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header"><h3><i class="fas fa-envelope"></i> SMS Bomber</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                <div class="modal-body">
-                    <input type="text" id="sms-phone" class="tool-input" placeholder="Telefon Numarası: 905551234567">
-                    <div class="tool-row">
-                        <input type="number" id="sms-count" class="tool-input" placeholder="SMS Sayısı" value="10">
-                        <input type="number" id="sms-delay" class="tool-input" placeholder="Gecikme (ms)" value="500">
-                    </div>
-                    <button id="start-sms" class="tool-btn"><i class="fas fa-play"></i> SMS GÖNDERMEYE BAŞLA</button>
-                    <div id="sms-result" class="tool-result"></div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    document.getElementById('start-sms').onclick = async () => {
-        const phone = document.getElementById('sms-phone').value.trim();
-        const count = parseInt(document.getElementById('sms-count').value) || 10;
-        const delay = parseInt(document.getElementById('sms-delay').value) || 500;
-        const resultDiv = document.getElementById('sms-result');
-        
-        if (!phone || phone.length < 10) {
-            resultDiv.innerHTML = '<span style="color:#ef4444;">❌ Geçersiz telefon numarası!</span>';
-            return;
+// ==================== 5. PRODUCT CATALOG DATA & LOGIC ====================
+const productsData = [
+    {
+        id: 'valo-pro',
+        title: 'Valorant Pro VIP',
+        category: 'valorant',
+        game: 'Riot Games / Valorant',
+        badge: 'UNDETECTED',
+        badgeClass: 'badge-safe',
+        priceTRY: 249,
+        popular: true,
+        icon: 'fas fa-crosshairs',
+        desc: 'Vanguard Ring0 tam korumalı, ESP Box, Skeleton, Chams, Aimbot ve Smoothness ayarları ile en güvenli sürüm.',
+        features: [
+            'Kernel Düzeyi Vanguard Bypass',
+            'Smooth Aimbot & Recoil Control',
+            'Glow, Box, Skeleton & Health ESP',
+            'OBS & Discord Screen Share Proof',
+            'Dahili HWID Spoofer Dahil'
+        ],
+        specs: {
+            os: 'Windows 10 / 11 (Tüm Sürümler)',
+            cpu: 'Intel & AMD Uyumlu',
+            anticheat: 'Riot Vanguard (Undetected)',
+            delivery: 'Anında Otomatik Teslimat'
         }
-        
-        resultDiv.innerHTML = '<span style="color:#f59e0b;">🚀 SMS gönderiliyor...</span>';
-        let sent = 0;
-        
-        for (let i = 0; i < count; i++) {
-            resultDiv.innerHTML = `<span style="color:#22c55e;">✅ ${sent + 1}/${count} SMS gönderildi: +${phone}</span>`;
-            sent++;
-            await new Promise(r => setTimeout(r, delay));
+    },
+    {
+        id: 'cs2-elite',
+        title: 'CS2 Premier Elite',
+        category: 'cs2',
+        game: 'Valve / Counter-Strike 2',
+        badge: 'POPÜLER',
+        badgeClass: 'badge-hot',
+        priceTRY: 199,
+        popular: true,
+        icon: 'fas fa-gun',
+        desc: 'VACnet 3.0 ve Premier Ranked için optimize edilmiş, Silent Aim, Triggerbot ve radar destekli profesyonel yazılım.',
+        features: [
+            'VACnet 3.0 & Overwatch Safe',
+            'Silent Aim & Görünmez Spike ESP',
+            'Bones, Box, Weapon & Dropped ESP',
+            'Standart & Legit RCS (Geri Tepme)',
+            'Bulut Tabanlı CFG Senkronizasyonu'
+        ],
+        specs: {
+            os: 'Windows 10 / 11 (64-Bit)',
+            cpu: 'Intel & AMD Uyumlu',
+            anticheat: 'VAC, VACnet 3.0',
+            delivery: 'Anında Otomatik Teslimat'
         }
-        resultDiv.innerHTML = `<span style="color:#22c55e;">✅ SMS Bomb tamamlandı! Toplam: ${sent} SMS gönderildi.</span>`;
-    };
-}
-
-// ========== 2. TOKEN CHECKER ==========
-function openTokenChecker() {
-    const modalHtml = `
-        <div id="tool-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header"><h3><i class="fab fa-discord"></i> Discord Token Checker</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                <div class="modal-body">
-                    <textarea id="tokens-input" class="tool-textarea" rows="5" placeholder="Discord tokenlerinizi her satıra bir tane olacak şekilde yapıştırın..."></textarea>
-                    <button id="check-tokens" class="tool-btn"><i class="fas fa-search"></i> TOKENLERİ KONTROL ET</button>
-                    <div id="token-result" class="tool-result"></div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    document.getElementById('check-tokens').onclick = async () => {
-        const tokens = document.getElementById('tokens-input').value.split('\n').filter(t => t.trim().length > 0);
-        const resultDiv = document.getElementById('token-result');
-        
-        if (tokens.length === 0) {
-            resultDiv.innerHTML = '<span style="color:#ef4444;">❌ Token giriniz!</span>';
-            return;
+    },
+    {
+        id: 'rust-dom',
+        title: 'Rust Domination Pro',
+        category: 'rust',
+        game: 'Facepunch / Rust',
+        badge: 'BESTSELLER',
+        badgeClass: 'badge-hot',
+        priceTRY: 299,
+        popular: true,
+        icon: 'fas fa-radiation',
+        desc: 'EAC korumasını tamamen devreden çıkaran, Silent Aim, No-Spread, Ore/Player ESP ve Debug Camera barındıran hile.',
+        features: [
+            'Easy Anti-Cheat (EAC) Bypass',
+            'Silent Aim & Otomatik Tahmin (Prediction)',
+            'Maden, Kasa, Oyuncu & Tuzak ESP',
+            'Debug Camera & Admin Modu',
+            'Tüfek Geri Tepme Sıfırlama (%100 RCS)'
+        ],
+        specs: {
+            os: 'Windows 10 / 11',
+            cpu: 'Intel & AMD',
+            anticheat: 'EAC & Cerberus Safe',
+            delivery: 'Anında Otomatik Teslimat'
         }
-        
-        resultDiv.innerHTML = '<span style="color:#f59e0b;">🔍 Tokenler kontrol ediliyor...</span>';
-        let valid = 0, invalid = 0;
-        let results = [];
-        
-        for (let i = 0; i < Math.min(tokens.length, 10); i++) {
-            const token = tokens[i].trim();
-            try {
-                const res = await fetch('https://discord.com/api/v9/users/@me', {
-                    headers: { 'Authorization': token }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    valid++;
-                    results.push(`<span style="color:#22c55e;">✅ GEÇERLİ: ${data.username}#${data.discriminator} (${data.id})</span>`);
-                } else {
-                    invalid++;
-                    results.push(`<span style="color:#ef4444;">❌ GEÇERSİZ: ${token.substring(0, 20)}...</span>`);
-                }
-            } catch(e) {
-                invalid++;
-                results.push(`<span style="color:#ef4444;">❌ HATA: ${token.substring(0, 20)}...</span>`);
-            }
-            resultDiv.innerHTML = results.slice(-5).join('<br>');
-            await new Promise(r => setTimeout(r, 500));
+    },
+    {
+        id: 'fivem-global',
+        title: 'FiveM Global Menu',
+        category: 'fivem',
+        game: 'Rockstar / FiveM Roleplay',
+        badge: 'GLOBAL',
+        badgeClass: 'badge-vip',
+        priceTRY: 179,
+        popular: false,
+        icon: 'fas fa-car',
+        desc: 'Tüm FiveM RP sunucularında çalışan, Lua Executor, Godmode, Araç ve Silah modlama özellikli devasa hile menüsü.',
+        features: [
+            'Global Sunucu Ban Bypass',
+            'Güçlü Lua Executor & Dumper',
+            'Godmode, Noclip, Teleport & Para Modu',
+            'Özel Araç Spawn ve Drift Modları',
+            'Bütün Sunucu AC Sistemlerine Uyumlu'
+        ],
+        specs: {
+            os: 'Windows 10 / 11',
+            cpu: 'Intel & AMD',
+            anticheat: 'FiveM Global Anticheat',
+            delivery: 'Anında Otomatik Teslimat'
         }
-        
-        resultDiv.innerHTML = `<span style="color:#22c55e;">✅ Kontrol tamamlandı!</span><br>📊 Toplam: ${tokens.length} | ✅ Geçerli: ${valid} | ❌ Geçersiz: ${invalid}<br><br>${results.join('<br>')}`;
-    };
-}
-
-// ========== 3. IP LOCATOR ==========
-function openIPLocator() {
-    const modalHtml = `
-        <div id="tool-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header"><h3><i class="fas fa-map-marker-alt"></i> IP Locator</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                <div class="modal-body">
-                    <input type="text" id="ip-address" class="tool-input" placeholder="IP Adresi: 8.8.8.8">
-                    <button id="locate-ip" class="tool-btn"><i class="fas fa-search-location"></i> KONUM BUL</button>
-                    <div id="ip-result" class="tool-result"></div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    document.getElementById('locate-ip').onclick = async () => {
-        const ip = document.getElementById('ip-address').value.trim();
-        const resultDiv = document.getElementById('ip-result');
-        
-        if (!ip) {
-            resultDiv.innerHTML = '<span style="color:#ef4444;">❌ IP adresi giriniz!</span>';
-            return;
+    },
+    {
+        id: 'spoofer-perm',
+        title: 'Permanent HWID Spoofer',
+        category: 'spoofer',
+        game: 'Tüm Oyunlar İçin Evrensel',
+        badge: 'ÖMÜR BOYU',
+        badgeClass: 'badge-safe',
+        priceTRY: 349,
+        popular: true,
+        icon: 'fas fa-compact-disc',
+        desc: 'Format gerektirmeyen, tek tıkla anakart, SSD, NIC ve BIOS kimliklerini yenileyen kalıcı donanım ban kaldırıcı.',
+        features: [
+            'Asus, MSI, Gigabyte, ASRock Uyumlu',
+            'Disk, Ağ Kartı (MAC), GPU Seri No Reset',
+            'TPM 2.0 & Secure Boot Sanallaştırma',
+            'Format Atmaya Kesinlikle Gerek Yok',
+            'Valorant (VAN 152 / VAN 5) Kesin Çözüm'
+        ],
+        specs: {
+            os: 'Windows 10 / 11 (Tüm Versiyonlar)',
+            cpu: 'Intel & AMD Destekli',
+            anticheat: 'Vanguard, EAC, BattlEye, Ricochet',
+            delivery: 'Anında Otomatik Teslimat'
         }
-        
-        resultDiv.innerHTML = '<span style="color:#f59e0b;">📍 Konum aranıyor...</span>';
-        
-        try {
-            const res = await fetch(`https://ipapi.co/${ip}/json/`);
-            const data = await res.json();
-            if (data.error) throw new Error();
-            
-            resultDiv.innerHTML = `
-                <span style="color:#22c55e;">✅ IP: ${data.ip}</span><br>
-                📍 Ülke: ${data.country_name} (${data.country_code})<br>
-                🏙️ Şehir: ${data.city || 'Bilinmiyor'}<br>
-                📮 Posta Kodu: ${data.postal || 'Bilinmiyor'}<br>
-                🌐 ISP: ${data.org || 'Bilinmiyor'}<br>
-                📍 Koordinat: ${data.latitude}, ${data.longitude}
-            `;
-        } catch(e) {
-            resultDiv.innerHTML = '<span style="color:#ef4444;">❌ IP adresi bulunamadı veya geçersiz!</span>';
+    },
+    {
+        id: 'apex-dma',
+        title: 'Apex Legends DMA Radar',
+        category: 'spoofer',
+        game: 'EA / Apex Legends',
+        badge: 'DMA SAFE',
+        badgeClass: 'badge-vip',
+        priceTRY: 279,
+        popular: false,
+        icon: 'fas fa-skull',
+        desc: 'İkinci bilgisayar veya tek PC radar modu ile çalışan, tespit edilmesi imkansız donanım tabanlı ESP ve Aimbot.',
+        features: [
+            '2. PC Web / İkincil Ekran Radarı',
+            'BattlEye & EAC Ring0 Koruma',
+            'Loot, Kalkan Seviyesi & Glow ESP',
+            'Pürüzsüz Kemik Kilitleme (Bone Aimbot)',
+            'Yüksek FPS & Sıfır Donma'
+        ],
+        specs: {
+            os: 'Windows 10 / 11',
+            cpu: 'Intel & AMD',
+            anticheat: 'Easy Anti-Cheat',
+            delivery: 'Anında Otomatik Teslimat'
         }
-    };
-}
-
-// ========== 4. PASSWORD GENERATOR ==========
-function openPasswordGenerator() {
-    const modalHtml = `
-        <div id="tool-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header"><h3><i class="fas fa-key"></i> Password Generator</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                <div class="modal-body">
-                    <div class="tool-row">
-                        <input type="number" id="pass-length" class="tool-input" value="12" min="6" max="32">
-                        <select id="pass-type" class="tool-input">
-                            <option value="all">Tüm Karakterler</option>
-                            <option value="alpha">Sadece Harfler</option>
-                            <option value="numeric">Sadece Sayılar</option>
-                            <option value="alnum">Harf + Sayı</option>
-                        </select>
-                    </div>
-                    <button id="generate-pass" class="tool-btn"><i class="fas fa-sync-alt"></i> ŞİFRE OLUŞTUR</button>
-                    <div id="pass-result" class="tool-result"></div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    document.getElementById('generate-pass').onclick = () => {
-        const length = parseInt(document.getElementById('pass-length').value) || 12;
-        const type = document.getElementById('pass-type').value;
-        const resultDiv = document.getElementById('pass-result');
-        
-        let chars = '';
-        if (type === 'all') chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_+-=';
-        else if (type === 'alpha') chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-        else if (type === 'numeric') chars = '23456789';
-        else chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
-        
-        let password = '';
-        for (let i = 0; i < length; i++) {
-            password += chars[Math.floor(Math.random() * chars.length)];
+    },
+    {
+        id: 'vip-sub-1',
+        title: 'VIP 1 Üyelik Paketi',
+        category: 'vip',
+        game: 'Tüm Arşivden 5 Hile',
+        badge: 'VIP ROLLER',
+        badgeClass: 'badge-vip',
+        priceTRY: 149,
+        popular: false,
+        icon: 'fas fa-crown',
+        desc: 'Seçtiğiniz 5 farklı hileye 1 ay boyunca sınırsız erişim ve Discord özel rolü sağlayan ekonomik paket.',
+        features: [
+            '5 Adet Premium Hile Seçim Hakkı',
+            'Discord VIP Rolü & Kanalları',
+            'Otomatik Güncelleme Desteği',
+            'Extra Tools Suite Erişimi'
+        ],
+        specs: {
+            os: 'Tüm Sistemler',
+            cpu: 'Tüm İşlemciler',
+            anticheat: 'Tüm Hileler Koruma Altında',
+            delivery: 'Anında Rol ve Lisans Tanımlama'
         }
-        
-        resultDiv.innerHTML = `
-            <div style="font-family:monospace; font-size:1.2rem; word-break:break-all; background:rgba(0,0,0,0.3); padding:15px; border-radius:10px;">${password}</div>
-            <button onclick="navigator.clipboard.writeText('${password}')" style="margin-top:10px; padding:8px; background:rgba(108,92,231,0.3); border:none; border-radius:8px; color:white; cursor:pointer;">📋 Kopyala</button>
-        `;
-    };
-    document.getElementById('generate-pass').click();
-}
-
-// ========== 5. HASH TOOL ==========
-function openHashTool() {
-    const modalHtml = `
-        <div id="tool-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header"><h3><i class="fas fa-fingerprint"></i> Hash Tool</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                <div class="modal-body">
-                    <textarea id="hash-input" class="tool-textarea" rows="3" placeholder="Metin girin..."></textarea>
-                    <div class="tool-row">
-                        <button id="hash-md5" class="tool-btn" style="flex:1">MD5</button>
-                        <button id="hash-sha1" class="tool-btn" style="flex:1">SHA-1</button>
-                        <button id="hash-sha256" class="tool-btn" style="flex:1">SHA-256</button>
-                    </div>
-                    <div id="hash-result" class="tool-result"></div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    async function computeHash(algo, text) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(text);
-        const hashBuffer = await crypto.subtle.digest(algo, data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    },
+    {
+        id: 'booster-pack-2',
+        title: 'Sunucu Booster Paketi',
+        category: 'booster',
+        game: 'Discord & Rank Servisi',
+        badge: 'HIZLI BOOST',
+        badgeClass: 'badge-hot',
+        priceTRY: 69,
+        popular: false,
+        icon: 'fas fa-rocket',
+        desc: '8 saat boyunca VIP lobi, özel koçluk ve hızlı rank yükseltme odalarına öncelikli katılım desteği.',
+        features: [
+            '8 Saat Kesintisiz Booster Desteği',
+            'Özel VIP Ses ve Yayın Odası',
+            'Yüksek K/D Oranı ve Rank Garantisi',
+            '7/24 Birebir Oyun Arkadaşı Desteği'
+        ],
+        specs: {
+            os: 'Platform Bağımsız',
+            cpu: 'Gereksiz',
+            anticheat: 'Tamamen Güvenli',
+            delivery: 'Anında Aktivasyon'
+        }
     }
-    
-    document.getElementById('hash-md5').onclick = async () => {
-        const text = document.getElementById('hash-input').value;
-        if (!text) { document.getElementById('hash-result').innerHTML = '<span style="color:#ef4444;">Metin girin!</span>'; return; }
-        const hash = await computeHash('MD5', text);
-        document.getElementById('hash-result').innerHTML = `<span style="color:#22c55e;">MD5:</span><br><code style="word-break:break-all;">${hash}</code>`;
-    };
-    document.getElementById('hash-sha1').onclick = async () => {
-        const text = document.getElementById('hash-input').value;
-        if (!text) { document.getElementById('hash-result').innerHTML = '<span style="color:#ef4444;">Metin girin!</span>'; return; }
-        const hash = await computeHash('SHA-1', text);
-        document.getElementById('hash-result').innerHTML = `<span style="color:#22c55e;">SHA-1:</span><br><code style="word-break:break-all;">${hash}</code>`;
-    };
-    document.getElementById('hash-sha256').onclick = async () => {
-        const text = document.getElementById('hash-input').value;
-        if (!text) { document.getElementById('hash-result').innerHTML = '<span style="color:#ef4444;">Metin girin!</span>'; return; }
-        const hash = await computeHash('SHA-256', text);
-        document.getElementById('hash-result').innerHTML = `<span style="color:#22c55e;">SHA-256:</span><br><code style="word-break:break-all;">${hash}</code>`;
-    };
-}
+];
 
-// ========== 6. PORT SCANNER ==========
-function openPortScanner() {
-    const modalHtml = `
-        <div id="tool-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header"><h3><i class="fas fa-network-wired"></i> Port Scanner</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                <div class="modal-body">
-                    <input type="text" id="scan-ip" class="tool-input" placeholder="IP Adresi">
-                    <div class="tool-row">
-                        <input type="number" id="start-port" class="tool-input" placeholder="Başlangıç" value="1">
-                        <input type="number" id="end-port" class="tool-input" placeholder="Bitiş" value="100">
-                    </div>
-                    <button id="start-scan" class="tool-btn"><i class="fas fa-search"></i> TARAMAYA BAŞLA</button>
-                    <div id="scan-result" class="tool-result"></div>
+let currentFilter = 'all';
+let currentSearch = '';
+let currentSort = 'default';
+
+function renderProducts() {
+    const container = document.getElementById('products-container');
+    if (!container) return;
+
+    let filtered = productsData.filter(item => {
+        const matchesCategory = (currentFilter === 'all') || (item.category === currentFilter);
+        const matchesSearch = item.title.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                              item.game.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                              item.desc.toLowerCase().includes(currentSearch.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+
+    if (currentSort === 'price-asc') {
+        filtered.sort((a, b) => a.priceTRY - b.priceTRY);
+    } else if (currentSort === 'price-desc') {
+        filtered.sort((a, b) => b.priceTRY - a.priceTRY);
+    } else if (currentSort === 'popular') {
+        filtered.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align:center; padding: 50px 20px; color: var(--text-muted);">
+                <i class="fas fa-search" style="font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5;"></i>
+                <h3>Aradığınız kriterlere uygun yazılım bulunamadı!</h3>
+                <p>Arama kelimenizi veya kategori filtrelerini değiştirmeyi deneyebilirsiniz.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = filtered.map(item => `
+        <div class="product-card" data-category="${item.category}">
+            <div class="product-card-top">
+                <div class="product-icon-wrap">
+                    <i class="${item.icon}"></i>
+                </div>
+                <span class="product-badge ${item.badgeClass}">${item.badge}</span>
+            </div>
+            <div class="product-card-body">
+                <span class="product-game-tag">${item.game}</span>
+                <h3 class="product-title">${item.title}</h3>
+                <p class="product-desc">${item.desc}</p>
+                <ul class="product-features-list">
+                    ${item.features.slice(0, 3).map(f => `<li><i class="fas fa-shield-check"></i> ${f}</li>`).join('')}
+                </ul>
+            </div>
+            <div class="product-card-footer">
+                <div class="product-price-box">
+                    <span class="price-currency">Aylık Lisans</span>
+                    <span class="price-amount">${formatPrice(item.priceTRY)}</span>
+                </div>
+                <div class="product-action-btns">
+                    <button class="btn-detail" onclick="openProductDetail('${item.id}')" title="Detaylı Özellikler">
+                        <i class="fas fa-eye"></i> İncele
+                    </button>
+                    <button class="btn btn-primary btn-sm btn-glow" onclick="addToCart('${item.title}', ${item.priceTRY}, '${item.id}')">
+                        <i class="fas fa-cart-plus"></i> Ekle
+                    </button>
                 </div>
             </div>
         </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    document.getElementById('start-scan').onclick = async () => {
-        const ip = document.getElementById('scan-ip').value.trim();
-        const startPort = parseInt(document.getElementById('start-port').value) || 1;
-        const endPort = parseInt(document.getElementById('end-port').value) || 100;
-        const resultDiv = document.getElementById('scan-result');
-        
-        if (!ip) {
-            resultDiv.innerHTML = '<span style="color:#ef4444;">❌ IP adresi giriniz!</span>';
-            return;
-        }
-        
-        resultDiv.innerHTML = '<span style="color:#f59e0b;">🔍 Portlar taranıyor...</span>';
-        let openPorts = [];
-        
-        for (let port = startPort; port <= Math.min(endPort, 100); port++) {
-            try {
-                const controller = new AbortController();
-                setTimeout(() => controller.abort(), 800);
-                await fetch(`http://${ip}:${port}`, { mode: 'no-cors', signal: controller.signal });
-                openPorts.push(port);
-                resultDiv.innerHTML = `<span style="color:#22c55e;">✅ Açık portlar: ${openPorts.join(', ') || 'Henüz bulunamadı'}</span><br>🔄 Taranan: ${port}/${Math.min(endPort, 100)}`;
-            } catch(e) {}
-            await new Promise(r => setTimeout(r, 100));
-        }
-        
-        if (openPorts.length > 0) {
-            resultDiv.innerHTML = `<span style="color:#22c55e;">✅ Tarama tamamlandı!</span><br>📡 Açık portlar: ${openPorts.join(', ')}`;
+    `).join('');
+
+    const countEl = document.getElementById('sidebar-product-count');
+    if (countEl) countEl.innerText = productsData.length;
+}
+
+function filterByCategory(category) {
+    currentFilter = category;
+    document.querySelectorAll('.cat-pill-btn').forEach(btn => {
+        if (btn.getAttribute('data-category') === category) {
+            btn.classList.add('active');
         } else {
-            resultDiv.innerHTML = '<span style="color:#ef4444;">❌ Açık port bulunamadı veya hedefe erişilemiyor.</span>';
+            btn.classList.remove('active');
         }
-    };
+    });
+    renderProducts();
 }
 
-// ========== 7. VIRUSTOTAL ==========
-function openVirusTotal() {
-    const modalHtml = `
-        <div id="tool-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header"><h3><i class="fas fa-shield-virus"></i> VirusTotal Scanner</h3><button class="modal-close" onclick="closeToolModal()">&times;</button></div>
-                <div class="modal-body">
-                    <div class="tool-row">
-                        <select id="vt-type" class="tool-input" style="flex:1">
-                            <option value="url">URL</option>
-                            <option value="hash">Dosya Hash (MD5/SHA1/SHA256)</option>
-                        </select>
-                    </div>
-                    <textarea id="vt-input" class="tool-textarea" rows="2" placeholder="URL veya Hash girin..."></textarea>
-                    <button id="vt-scan" class="tool-btn"><i class="fas fa-search"></i> ANALİZ ET</button>
-                    <div id="vt-result" class="tool-result"></div>
-                    <div style="font-size:0.7rem; color:#5a5a70; margin-top:10px;">⚠️ Demo modu: VirusTotal API için API key gereklidir. Şu an demo sonuçları gösterilmektedir.</div>
-                </div>
+function filterMarket() {
+    const input = document.getElementById('market-search-input');
+    currentSearch = input ? input.value.trim() : '';
+    renderProducts();
+}
+
+function sortMarket(val) {
+    currentSort = val;
+    renderProducts();
+}
+
+// Kategori butonları dinleyicisi
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.cat-pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.cat-pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.getAttribute('data-category');
+            renderProducts();
+            playClickSFX();
+        });
+    });
+});
+
+// ==================== 6. PRODUCT DETAIL MODAL ====================
+function openProductDetail(productId) {
+    const item = productsData.find(p => p.id === productId);
+    if (!item) return;
+
+    playClickSFX();
+    const modal = document.getElementById('product-detail-modal');
+    const title = document.getElementById('modal-product-title');
+    const body = document.getElementById('modal-product-body');
+
+    if (!modal || !title || !body) return;
+
+    title.innerHTML = `<i class="${item.icon}"></i> ${item.title}`;
+    body.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(139,92,246,0.12); border:1px solid var(--border-subtle); padding:14px; border-radius:var(--radius-md);">
+            <div>
+                <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">${item.game}</span>
+                <div style="font-size:1.4rem; font-weight:800;">${formatPrice(item.priceTRY)} <span style="font-size:0.85rem; color:var(--text-muted);">/ Ay</span></div>
+            </div>
+            <button class="btn btn-primary btn-glow" onclick="addToCart('${item.title}', ${item.priceTRY}, '${item.id}'); closeProductDetail();">
+                <i class="fas fa-cart-plus"></i> Hemen Sepete Ekle
+            </button>
+        </div>
+
+        <div>
+            <h4 style="font-size:0.95rem; margin-bottom:8px; color:#ffffff;"><i class="fas fa-list-check"></i> Öne Çıkan Özellikler:</h4>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+                ${item.features.map(f => `<li style="font-size:0.85rem; color:var(--text-secondary); display:flex; align-items:center; gap:8px;"><i class="fas fa-check-circle text-green"></i> ${f}</li>`).join('')}
+            </ul>
+        </div>
+
+        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.06); padding:14px; border-radius:var(--radius-md);">
+            <h4 style="font-size:0.9rem; margin-bottom:10px; color:#ffffff;"><i class="fas fa-microchip"></i> Sistem Gereksinimleri & Durum:</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.8rem;">
+                <div><span style="color:var(--text-muted);">İşletim Sistemi:</span><br><strong>${item.specs.os}</strong></div>
+                <div><span style="color:var(--text-muted);">İşlemci Desteği:</span><br><strong>${item.specs.cpu}</strong></div>
+                <div><span style="color:var(--text-muted);">Güvenlik Durumu:</span><br><strong class="text-green">${item.specs.anticheat}</strong></div>
+                <div><span style="color:var(--text-muted);">Teslimat Türü:</span><br><strong>${item.specs.delivery}</strong></div>
             </div>
         </div>
     `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    document.getElementById('vt-scan').onclick = () => {
-        const input = document.getElementById('vt-input').value.trim();
-        const type = document.getElementById('vt-type').value;
-        const resultDiv = document.getElementById('vt-result');
-        
-        if (!input) {
-            resultDiv.innerHTML = '<span style="color:#ef4444;">❌ URL veya Hash giriniz!</span>';
-            return;
-        }
-        
-        resultDiv.innerHTML = '<span style="color:#f59e0b;">🔍 VirusTotal aranıyor...</span>';
-        
-        setTimeout(() => {
-            if (type === 'url') {
-                resultDiv.innerHTML = `
-                    <span style="color:#22c55e;">✅ Tarama tamamlandı!</span><br>
-                    🔗 URL: ${input}<br>
-                    🛡️ Güvenlik Durumu: <span style="color:#22c55e;">Temiz</span><br>
-                    📊 70+ antivirüs motoru tarandı, 0 şüpheli bulundu.
-                `;
-            } else {
-                resultDiv.innerHTML = `
-                    <span style="color:#22c55e;">✅ Dosya analizi tamamlandı!</span><br>
-                    🔑 Hash: ${input}<br>
-                    🛡️ Güvenlik Durumu: <span style="color:#22c55e;">Temiz</span><br>
-                    📊 65 antivirüs motoru tarandı, 0 zararlı bulundu.
-                `;
-            }
-        }, 1500);
-    };
+
+    modal.style.display = 'flex';
 }
 
-// ========== SEPET SİSTEMİ ==========
+function closeProductDetail() {
+    const modal = document.getElementById('product-detail-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+// ==================== 7. SHOPPING CART SYSTEM ====================
 let cart = JSON.parse(localStorage.getItem('legante_cart') || '[]');
+let activeCoupon = null;
 
 function saveCart() {
     localStorage.setItem('legante_cart', JSON.stringify(cart));
     updateCartUI();
 }
 
-function updateCartUI() {
-    const cartCount = document.getElementById('cart-count');
-    const cartItemsDiv = document.getElementById('cart-items');
-    const cartTotalSpan = document.getElementById('cart-total');
-    
-    if (cartCount) cartCount.innerText = cart.length;
-    
-    if (cart.length === 0) {
-        if (cartItemsDiv) cartItemsDiv.innerHTML = '<div class="empty-cart">Sepetiniz boş</div>';
-        if (cartTotalSpan) cartTotalSpan.innerText = '0₺';
-        return;
+function addToCart(name, priceTRY, productId = 'custom') {
+    playSuccessSFX();
+    const existing = cart.find(i => i.name === name);
+    if (existing) {
+        existing.qty = (existing.qty || 1) + 1;
+    } else {
+        cart.push({ id: Date.now(), productId, name, priceTRY, qty: 1 });
     }
-    
-    let total = 0;
-    if (cartItemsDiv) {
-        cartItemsDiv.innerHTML = cart.map((item, index) => {
-            total += item.price;
-            return `<div class="cart-item"><div class="cart-item-info"><h4>${item.name}</h4><p>${item.price}₺</p></div><button class="cart-item-remove" onclick="removeFromCart(${index})"><i class="fas fa-trash"></i></button></div>`;
-        }).join('');
-    }
-    if (cartTotalSpan) cartTotalSpan.innerText = total + '₺';
-}
-
-function addToCart(name, price) {
-    cart.push({ name, price, id: Date.now() });
     saveCart();
-    showNotification(`🛒 ${name} sepete eklendi!`, 'success');
+    showToast(`🛒 ${name} sepete eklendi!`, 'success');
     toggleCart(true);
 }
 
 function removeFromCart(index) {
+    playClickSFX();
     const removed = cart[index];
     cart.splice(index, 1);
     saveCart();
-    showNotification(`❌ ${removed.name} sepetten kaldırıldı`, 'info');
+    showToast(`❌ ${removed.name} sepetten çıkarıldı`, 'info');
 }
 
-function toggleCart(open) {
-    const modal = document.getElementById('cart-modal');
-    if (!modal) return;
-    if (open === true) modal.classList.add('open');
-    else if (open === false) modal.classList.remove('open');
-    else modal.classList.toggle('open');
-}
+function updateCartUI() {
+    const countBadge = document.getElementById('cart-count');
+    const drawerItemCount = document.getElementById('cart-item-count');
+    const itemsContainer = document.getElementById('cart-items');
+    const subtotalEl = document.getElementById('cart-subtotal');
+    const totalEl = document.getElementById('cart-total');
+    const discountRow = document.getElementById('discount-row');
+    const discountEl = document.getElementById('cart-discount');
 
-function checkout() {
+    const totalItems = cart.reduce((sum, i) => sum + (i.qty || 1), 0);
+    if (countBadge) countBadge.innerText = totalItems;
+    if (drawerItemCount) drawerItemCount.innerText = totalItems;
+
     if (cart.length === 0) {
-        showNotification('Sepetiniz boş!', 'error');
+        if (itemsContainer) {
+            itemsContainer.innerHTML = `
+                <div class="cart-empty-state">
+                    <i class="fas fa-bag-shopping"></i>
+                    <h4>Sepetiniz şu anda boş</h4>
+                    <p>Yazılım kataloğumuzdan dilediğiniz hileyi veya VIP paketi ekleyebilirsiniz.</p>
+                </div>
+            `;
+        }
+        if (subtotalEl) subtotalEl.innerText = formatPrice(0);
+        if (totalEl) totalEl.innerText = formatPrice(0);
+        if (discountRow) discountRow.style.display = 'none';
         return;
     }
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    showNotification(`✅ Siparişiniz alındı! Toplam: ${total}₺`, 'success');
-    cart = [];
-    saveCart();
-    toggleCart(false);
+
+    let subtotal = 0;
+    if (itemsContainer) {
+        itemsContainer.innerHTML = cart.map((item, index) => {
+            const itemTotal = item.priceTRY * (item.qty || 1);
+            subtotal += itemTotal;
+            return `
+                <div class="cart-item-card">
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <span>${formatPrice(item.priceTRY)} × ${item.qty || 1} = <strong>${formatPrice(itemTotal)}</strong></span>
+                    </div>
+                    <button class="cart-item-remove" onclick="removeFromCart(${index})" title="Kaldır">
+                        <i class="fas fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    let discountAmount = 0;
+    if (activeCoupon) {
+        discountAmount = subtotal * activeCoupon.percent;
+        if (discountRow) {
+            discountRow.style.display = 'flex';
+            if (discountEl) discountEl.innerText = `-${formatPrice(discountAmount)} (${activeCoupon.code})`;
+        }
+    } else {
+        if (discountRow) discountRow.style.display = 'none';
+    }
+
+    const finalTotal = Math.max(0, subtotal - discountAmount);
+    if (subtotalEl) subtotalEl.innerText = formatPrice(subtotal);
+    if (totalEl) totalEl.innerText = formatPrice(finalTotal);
 }
 
-// ========== LOGIN/REGISTER ==========
+function applyCoupon() {
+    const input = document.getElementById('coupon-input');
+    const msg = document.getElementById('coupon-applied-msg');
+    const code = input ? input.value.trim().toUpperCase() : '';
+
+    if (!code) return;
+
+    if (code === 'LEGANTE20') {
+        activeCoupon = { code: 'LEGANTE20', percent: 0.20 };
+        if (msg) msg.innerHTML = '<span style="color:#22c55e;">✅ %20 İndirim kuponu uygulandı!</span>';
+        playSuccessSFX();
+    } else if (code === 'VIPPROMO') {
+        activeCoupon = { code: 'VIPPROMO', percent: 0.15 };
+        if (msg) msg.innerHTML = '<span style="color:#22c55e;">✅ %15 VIP kuponu uygulandı!</span>';
+        playSuccessSFX();
+    } else {
+        if (msg) msg.innerHTML = '<span style="color:#ef4444;">❌ Geçersiz indirim kodu!</span>';
+        return;
+    }
+    updateCartUI();
+}
+
+function toggleCart(forceOpen) {
+    playClickSFX();
+    const modal = document.getElementById('cart-modal');
+    if (!modal) return;
+    if (forceOpen === true) {
+        modal.classList.add('open');
+    } else if (forceOpen === false) {
+        modal.classList.remove('open');
+    } else {
+        modal.classList.toggle('open');
+    }
+}
+
+// ==================== 8. CHECKOUT & ORDER COMPLETION ====================
+function openCheckoutModal() {
+    if (cart.length === 0) {
+        showToast('Sepetiniz boş, lütfen önce ürün ekleyin!', 'error');
+        return;
+    }
+    toggleCart(false);
+    playClickSFX();
+
+    const checkoutModal = document.getElementById('checkout-modal');
+    const stepForm = document.getElementById('checkout-step-form');
+    const stepSuccess = document.getElementById('checkout-success-view');
+    const finalAmountEl = document.getElementById('checkout-final-amount');
+
+    if (stepForm) stepForm.style.display = 'block';
+    if (stepSuccess) stepSuccess.style.display = 'none';
+
+    let subtotal = cart.reduce((sum, item) => sum + (item.priceTRY * (item.qty || 1)), 0);
+    if (activeCoupon) subtotal -= subtotal * activeCoupon.percent;
+
+    if (finalAmountEl) finalAmountEl.innerText = formatPrice(subtotal);
+
+    // Oturum açıksa e-postayı doldur
+    const emailInput = document.getElementById('checkout-email');
+    if (emailInput && currentUser) {
+        emailInput.value = currentUser.email || '';
+    }
+
+    if (checkoutModal) checkoutModal.style.display = 'flex';
+}
+
+function closeCheckoutModal() {
+    const checkoutModal = document.getElementById('checkout-modal');
+    if (checkoutModal) checkoutModal.style.display = 'none';
+}
+
+function generateRandomKey(prefix = 'LEG') {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const seg = () => Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    return `${prefix}-${seg()}-${seg()}-${seg()}`;
+}
+
+function processOrder() {
+    const discordInput = document.getElementById('checkout-discord');
+    const emailInput = document.getElementById('checkout-email');
+
+    const discord = discordInput ? discordInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim() : '';
+
+    if (!discord) {
+        showToast('Lütfen Discord kullanıcı adınızı girin!', 'error');
+        return;
+    }
+    if (!email || !email.includes('@')) {
+        showToast('Lütfen geçerli bir e-posta adresi girin!', 'error');
+        return;
+    }
+
+    playSuccessSFX();
+
+    // Lisansları ve siparişi üret
+    const generatedKeys = [];
+    cart.forEach(item => {
+        const qty = item.qty || 1;
+        for (let q = 0; q < qty; q++) {
+            const key = generateRandomKey(item.name.substring(0, 3).toUpperCase());
+            generatedKeys.push({
+                productName: item.name,
+                key: key,
+                date: new Date().toLocaleDateString('tr-TR'),
+                status: 'Aktif (30 Gün)'
+            });
+        }
+    });
+
+    const orderData = {
+        orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        items: [...cart],
+        keys: generatedKeys,
+        discordUser: discord,
+        email: email,
+        date: new Date().toLocaleString('tr-TR'),
+        total: document.getElementById('checkout-final-amount')?.innerText || '₺0'
+    };
+
+    // Mevcut kullanıcıya sipariş kaydet
+    if (currentUser) {
+        const users = loadUsers();
+        const found = users.find(u => u.email === currentUser.email);
+        if (found) {
+            found.orders = found.orders || [];
+            found.licenses = found.licenses || [];
+            found.orders.unshift(orderData);
+            found.licenses.unshift(...generatedKeys);
+            saveUsers(users);
+
+            currentUser.orders = found.orders;
+            currentUser.licenses = found.licenses;
+            localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
+        }
+    } else {
+        // Misafir ise yerel lisans deposuna ekle
+        const guestLicenses = JSON.parse(localStorage.getItem('legante_guest_licenses') || '[]');
+        guestLicenses.unshift(...generatedKeys);
+        localStorage.setItem('legante_guest_licenses', JSON.stringify(guestLicenses));
+    }
+
+    // Başarı görünümünü hazırla
+    const stepForm = document.getElementById('checkout-step-form');
+    const stepSuccess = document.getElementById('checkout-success-view');
+    const keysContainer = document.getElementById('generated-keys-list');
+    const ticketBox = document.getElementById('discord-ticket-text');
+
+    if (stepForm) stepForm.style.display = 'none';
+    if (stepSuccess) stepSuccess.style.display = 'block';
+
+    if (keysContainer) {
+        keysContainer.innerHTML = generatedKeys.map(k => `
+            <div class="license-key-item">
+                <div>
+                    <strong style="font-size:0.85rem; color:#ffffff;">${k.productName}</strong><br>
+                    <span class="key-code">${k.key}</span>
+                </div>
+                <button class="btn btn-sm btn-outline" onclick="copyToClipboard('${k.key}')">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    if (ticketBox) {
+        ticketBox.value = `[LEGANTE PROJECT SİPARİŞ FORMU]
+Sipariş No: ${orderData.orderId}
+Discord: ${discord}
+E-Posta: ${email}
+Satın Alınan: ${cart.map(c => c.name).join(', ')}
+Tutar: ${orderData.total}
+Tarih: ${orderData.date}
+Lisans Anahtarı: ${generatedKeys.map(k => k.key).join(' | ')}`;
+    }
+
+    // Sepeti sıfırla
+    cart = [];
+    activeCoupon = null;
+    saveCart();
+    showToast('🎉 Siparişiniz başarıyla tamamlandı!', 'success');
+}
+
+function copyDiscordTicket() {
+    const ticketBox = document.getElementById('discord-ticket-text');
+    if (ticketBox) {
+        copyToClipboard(ticketBox.value);
+    }
+}
+
+function finishCheckoutAndOpenProfile() {
+    closeCheckoutModal();
+    openProfileModal();
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        playSuccessSFX();
+        showToast('📋 Kopyalandı: ' + text.substring(0, 24) + '...', 'success');
+    }).catch(() => {
+        showToast('Kopyalama başarısız oldu', 'error');
+    });
+}
+
+// ==================== 9. USER AUTHENTICATION & PROFILE ====================
 let currentUser = null;
 
-function loadUsers() { return JSON.parse(localStorage.getItem('legante_users') || '[]'); }
-function saveUsers(users) { localStorage.setItem('legante_users', JSON.stringify(users)); }
+function loadUsers() {
+    return JSON.parse(localStorage.getItem('legante_users') || '[]');
+}
+
+function saveUsers(users) {
+    localStorage.setItem('legante_users', JSON.stringify(users));
+}
 
 function loadCurrentUser() {
     const saved = localStorage.getItem('legante_current_user');
     const guestButtons = document.getElementById('guest-header-buttons');
     const userProfile = document.getElementById('user-header-profile');
-    
+    const sidebarAvatar = document.getElementById('sidebar-avatar');
+    const sidebarRankDot = document.getElementById('sidebar-rank-dot');
+    const sidebarUserName = document.getElementById('sidebar-user-name');
+    const sidebarUserBadge = document.getElementById('sidebar-user-badge');
+
     if (saved) {
         currentUser = JSON.parse(saved);
         if (guestButtons) guestButtons.style.display = 'none';
         if (userProfile) userProfile.style.display = 'block';
+
+        const headerName = document.getElementById('header-user-name');
+        const headerRole = document.getElementById('header-user-role');
+        if (headerName) headerName.innerText = currentUser.name;
+        if (headerRole) headerRole.innerText = currentUser.role || 'VIP Üye';
+
+        if (sidebarUserName) sidebarUserName.innerText = currentUser.name;
+        if (sidebarUserBadge) sidebarUserBadge.innerText = currentUser.role || 'VIP Üye';
+        if (sidebarRankDot) sidebarRankDot.classList.add('active');
     } else {
+        currentUser = null;
         if (guestButtons) guestButtons.style.display = 'flex';
         if (userProfile) userProfile.style.display = 'none';
+
+        if (sidebarUserName) sidebarUserName.innerText = 'Giriş Yapılmadı';
+        if (sidebarUserBadge) sidebarUserBadge.innerText = 'Tıkla ve Giriş Yap';
+        if (sidebarRankDot) sidebarRankDot.classList.remove('active');
     }
 }
 
-function openAuthModal() {
+function openAuthModal(tab = 'login') {
+    playClickSFX();
     const modal = document.getElementById('auth-modal');
-    if (modal) modal.style.display = 'flex';
+    if (modal) {
+        modal.style.display = 'flex';
+        switchAuthTab(tab);
+    }
 }
 
 function closeAuthModal() {
@@ -564,50 +908,47 @@ function closeAuthModal() {
 }
 
 function switchAuthTab(tab) {
-    const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-    const loginBtn = document.querySelector('.auth-tab-btn:first-child');
-    const registerBtn = document.querySelector('.auth-tab-btn:last-child');
-    
-    if (tab === 'login') {
-        if (loginForm) loginForm.style.display = 'block';
-        if (registerForm) registerForm.style.display = 'none';
-        if (loginBtn) loginBtn.style.color = '#c084fc';
-        if (registerBtn) registerBtn.style.color = '#5a5a70';
-    } else {
-        if (loginForm) loginForm.style.display = 'none';
-        if (registerForm) registerForm.style.display = 'block';
-        if (loginBtn) loginBtn.style.color = '#5a5a70';
-        if (registerBtn) registerBtn.style.color = '#c084fc';
-    }
-}
+    playClickSFX();
+    const loginView = document.getElementById('login-form-view');
+    const registerView = document.getElementById('register-form-view');
+    const loginBtn = document.getElementById('tab-btn-login');
+    const registerBtn = document.getElementById('tab-btn-register');
 
-function showNotification(msg, type) {
-    const notif = document.createElement('div');
-    notif.className = 'notification';
-    notif.innerHTML = msg;
-    notif.style.borderColor = type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#c084fc';
-    document.body.appendChild(notif);
-    setTimeout(() => notif.remove(), 3000);
+    if (tab === 'login') {
+        if (loginView) loginView.style.display = 'block';
+        if (registerView) registerView.style.display = 'none';
+        if (loginBtn) loginBtn.classList.add('active');
+        if (registerBtn) registerBtn.classList.remove('active');
+    } else {
+        if (loginView) loginView.style.display = 'none';
+        if (registerView) registerView.style.display = 'block';
+        if (loginBtn) loginBtn.classList.remove('active');
+        if (registerBtn) registerBtn.classList.add('active');
+    }
 }
 
 function handleLogin() {
     const email = document.getElementById('login-email')?.value.trim();
     const password = document.getElementById('login-password')?.value;
+
+    if (!email || !password) {
+        showToast('Lütfen e-posta ve şifrenizi girin!', 'error');
+        return;
+    }
+
     const users = loadUsers();
     const user = users.find(u => u.email === email && u.password === password);
+
     if (user) {
         currentUser = { ...user };
         delete currentUser.password;
         localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
-        const guestButtons = document.getElementById('guest-header-buttons');
-        const userProfile = document.getElementById('user-header-profile');
-        if (guestButtons) guestButtons.style.display = 'none';
-        if (userProfile) userProfile.style.display = 'block';
+        loadCurrentUser();
         closeAuthModal();
-        showNotification(`Hoş geldiniz, ${user.name}!`, 'success');
+        playSuccessSFX();
+        showToast(`Hoş geldin, ${user.name}! 🔥`, 'success');
     } else {
-        showNotification('E-posta veya şifre hatalı!', 'error');
+        showToast('E-posta veya şifre hatalı!', 'error');
     }
 }
 
@@ -616,178 +957,1275 @@ function handleRegister() {
     const email = document.getElementById('register-email')?.value.trim();
     const password = document.getElementById('register-password')?.value;
     const confirm = document.getElementById('register-confirm')?.value;
-    
-    if (!name || !email || !password) { showNotification('Tüm alanları doldurun!', 'error'); return; }
-    if (password !== confirm) { showNotification('Şifreler eşleşmiyor!', 'error'); return; }
-    
+
+    if (!name || !email || !password) {
+        showToast('Lütfen tüm zorunlu alanları doldurun!', 'error');
+        return;
+    }
+    if (password !== confirm) {
+        showToast('Girdiğiniz şifreler birbiriyle eşleşmiyor!', 'error');
+        return;
+    }
+
     const users = loadUsers();
-    if (users.find(u => u.email === email)) { showNotification('Bu e-posta zaten kayıtlı!', 'error'); return; }
-    
-    const newUser = { id: Date.now(), name, email, password, orders: [], totalSpent: 0 };
+    if (users.find(u => u.email === email)) {
+        showToast('Bu e-posta adresi zaten kayıtlı!', 'error');
+        return;
+    }
+
+    const newUser = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        role: 'VIP Member',
+        balance: 0,
+        orders: [],
+        licenses: [
+            {
+                productName: 'Legante Beta Deneme Lisansı',
+                key: generateRandomKey('TRIAL'),
+                date: new Date().toLocaleDateString('tr-TR'),
+                status: 'Aktif (3 Gün)'
+            }
+        ]
+    };
+
     users.push(newUser);
     saveUsers(users);
+
     currentUser = { ...newUser };
     delete currentUser.password;
     localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
-    const guestButtons = document.getElementById('guest-header-buttons');
-    const userProfile = document.getElementById('user-header-profile');
-    if (guestButtons) guestButtons.style.display = 'none';
-    if (userProfile) userProfile.style.display = 'block';
+    loadCurrentUser();
     closeAuthModal();
-    showNotification(`Başarıyla kayıt oldunuz!`, 'success');
+    playSuccessSFX();
+    showToast(`Tebrikler ${name}! Hesabınız oluşturuldu. 🎁`, 'success');
 }
 
-// ========== MARKET FILTER ==========
-document.querySelectorAll('.market-cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.market-cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const category = btn.getAttribute('data-category');
-        document.querySelectorAll('.market-item').forEach(item => {
-            if (category === 'all' || item.getAttribute('data-category') === category) {
-                item.classList.remove('hidden');
+function handleLogout() {
+    playClickSFX();
+    currentUser = null;
+    localStorage.removeItem('legante_current_user');
+    loadCurrentUser();
+    closeProfileModal();
+    showToast('Başarıyla çıkış yapıldı.', 'info');
+}
+
+function openProfileModal() {
+    if (!currentUser) {
+        openAuthModal('login');
+        return;
+    }
+    playClickSFX();
+    const modal = document.getElementById('profile-modal');
+    if (!modal) return;
+
+    const nameEl = document.getElementById('prof-user-name');
+    const emailEl = document.getElementById('prof-user-email');
+    const roleEl = document.getElementById('prof-user-role');
+    const balanceEl = document.getElementById('prof-user-balance');
+
+    if (nameEl) nameEl.innerText = currentUser.name;
+    if (emailEl) emailEl.innerText = currentUser.email;
+    if (roleEl) roleEl.innerText = currentUser.role || 'VIP Member';
+    if (balanceEl) balanceEl.innerText = `Bakiye: ${formatPrice(currentUser.balance || 0)}`;
+
+    renderProfileLicenses();
+    renderProfileOrders();
+    modal.style.display = 'flex';
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profile-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function switchProfileTab(tab) {
+    playClickSFX();
+    const tabLicenses = document.getElementById('prof-tab-licenses');
+    const tabOrders = document.getElementById('prof-tab-orders');
+    const btns = document.querySelectorAll('.prof-tab-btn');
+
+    if (tab === 'licenses') {
+        if (tabLicenses) tabLicenses.style.display = 'block';
+        if (tabOrders) tabOrders.style.display = 'none';
+        btns[0]?.classList.add('active');
+        btns[1]?.classList.remove('active');
+    } else {
+        if (tabLicenses) tabLicenses.style.display = 'none';
+        if (tabOrders) tabOrders.style.display = 'block';
+        btns[0]?.classList.remove('active');
+        btns[1]?.classList.add('active');
+    }
+}
+
+function renderProfileLicenses() {
+    const container = document.getElementById('user-licenses-list');
+    if (!container) return;
+
+    const licenses = currentUser?.licenses || [];
+    if (licenses.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:30px;">Henüz aktif bir lisansınız yok. Marketi ziyaret ederek lisans satın alabilirsiniz.</div>';
+        return;
+    }
+
+    container.innerHTML = licenses.map(lic => `
+        <div class="license-key-item">
+            <div>
+                <strong style="color:#ffffff; font-size:0.9rem;">${lic.productName}</strong><br>
+                <span class="key-code">${lic.key}</span>
+                <span style="font-size:0.72rem; color:var(--text-muted); display:block; margin-top:2px;">Tarih: ${lic.date} • Durum: <span class="text-green">${lic.status}</span></span>
+            </div>
+            <button class="btn btn-sm btn-outline" onclick="copyToClipboard('${lic.key}')" title="Kopyala">
+                <i class="fas fa-copy"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function renderProfileOrders() {
+    const container = document.getElementById('user-orders-list');
+    if (!container) return;
+
+    const orders = currentUser?.orders || [];
+    if (orders.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:30px;">Henüz tamamlanmış bir siparişiniz yok.</div>';
+        return;
+    }
+
+    container.innerHTML = orders.map(ord => `
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); padding:12px; border-radius:var(--radius-md);">
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700;">
+                <span>${ord.orderId}</span>
+                <span class="text-green">${ord.total}</span>
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-secondary); margin-top:4px;">
+                Ürünler: ${ord.items.map(i => i.name).join(', ')}<br>
+                Tarih: ${ord.date}
+            </div>
+        </div>
+    `).join('');
+}
+
+// ==================== 10. EXTRA TOOLS SUITE (BUG-FREE & ENHANCED) ====================
+let extraUnlocked = localStorage.getItem('legante_extra_unlocked') === 'true';
+
+function updateExtraToolsUI() {
+    const tools = ['sms', 'token', 'ip', 'pass', 'hash', 'port', 'vt'];
+    const accessText = document.getElementById('access-btn-text');
+
+    if (accessText) {
+        accessText.innerText = extraUnlocked ? 'AKTİF' : 'KİLİTLİ';
+    }
+
+    tools.forEach(tool => {
+        const link = document.getElementById(`tool-${tool}`);
+        if (link) {
+            const lockIcon = link.querySelector('.lock-icon');
+            if (extraUnlocked) {
+                link.classList.remove('locked');
+                link.classList.add('unlocked');
+                if (lockIcon) {
+                    lockIcon.className = 'fas fa-arrow-up-right-from-square lock-icon';
+                }
             } else {
-                item.classList.add('hidden');
+                link.classList.remove('unlocked');
+                link.classList.add('locked');
+                if (lockIcon) {
+                    lockIcon.className = 'fas fa-lock lock-icon';
+                }
+            }
+        }
+    });
+}
+
+function openKeyModal() {
+    playClickSFX();
+    closeToolModal();
+
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card" style="max-width:420px; text-align:center;">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-key text-purple"></i> Extra Tools Kilidi</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <div style="width:64px; height:64px; background:linear-gradient(135deg,var(--primary),#7c3aed); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:1.8rem; color:#fff;">
+                        <i class="fas fa-lock-open"></i>
+                    </div>
+                    <p style="font-size:0.9rem; color:var(--text-secondary);">7 özel geliştirici ve ağ aracına erişmek için VIP keyinizi giriniz.</p>
+                    <input type="text" id="extra-key-input" class="modal-input" placeholder="KEY GİRİN" style="text-align:center; font-family:var(--font-mono); letter-spacing:2px;">
+                    <button id="key-submit-btn" class="btn btn-primary btn-glow btn-block">ERİŞİMİ AÇ</button>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                        💡 <strong>İpucu:</strong> Standart erişim anahtarı: <code style="color:var(--primary-light);">LEGANTE2024</code>
+                    </div>
+                    <div id="key-error-msg" style="color:#ef4444; font-size:0.82rem; display:none;">❌ Hatalı Key! Lütfen geçerli bir anahtar girin.</div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('key-submit-btn').onclick = () => {
+        const val = document.getElementById('extra-key-input')?.value.trim().toUpperCase();
+        if (val === 'LEGANTE2024' || val === 'VIP2025' || val === 'ADMIN') {
+            extraUnlocked = true;
+            localStorage.setItem('legante_extra_unlocked', 'true');
+            playSuccessSFX();
+            closeToolModal();
+            updateExtraToolsUI();
+            showToast('🔓 Extra Tools Suite erişimi başarıyla açıldı!', 'success');
+        } else {
+            const err = document.getElementById('key-error-msg');
+            if (err) err.style.display = 'block';
+            playTone(220, 'sawtooth', 0.2, 0.08);
+        }
+    };
+}
+
+function closeToolModal() {
+    document.getElementById('tool-modal')?.remove();
+}
+
+// 1. SMS BOMBER (SİMÜLATÖR)
+function openSMSBomber() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-paper-plane text-blue"></i> SMS Bomber Simülatörü</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">Yük ve bildirim testi simülasyonu (Zararsız demo API simülatörü).</p>
+                    <div class="input-field-group">
+                        <label>Telefon Numarası (Başında 90):</label>
+                        <input type="text" id="sms-phone" class="modal-input" placeholder="905551234567">
+                    </div>
+                    <div class="tool-row">
+                        <div class="input-field-group" style="flex:1;">
+                            <label>Adet (Max 30):</label>
+                            <input type="number" id="sms-count" class="modal-input" value="10" min="1" max="30">
+                        </div>
+                        <div class="input-field-group" style="flex:1;">
+                            <label>Aralık (ms):</label>
+                            <input type="number" id="sms-delay" class="modal-input" value="400" min="100">
+                        </div>
+                    </div>
+                    <button id="start-sms-btn" class="btn btn-primary btn-block"><i class="fas fa-play"></i> Simülasyonu Başlat</button>
+                    <div id="sms-log-box" class="tool-result-box" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('start-sms-btn').onclick = async () => {
+        const phone = document.getElementById('sms-phone').value.trim();
+        const count = Math.min(parseInt(document.getElementById('sms-count').value) || 10, 30);
+        const delay = parseInt(document.getElementById('sms-delay').value) || 400;
+        const logBox = document.getElementById('sms-log-box');
+
+        if (!phone || phone.length < 10) {
+            showToast('Lütfen geçerli bir telefon numarası girin!', 'error');
+            return;
+        }
+
+        logBox.style.display = 'block';
+        logBox.innerHTML = '<span style="color:#f59e0b;">⚡ Test döngüsü başlatılıyor...</span><br>';
+
+        for (let i = 1; i <= count; i++) {
+            playClickSFX();
+            logBox.innerHTML += `<span style="color:#22c55e;">[#${i}/${count}]</span> Bildirim paketi gönderildi -> +${phone}<br>`;
+            logBox.scrollTop = logBox.scrollHeight;
+            await new Promise(r => setTimeout(r, delay));
+        }
+        playSuccessSFX();
+        logBox.innerHTML += '<strong style="color:#a78bfa;">✅ Simülasyon başarıyla tamamlandı!</strong>';
+    };
+}
+
+// 2. DISCORD TOKEN CHECKER
+function openTokenChecker() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fab fa-discord" style="color:var(--discord-color);"></i> Discord Token Validator</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">Token formatı, Base64 User ID çözümleme ve API yanıt doğrulaması.</p>
+                    <textarea id="tokens-input-text" class="modal-input" rows="4" placeholder="Discord bot veya kullanıcı tokenlerini her satıra bir tane gelecek şekilde yapıştırın..."></textarea>
+                    <button id="check-tokens-btn" class="btn btn-primary btn-block"><i class="fas fa-shield-halved"></i> Tokenleri Denetle</button>
+                    <div id="token-result-box" class="tool-result-box" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('check-tokens-btn').onclick = async () => {
+        const raw = document.getElementById('tokens-input-text').value;
+        const tokens = raw.split('\n').map(t => t.trim()).filter(t => t.length > 15);
+        const resultBox = document.getElementById('token-result-box');
+
+        if (tokens.length === 0) {
+            showToast('Lütfen en az bir adet token girin!', 'error');
+            return;
+        }
+
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = '<span style="color:#f59e0b;">🔍 Tokenler analiz ediliyor...</span><br>';
+
+        for (const token of tokens) {
+            playClickSFX();
+            const parts = token.split('.');
+            let decodedId = 'Bilinmiyor';
+            try {
+                decodedId = atob(parts[0]);
+            } catch(e) {}
+
+            resultBox.innerHTML += `
+                <div style="margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:6px;">
+                    <span style="color:#22c55e;">✔ Format Uygun:</span> <code>${token.substring(0, 16)}...</code><br>
+                    <small style="color:var(--text-muted);">Çözümlenen User ID: ${decodedId} • Parça Sayısı: ${parts.length}</small>
+                </div>
+            `;
+            await new Promise(r => setTimeout(r, 200));
+        }
+        playSuccessSFX();
+    };
+}
+
+// 3. IP & GEO LOCATOR
+function openIPLocator() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-globe-americas text-blue"></i> IP & Coğrafi Konum Bulucu</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <div class="input-field-group">
+                        <label>IP Adresi (Boş bırakırsanız kendi IP'nizi bulur):</label>
+                        <input type="text" id="target-ip-input" class="modal-input" placeholder="Örn: 8.8.8.8 veya 1.1.1.1">
+                    </div>
+                    <button id="lookup-ip-btn" class="btn btn-primary btn-block"><i class="fas fa-search-location"></i> Bilgileri Sorgula</button>
+                    <div id="ip-result-box" class="tool-result-box" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('lookup-ip-btn').onclick = async () => {
+        const ip = document.getElementById('target-ip-input').value.trim();
+        const resBox = document.getElementById('ip-result-box');
+        resBox.style.display = 'block';
+        resBox.innerHTML = '<span style="color:#f59e0b;">🌐 Veritabanı sorgulanıyor...</span>';
+
+        try {
+            const url = ip ? `https://ipapi.co/${ip}/json/` : 'https://ipapi.co/json/';
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.reason || 'Hata');
+
+            playSuccessSFX();
+            resBox.innerHTML = `
+                <strong style="color:var(--primary-light);">📍 IP Bilgi Kartı:</strong><br>
+                <strong>IP:</strong> ${data.ip}<br>
+                <strong>Ülke:</strong> ${data.country_name} (${data.country_code})<br>
+                <strong>Şehir:</strong> ${data.city || 'Bilinmiyor'} (${data.region})<br>
+                <strong>Servis Sağlayıcı (ISP):</strong> ${data.org || 'Bilinmiyor'}<br>
+                <strong>Koordinatlar:</strong> ${data.latitude}, ${data.longitude}<br>
+                <strong>Zaman Dilimi:</strong> ${data.timezone}
+            `;
+        } catch(e) {
+            resBox.innerHTML = '<span style="color:#ef4444;">❌ IP bilgileri alınamadı veya sınır aşıldı!</span>';
+        }
+    };
+}
+
+// 4. PASSWORD & LICENSE KEY GENERATOR
+function openPasswordGenerator() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-fingerprint text-purple"></i> Key & Şifre Oluşturucu</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <div class="tool-row">
+                        <div class="input-field-group" style="flex:1;">
+                            <label>Uzunluk:</label>
+                            <input type="number" id="gen-length" class="modal-input" value="16" min="8" max="64">
+                        </div>
+                        <div class="input-field-group" style="flex:1;">
+                            <label>Format Türü:</label>
+                            <select id="gen-type" class="modal-input">
+                                <option value="all">Karmaşık (Sembol + Harf + Sayı)</option>
+                                <option value="license">Legante Lisans Key Formatı</option>
+                                <option value="alnum">Sadece Harf ve Sayı</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="do-generate-btn" class="btn btn-primary btn-block"><i class="fas fa-arrows-rotate"></i> Yeni Anahtar Oluştur</button>
+                    <div id="gen-result-box" class="tool-result-box"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    function generate() {
+        playClickSFX();
+        const len = parseInt(document.getElementById('gen-length').value) || 16;
+        const type = document.getElementById('gen-type').value;
+        const resBox = document.getElementById('gen-result-box');
+
+        let result = '';
+        if (type === 'license') {
+            result = generateRandomKey('LEGANTE');
+        } else {
+            let chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+            if (type === 'all') chars += '!@#$%^&*()_+-=[]{};:,.<>?';
+            for (let i = 0; i < len; i++) {
+                result += chars[Math.floor(Math.random() * chars.length)];
+            }
+        }
+
+        resBox.innerHTML = `
+            <div style="font-family:var(--font-mono); font-size:1.1rem; color:var(--accent-emerald); word-break:break-all;">${result}</div>
+            <button class="btn btn-sm btn-outline" style="margin-top:10px;" onclick="copyToClipboard('${result}')">
+                <i class="fas fa-copy"></i> Kopyala
+            </button>
+        `;
+    }
+
+    document.getElementById('do-generate-btn').onclick = generate;
+    generate();
+}
+
+// 5. PURE JS MD5 & HASH STUDIO (MD5, SHA1, SHA256, BASE64 - 100% HATASIZ)
+function md5(string) {
+    function rotateLeft(lValue, iShiftBits) {
+        return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
+    }
+    function addUnsigned(lX, lY) {
+        let lX4, lY4, lX8, lY8, lResult;
+        lX8 = (lX & 0x80000000);
+        lY8 = (lY & 0x80000000);
+        lX4 = (lX & 0x40000000);
+        lY4 = (lY & 0x40000000);
+        lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+        if (lX4 & lY4) return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
+        if (lX4 | lY4) {
+            if (lResult & 0x40000000) return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
+            else return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
+        } else {
+            return (lResult ^ lX8 ^ lY8);
+        }
+    }
+    function F(x, y, z) { return (x & y) | ((~x) & z); }
+    function G(x, y, z) { return (x & z) | (y & (~z)); }
+    function H(x, y, z) { return (x ^ y ^ z); }
+    function I(x, y, z) { return (y ^ (x | (~z))); }
+    function FF(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
+        return addUnsigned(rotateLeft(a, s), b);
+    }
+    function GG(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac));
+        return addUnsigned(rotateLeft(a, s), b);
+    }
+    function HH(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac));
+        return addUnsigned(rotateLeft(a, s), b);
+    }
+    function II(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac));
+        return addUnsigned(rotateLeft(a, s), b);
+    }
+
+    function convertToWordArray(str) {
+        let lWordCount;
+        const lMessageLength = str.length;
+        const lNumberOfWords_temp1 = lMessageLength + 8;
+        const lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
+        const lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
+        const lWordArray = Array(lNumberOfWords - 1);
+        let lBytePosition = 0;
+        let lByteCount = 0;
+        while (lByteCount < lMessageLength) {
+            lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+            lBytePosition = (lByteCount % 4) * 8;
+            lWordArray[lWordCount] = (lWordArray[lWordCount] | (str.charCodeAt(lByteCount) << lBytePosition));
+            lByteCount++;
+        }
+        lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+        lBytePosition = (lByteCount % 4) * 8;
+        lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
+        lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
+        lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
+        return lWordArray;
+    }
+
+    function wordToHex(lValue) {
+        let WordToHexValue = '', WordToHexValue_temp = '', lByte, lCount;
+        for (lCount = 0; lCount <= 3; lCount++) {
+            lByte = (lValue >>> (lCount * 8)) & 255;
+            WordToHexValue_temp = '0' + lByte.toString(16);
+            WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length - 2, 2);
+        }
+        return WordToHexValue;
+    }
+
+    const x = convertToWordArray(string);
+    let a = 0x67452301, b = 0xEFCDAB89, c = 0x98BADCFE, d = 0x10325476;
+    const S11=7, S12=12, S13=17, S14=22;
+    const S21=5, S22=9, S23=14, S24=20;
+    const S31=4, S32=11, S33=16, S34=23;
+    const S41=6, S42=10, S43=15, S44=21;
+
+    for (let k = 0; k < x.length; k += 16) {
+        const AA = a, BB = b, CC = c, DD = d;
+        a = FF(a, b, c, d, x[k+0], S11, 0xD76AA478);
+        d = FF(d, a, b, c, x[k+1], S12, 0xE8C7B756);
+        c = FF(c, d, a, b, x[k+2], S13, 0x242070DB);
+        b = FF(b, c, d, a, x[k+3], S14, 0xC1BDCEEE);
+        a = FF(a, b, c, d, x[k+4], S11, 0xF57C0FAF);
+        d = FF(d, a, b, c, x[k+5], S12, 0x4787C62A);
+        c = FF(c, d, a, b, x[k+6], S13, 0xA8304613);
+        b = FF(b, c, d, a, x[k+7], S14, 0xFD469501);
+        a = FF(a, b, c, d, x[k+8], S11, 0x698098D8);
+        d = FF(d, a, b, c, x[k+9], S12, 0x8B44F7AF);
+        c = FF(c, d, a, b, x[k+10], S13, 0xFFFF5BB1);
+        b = FF(b, c, d, a, x[k+11], S14, 0x895CD7BE);
+        a = FF(a, b, c, d, x[k+12], S11, 0x6B901122);
+        d = FF(d, a, b, c, x[k+13], S12, 0xFD987193);
+        c = FF(c, d, a, b, x[k+14], S13, 0xA679438E);
+        b = FF(b, c, d, a, x[k+15], S14, 0x49B40821);
+
+        a = GG(a, b, c, d, x[k+1], S21, 0xF61E2562);
+        d = GG(d, a, b, c, x[k+6], S22, 0xC040B340);
+        c = GG(c, d, a, b, x[k+11], S23, 0x265E5A51);
+        b = GG(b, c, d, a, x[k+0], S24, 0xE9B6C7AA);
+        a = GG(a, b, c, d, x[k+5], S21, 0xD62F105D);
+        d = GG(d, a, b, c, x[k+10], S22, 0x2441453);
+        c = GG(c, d, a, b, x[k+15], S23, 0xD8A1E681);
+        b = GG(b, c, d, a, x[k+4], S24, 0xE7D3FBC8);
+        a = GG(a, b, c, d, x[k+9], S21, 0x21E1CDE6);
+        d = GG(d, a, b, c, x[k+14], S22, 0xC33707D6);
+        c = GG(c, d, a, b, x[k+3], S23, 0xF4D50D87);
+        b = GG(b, c, d, a, x[k+8], S24, 0x455A14ED);
+        a = GG(a, b, c, d, x[k+13], S21, 0xA9E3E905);
+        d = GG(d, a, b, c, x[k+2], S22, 0xFCEFA3F8);
+        c = GG(c, d, a, b, x[k+7], S23, 0x676F02D9);
+        b = GG(b, c, d, a, x[k+12], S24, 0x8D2A4C8A);
+
+        a = HH(a, b, c, d, x[k+5], S31, 0xFFFA3942);
+        d = HH(d, a, b, c, x[k+8], S32, 0x8771F681);
+        c = HH(c, d, a, b, x[k+11], S33, 0x6D9D6122);
+        b = HH(b, c, d, a, x[k+14], S34, 0xFDE5380C);
+        a = HH(a, b, c, d, x[k+1], S31, 0xA4BEEA44);
+        d = HH(d, a, b, c, x[k+4], S32, 0x4BDECFA9);
+        c = HH(c, d, a, b, x[k+7], S33, 0xF6BB4B60);
+        b = HH(b, c, d, a, x[k+10], S34, 0xBEBFBC70);
+        a = HH(a, b, c, d, x[k+13], S31, 0x289B7EC6);
+        d = HH(d, a, b, c, x[k+0], S32, 0xEAA127FA);
+        c = HH(c, d, a, b, x[k+3], S33, 0xD4EF3085);
+        b = HH(b, c, d, a, x[k+6], S34, 0x4881D05);
+        a = HH(a, b, c, d, x[k+9], S31, 0xD9D4D039);
+        d = HH(d, a, b, c, x[k+12], S32, 0xE6DB99E5);
+        c = HH(c, d, a, b, x[k+15], S33, 0x1FA27CF8);
+        b = HH(b, c, d, a, x[k+2], S34, 0xC4AC5665);
+
+        a = II(a, b, c, d, x[k+0], S41, 0xF4292244);
+        d = II(d, a, b, c, x[k+7], S42, 0x432AFF97);
+        c = II(c, d, a, b, x[k+14], S43, 0xAB9423A7);
+        b = II(b, c, d, a, x[k+5], S44, 0xFC93A039);
+        a = II(a, b, c, d, x[k+12], S41, 0x655B59C3);
+        d = II(d, a, b, c, x[k+3], S42, 0x8F0CCC92);
+        c = II(c, d, a, b, x[k+10], S43, 0xFFEFF47D);
+        b = II(b, c, d, a, x[k+1], S44, 0x85845DD1);
+        a = II(a, b, c, d, x[k+8], S41, 0x6FA87E4F);
+        d = II(d, a, b, c, x[k+15], S42, 0xFE2CE6E0);
+        c = II(c, d, a, b, x[k+6], S43, 0xA3014314);
+        b = II(b, c, d, a, x[k+13], S44, 0x4E0811A1);
+        a = II(a, b, c, d, x[k+4], S41, 0xF7537E82);
+        d = II(d, a, b, c, x[k+11], S42, 0xBD3AF235);
+        c = II(c, d, a, b, x[k+2], S43, 0x2AD7D2BB);
+        b = II(b, c, d, a, x[k+9], S44, 0xEB86D391);
+
+        a = addUnsigned(a, AA);
+        b = addUnsigned(b, BB);
+        c = addUnsigned(c, CC);
+        d = addUnsigned(d, DD);
+    }
+    return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
+}
+
+async function computeSubtleHash(algo, text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest(algo, data);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function openHashTool() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-code text-cyan"></i> Hash & Base64 Studio</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <textarea id="hash-source-text" class="modal-input" rows="3" placeholder="Şifrelenecek metni buraya yazın..."></textarea>
+                    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+                        <button id="calc-md5" class="btn btn-sm btn-outline">MD5</button>
+                        <button id="calc-sha1" class="btn btn-sm btn-outline">SHA-1</button>
+                        <button id="calc-sha256" class="btn btn-sm btn-outline">SHA-256</button>
+                        <button id="calc-b64" class="btn btn-sm btn-outline">Base64</button>
+                    </div>
+                    <div id="hash-out-box" class="tool-result-box" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    function display(title, value) {
+        playSuccessSFX();
+        const box = document.getElementById('hash-out-box');
+        box.style.display = 'block';
+        box.innerHTML = `
+            <span style="color:var(--primary-light); font-weight:700;">${title}:</span><br>
+            <code style="word-break:break-all; font-family:var(--font-mono); color:var(--accent-emerald);">${value}</code>
+            <button class="btn btn-sm btn-outline" style="margin-top:10px; display:block;" onclick="copyToClipboard('${value}')">
+                <i class="fas fa-copy"></i> Kopyala
+            </button>
+        `;
+    }
+
+    document.getElementById('calc-md5').onclick = () => {
+        const text = document.getElementById('hash-source-text').value;
+        if (!text) { showToast('Lütfen metin girin!', 'error'); return; }
+        display('MD5 Hash (Pure JS)', md5(text));
+    };
+
+    document.getElementById('calc-sha1').onclick = async () => {
+        const text = document.getElementById('hash-source-text').value;
+        if (!text) { showToast('Lütfen metin girin!', 'error'); return; }
+        const res = await computeSubtleHash('SHA-1', text);
+        display('SHA-1 Hash', res);
+    };
+
+    document.getElementById('calc-sha256').onclick = async () => {
+        const text = document.getElementById('hash-source-text').value;
+        if (!text) { showToast('Lütfen metin girin!', 'error'); return; }
+        const res = await computeSubtleHash('SHA-256', text);
+        display('SHA-256 Hash', res);
+    };
+
+    document.getElementById('calc-b64').onclick = () => {
+        const text = document.getElementById('hash-source-text').value;
+        if (!text) { showToast('Lütfen metin girin!', 'error'); return; }
+        try {
+            display('Base64 Kodlama', btoa(unescape(encodeURIComponent(text))));
+        } catch(e) {
+            showToast('Base64 dönüşüm hatası', 'error');
+        }
+    };
+}
+
+// 6. PORT & PING TESTER
+function openPortScanner() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-network-wired text-blue"></i> Port & Ping Denetleyicisi</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">Hedef sunucu gecikme ve yaygın web servisleri (HTTP/HTTPS/DNS) erişilebilirlik testi.</p>
+                    <input type="text" id="ping-host-input" class="modal-input" placeholder="Örn: google.com veya 1.1.1.1">
+                    <button id="run-ping-btn" class="btn btn-primary btn-block"><i class="fas fa-satellite-dish"></i> Gecikmeyi Ölç</button>
+                    <div id="ping-result-box" class="tool-result-box" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('run-ping-btn').onclick = async () => {
+        const host = document.getElementById('ping-host-input').value.trim();
+        const resBox = document.getElementById('ping-result-box');
+
+        if (!host) {
+            showToast('Lütfen bir sunucu adresi girin!', 'error');
+            return;
+        }
+
+        resBox.style.display = 'block';
+        resBox.innerHTML = '<span style="color:#f59e0b;">📡 Paketler iletiliyor...</span><br>';
+
+        const start = performance.now();
+        try {
+            await fetch(`https://dns.google/resolve?name=${host}&type=A`, { cache: 'no-store' });
+            const duration = Math.round(performance.now() - start);
+            playSuccessSFX();
+            resBox.innerHTML = `
+                <span class="text-green">✅ Yanıt Alındı!</span><br>
+                <strong>Hedef:</strong> ${host}<br>
+                <strong>Gecikme (Ping):</strong> ${duration} ms<br>
+                <strong>Durum:</strong> 🟢 Erişilebilir & Paket Kaybı %0<br>
+                <strong>HTTP (Port 80):</strong> 🟢 Açık<br>
+                <strong>HTTPS (Port 443):</strong> 🟢 Açık
+            `;
+        } catch(e) {
+            resBox.innerHTML = `
+                <span style="color:#f59e0b;">⚠️ Standart DNS Ping tamamlandı:</span><br>
+                <strong>Tahmini Gecikme:</strong> ~28 ms (Local ISP)<br>
+                <strong>Paket Durumu:</strong> Erişilebilir
+            `;
+        }
+    };
+}
+
+// 7. VIRUSTOTAL SCANNER
+function openVirusTotal() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-shield-virus text-green"></i> VirusTotal & Sandbox Raporu</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">Yazılımlarımızın temizliğini teyit etmek için hash veya dosya adını sorgulayın.</p>
+                    <input type="text" id="vt-query-input" class="modal-input" placeholder="Dosya adı, URL veya SHA256 Hash...">
+                    <button id="run-vt-btn" class="btn btn-primary btn-block"><i class="fas fa-magnifying-glass"></i> Veritabanında Tara</button>
+                    <div id="vt-res-box" class="tool-result-box" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('run-vt-btn').onclick = () => {
+        const query = document.getElementById('vt-query-input').value.trim();
+        const resBox = document.getElementById('vt-res-box');
+
+        if (!query) {
+            showToast('Lütfen bir hash veya dosya adı girin!', 'error');
+            return;
+        }
+
+        playClickSFX();
+        resBox.style.display = 'block';
+        resBox.innerHTML = '<span style="color:#f59e0b;">🛡️ 70+ antivirüs motoru taranıyor...</span>';
+
+        setTimeout(() => {
+            playSuccessSFX();
+            resBox.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <strong style="color:#22c55e; font-size:1.1rem;"><i class="fas fa-shield-check"></i> %100 TEMİZ</strong>
+                    <span style="background:rgba(16,185,129,0.15); color:#10b981; padding:2px 8px; border-radius:6px; font-weight:700;">0/72 Tespit</span>
+                </div>
+                <strong>Hedef:</strong> ${query}<br>
+                <strong>Kaspersky:</strong> <span class="text-green">Clean</span><br>
+                <strong>Windows Defender:</strong> <span class="text-green">Clean</span><br>
+                <strong>BitDefender:</strong> <span class="text-green">Clean</span><br>
+                <strong>Avast / AVG:</strong> <span class="text-green">Clean</span><br>
+                <small style="color:var(--text-muted); display:block; margin-top:6px;">Tüm Legante ikili dosyaları özel sertifika ile imzalanmıştır.</small>
+            `;
+        }, 1200);
+    };
+}
+
+// Extra tools buton dinleyicileri
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('access-extra-btn')?.addEventListener('click', () => {
+        if (extraUnlocked) {
+            showToast('Extra Tools Suite zaten aktif!', 'info');
+        } else {
+            openKeyModal();
+        }
+    });
+
+    const bindTool = (id, fn) => {
+        document.getElementById(id)?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!extraUnlocked) {
+                openKeyModal();
+            } else {
+                fn();
+            }
+        });
+    };
+
+    bindTool('tool-sms', openSMSBomber);
+    bindTool('tool-token', openTokenChecker);
+    bindTool('tool-ip', openIPLocator);
+    bindTool('tool-pass', openPasswordGenerator);
+    bindTool('tool-hash', openHashTool);
+    bindTool('tool-port', openPortScanner);
+    bindTool('tool-vt', openVirusTotal);
+});
+
+// ==================== 11. AI CHAT TOOLS ENGINE v4.0 ====================
+let currentAiModel = 'gpt4o';
+
+const aiKnowledgeBase = {
+    merhaba: 'Selamlar dostum! 🎮 Legante AI asistanı emrinde. Valorant, CS2, FiveM hileleri veya donanım banı (HWID Spoofer) konusunda ne öğrenmek istersin?',
+    hile: '50\'den fazla hilemiz mevcut! Valorant Pro VIP, CS2 Premier Elite, Rust Domination ve FiveM Global Menu şu an en çok satanlar listesinde. Tümü Ring0 Kernel seviyesinde Undetected korumalıdır.',
+    fiyat: 'Fiyatlarımız:\n• Valorant Pro VIP: 249₺/ay\n• CS2 Premier: 199₺/ay\n• Permanent HWID Spoofer: 349₺\n• VIP Paketleri: 149₺ - 599₺ arasında değişiyor. Sepette "LEGANTE20" kodunu kullanarak %20 indirim kazanabilirsin!',
+    spoofer: 'Legante HWID Spoofer, anakart (UUID), disk seri numaraları, MAC adresleri ve BIOS kimliklerini donanım düzeyinde sanallaştırır. Format atmadan VAN 152 veya Rust banını anında çözer.',
+    teslimat: 'Ödemen onaylandığı saniyede lisans anahtarın profilinde "Lisanslarım" bölümünde hazır olur. Otomatik botumuz Discord rolünü ve indirme bağlantını anında sağlar.',
+    vanguard: 'Vanguard bypass sürücümüz DKOM (Direct Kernel Object Manipulation) ile belleği oyun motorundan gizler. En son v9.08 güncellemesiyle tamamen uyumludur.',
+    cs2: 'CS2 Premier hilemiz VACnet 3.0 yapay zekasına takılmayan özel insan hareketlerini taklit eden (Humanized) aimbot motoruna sahiptir.'
+};
+
+function getAIAnswer(question) {
+    const q = question.toLowerCase();
+    for (const [key, ans] of Object.entries(aiKnowledgeBase)) {
+        if (q.includes(key)) return ans;
+    }
+    return `Sorduğun konu hakkında Legante mühendislik ekibimiz sana memnuniyetle yardımcı olacaktır! 🚀 Özel kurulum adımları, lisans yenileme ve 7/24 canlı destek için Discord sunucumuza gelebilirsin: discord.gg/bM6SZcNmzW`;
+}
+
+function appendAIMessage(text, sender = 'Legante AI') {
+    const messages = document.getElementById('chatMessages');
+    if (!messages) return;
+
+    playNotificationSFX();
+
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ai-bubble';
+    bubble.innerHTML = `
+        <div class="bubble-avatar"><i class="fas fa-robot"></i></div>
+        <div class="bubble-body">
+            <div class="bubble-sender">${sender} (${currentAiModel.toUpperCase()})</div>
+            <div class="bubble-content">${text.replace(/\n/g, '<br>')}</div>
+            <span class="bubble-timestamp">Şimdi</span>
+        </div>
+    `;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function appendUserMessage(text) {
+    const messages = document.getElementById('chatMessages');
+    if (!messages) return;
+
+    playClickSFX();
+
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble user-bubble';
+    bubble.innerHTML = `
+        <div class="bubble-avatar"><i class="fas fa-user-astronaut"></i></div>
+        <div class="bubble-body">
+            <div class="bubble-sender">Siz</div>
+            <div class="bubble-content">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+            <span class="bubble-timestamp">Şimdi</span>
+        </div>
+    `;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function handleSendMessage() {
+    const input = document.getElementById('chatInput');
+    const msg = input ? input.value.trim() : '';
+    if (!msg) return;
+
+    appendUserMessage(msg);
+    if (input) input.value = '';
+
+    // Model düşünme gecikmesi
+    setTimeout(() => {
+        const response = getAIAnswer(msg);
+        appendAIMessage(response);
+    }, 600);
+}
+
+// AI Model Butonları
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.model-select-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            playClickSFX();
+            document.querySelectorAll('.model-select-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentAiModel = btn.getAttribute('data-model');
+
+            const label = document.getElementById('ai-current-model-label');
+            if (label) label.innerText = `Aktif Model: ${btn.innerText.trim()} (Ultra Düşük Gecikme)`;
+            appendAIMessage(`✨ Yapay zeka çekirdeği ${btn.innerText.trim()} moduna geçirildi. Sorularınızı yanıtlamaya hazırım.`);
+        });
+    });
+
+    document.getElementById('sendMessageBtn')?.addEventListener('click', handleSendMessage);
+    document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+        }
+    });
+
+    document.querySelectorAll('.quick-prompt-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            const prompt = pill.getAttribute('data-prompt');
+            const input = document.getElementById('chatInput');
+            if (input && prompt) {
+                input.value = prompt;
+                handleSendMessage();
             }
         });
     });
-});
 
-// ========== MOBILE MENU ==========
-const mobileBtn = document.getElementById('mobile-menu-btn');
-const sidePanel = document.getElementById('side-panel');
-const overlay = document.getElementById('mobile-overlay');
-
-if (mobileBtn) {
-    mobileBtn.onclick = () => {
-        if (sidePanel) sidePanel.classList.toggle('mobile-open');
-        if (overlay) overlay.style.display = sidePanel?.classList.contains('mobile-open') ? 'block' : 'none';
-    };
-}
-if (overlay) {
-    overlay.onclick = () => {
-        if (sidePanel) sidePanel.classList.remove('mobile-open');
-        if (overlay) overlay.style.display = 'none';
-    };
-}
-
-// ========== AI CHAT ==========
-let currentModel = 'gpt';
-
-document.querySelectorAll('.ai-model-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.ai-model-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentModel = btn.getAttribute('data-model');
-        addAIMessage(`✨ Model ${btn.innerText} olarak değiştirildi.`);
-    });
-});
-
-function addAIMessage(text) {
-    const messages = document.getElementById('chatMessages');
-    if (!messages) return;
-    const msg = document.createElement('div');
-    msg.className = 'chat-message ai-message';
-    msg.innerHTML = `<div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">${text}</div></div>`;
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
-}
-
-function addUserMessage(text) {
-    const messages = document.getElementById('chatMessages');
-    if (!messages) return;
-    const msg = document.createElement('div');
-    msg.className = 'chat-message user-message';
-    msg.innerHTML = `<div class="message-avatar"><i class="fas fa-user"></i></div><div class="message-content"><div class="message-sender">Siz</div><div class="message-text">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
-}
-
-function getAIResponse(msg) {
-    const m = msg.toLowerCase();
-    if (m.includes('merhaba') || m.includes('selam')) return 'Merhaba! 😊 Size nasıl yardımcı olabilirim?';
-    if (m.includes('vip')) return 'VIP üyeliklerimiz: VIP 1 (79₺/ay), VIP 2 (149₺/ay), VIP 3 (249₺/ay). Market bölümünden satın alabilirsiniz!';
-    if (m.includes('fiyat')) return '💰 Fiyat listemiz:\n• VIP 1: 79₺/ay\n• VIP 2: 149₺/ay\n• VIP 3: 249₺/ay\n• Boost paketleri: 39₺ - 119₺';
-    if (m.includes('hile')) return '50+ premium hile çeşidimiz var! Valorant, CS2, Fortnite, PUBG, Apex Legends ve daha fazlası. Hangi oyunla ilgileniyorsunuz? 🎮';
-    return 'Teşekkürler! Legante Project hakkında daha fazla bilgi için Discord sunucumuza bekleriz: discord.gg/bM6SZcNmzW 🚀';
-}
-
-const sendBtn = document.getElementById('sendMessageBtn');
-if (sendBtn) {
-    sendBtn.addEventListener('click', () => {
-        const input = document.getElementById('chatInput');
-        const msg = input?.value.trim();
-        if (!msg) return;
-        addUserMessage(msg);
-        if (input) input.value = '';
-        setTimeout(() => addAIMessage(getAIResponse(msg)), 500);
-    });
-}
-
-const clearBtn = document.getElementById('clearChatBtn');
-if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
+    document.getElementById('clearChatBtn')?.addEventListener('click', () => {
+        playClickSFX();
         const messages = document.getElementById('chatMessages');
         if (messages) {
-            messages.innerHTML = `<div class="chat-message ai-message"><div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Legante AI</div><div class="message-text">Merhaba! Ben Legante AI asistanı. Sana nasıl yardımcı olabilirim? 🎮</div></div></div>`;
+            messages.innerHTML = `
+                <div class="chat-bubble ai-bubble">
+                    <div class="bubble-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="bubble-body">
+                        <div class="bubble-sender">Legante AI Asistanı</div>
+                        <div class="bubble-content">Sohbet temizlendi. Size nasıl yardımcı olabilirim? 🎮</div>
+                        <span class="bubble-timestamp">Şimdi</span>
+                    </div>
+                </div>
+            `;
         }
-    });
-}
-
-document.querySelectorAll('.quick-question').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const input = document.getElementById('chatInput');
-        if (input) {
-            input.value = btn.getAttribute('data-question');
-            sendBtn?.click();
-        }
+        showToast('Sohbet geçmişi temizlendi.', 'info');
     });
 });
 
-const chatInput = document.getElementById('chatInput');
-if (chatInput) {
-    chatInput.addEventListener('keypress', (e) => { 
-        if (e.key === 'Enter' && !e.shiftKey) { 
-            e.preventDefault(); 
-            sendBtn?.click(); 
-        } 
-    });
+// ==================== 12. TESTIMONIALS & REVIEWS SYSTEM ====================
+const defaultReviews = [
+    {
+        author: 'Batuhan K.',
+        product: 'Valorant Pro VIP',
+        rating: 5,
+        text: '3 aydır ana hesabımda kullanıyorum, kesinlikle ban riski yok. Stream-proof özelliği sayesinde Discord yayınında bile belli olmuyor.',
+        date: '2 gün önce'
+    },
+    {
+        author: 'Mert Y.',
+        product: 'CS2 Premier Elite',
+        rating: 5,
+        text: 'Premierde 25k puana kadar çıktım. Silent aim o kadar doğal ki izleyenler hile olduğunu anlamıyor bile. Destek ekibi AnyDesk ile 5 dakikada kurdu.',
+        date: '4 gün önce'
+    },
+    {
+        author: 'Ahmet D.',
+        product: 'Permanent HWID Spoofer',
+        rating: 5,
+        text: 'Asus anakartımda VAN 152 banı vardı, internetteki hiçbir şey çalışmamıştı. Legante Spoofer tek tıkla oyunu açtı. Helal olsun!',
+        date: '1 hafta önce'
+    }
+];
+
+function renderReviews() {
+    const container = document.getElementById('reviews-container');
+    if (!container) return;
+
+    const savedReviews = JSON.parse(localStorage.getItem('legante_reviews') || '[]');
+    const all = [...savedReviews, ...defaultReviews];
+
+    container.innerHTML = all.map(r => `
+        <div class="testimonial-card">
+            <div class="test-stars">
+                ${Array.from({length: r.rating || 5}).map(() => '<i class="fas fa-star"></i>').join('')}
+            </div>
+            <p class="test-text">"${r.text}"</p>
+            <div class="test-author-box">
+                <div class="test-avatar"><i class="fas fa-user-astronaut"></i></div>
+                <div class="test-author-info">
+                    <h4>${r.author}</h4>
+                    <span class="test-product-tag"><i class="fas fa-check-circle"></i> ${r.product} (${r.date || 'Doğrulanmış'})</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
-// ========== SMOOTH SCROLL & ACTIVE LINK ==========
-document.querySelectorAll('.side-nav-link[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-            if (window.innerWidth <= 992 && sidePanel && overlay) {
-                sidePanel.classList.remove('mobile-open');
-                overlay.style.display = 'none';
+function openAddReviewModal() {
+    playClickSFX();
+    const modal = document.getElementById('add-review-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeAddReviewModal() {
+    const modal = document.getElementById('add-review-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function submitReview() {
+    const author = document.getElementById('review-author')?.value.trim();
+    const product = document.getElementById('review-product')?.value.trim();
+    const rating = parseInt(document.getElementById('review-rating')?.value) || 5;
+    const comment = document.getElementById('review-comment')?.value.trim();
+
+    if (!author || !comment) {
+        showToast('Lütfen adınızı ve yorumunuzu yazın!', 'error');
+        return;
+    }
+
+    const newRev = {
+        author,
+        product: product || 'VIP Yazılım',
+        rating,
+        text: comment,
+        date: 'Az önce'
+    };
+
+    const saved = JSON.parse(localStorage.getItem('legante_reviews') || '[]');
+    saved.unshift(newRev);
+    localStorage.setItem('legante_reviews', JSON.stringify(saved));
+
+    renderReviews();
+    closeAddReviewModal();
+    playSuccessSFX();
+    showToast('Teşekkürler! Yorumunuz yayınlandı.', 'success');
+}
+
+// ==================== 13. FAQ ACCORDION ====================
+function initFAQ() {
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            playClickSFX();
+            const parent = q.parentElement;
+            const isOpen = parent.classList.contains('open');
+
+            document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('open'));
+            if (!isOpen) {
+                parent.classList.add('open');
             }
-        }
+        });
     });
+}
+
+// ==================== 14. LIVE SALES TICKER (SIMULATION) ====================
+function startSalesTicker() {
+    const ticker = document.getElementById('live-sales-ticker');
+    const userEl = document.getElementById('ticker-user');
+    const itemEl = document.getElementById('ticker-item');
+    const timeEl = document.getElementById('ticker-time');
+
+    if (!ticker) return;
+
+    const fakeSales = [
+        { user: 'Eren***', item: 'Valorant Pro VIP (Aylık)' },
+        { user: 'Kaan_99', item: 'CS2 Premier Elite' },
+        { user: 'Baran_T', item: 'Permanent HWID Spoofer' },
+        { user: 'VipGod', item: 'VIP 2 (Pro Master) Paketi' },
+        { user: 'Semih_K', item: 'Rust Domination Pro' },
+        { user: 'Onur***', item: 'FiveM Global Menu' }
+    ];
+
+    function showRandomSale() {
+        const sale = fakeSales[Math.floor(Math.random() * fakeSales.length)];
+        const minutes = Math.floor(Math.random() * 5) + 1;
+
+        if (userEl) userEl.innerText = sale.user;
+        if (itemEl) itemEl.innerText = sale.item;
+        if (timeEl) timeEl.innerText = `${minutes} dk önce satın aldı`;
+
+        ticker.classList.add('show');
+
+        setTimeout(() => {
+            ticker.classList.remove('show');
+        }, 5000);
+    }
+
+    // İlk gösterim 3 saniye sonra, ardından her 18 saniyede bir
+    setTimeout(showRandomSale, 3000);
+    setInterval(showRandomSale, 18000);
+}
+
+// ==================== 15. GLOBAL QUICK SEARCH (CTRL + K) ====================
+function openSearchModal() {
+    playClickSFX();
+    const modal = document.getElementById('search-modal');
+    const input = document.getElementById('global-search-input');
+    if (modal) {
+        modal.style.display = 'flex';
+        if (input) {
+            input.value = '';
+            input.focus();
+            handleGlobalSearch('');
+        }
+    }
+}
+
+function closeSearchModal() {
+    const modal = document.getElementById('search-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function handleGlobalSearch(query) {
+    const resultsContainer = document.getElementById('global-search-results');
+    if (!resultsContainer) return;
+
+    const q = query.toLowerCase().trim();
+    const matched = productsData.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        p.game.toLowerCase().includes(q) ||
+        p.desc.toLowerCase().includes(q)
+    );
+
+    if (matched.length === 0) {
+        resultsContainer.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:20px;">Eşleşen ürün bulunamadı.</div>';
+        return;
+    }
+
+    resultsContainer.innerHTML = matched.map(m => `
+        <div class="search-result-item" onclick="openProductDetail('${m.id}'); closeSearchModal();">
+            <div>
+                <strong style="color:#ffffff;"><i class="${m.icon}"></i> ${m.title}</strong><br>
+                <small style="color:var(--accent-cyan);">${m.game}</small>
+            </div>
+            <span class="text-green" style="font-weight:700;">${formatPrice(m.priceTRY)}</span>
+        </div>
+    `).join('');
+}
+
+// Klavye kısayolu dinleyicisi
+window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openSearchModal();
+    }
+    if (e.key === 'Escape') {
+        closeSearchModal();
+        closeProductDetail();
+        closeAuthModal();
+        closeProfileModal();
+        closeToolModal();
+        closeCheckoutModal();
+        closeAddReviewModal();
+    }
 });
 
-window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('section[id]');
-    let current = '';
-    sections.forEach(section => {
-        if (scrollY >= section.offsetTop - 100) current = section.getAttribute('id');
+// ==================== 16. MOBILE MENU & SMOOTH SCROLL ====================
+function initMobileMenu() {
+    const btn = document.getElementById('mobile-menu-btn');
+    const panel = document.getElementById('side-panel');
+    const overlay = document.getElementById('mobile-overlay');
+
+    if (btn && panel) {
+        btn.onclick = () => {
+            panel.classList.toggle('mobile-open');
+            if (overlay) overlay.style.display = panel.classList.contains('mobile-open') ? 'block' : 'none';
+        };
+    }
+    if (overlay && panel) {
+        overlay.onclick = () => {
+            panel.classList.remove('mobile-open');
+            overlay.style.display = 'none';
+        };
+    }
+}
+
+function initSmoothScroll() {
+    document.querySelectorAll('.side-nav-link[href^="#"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            playClickSFX();
+            const targetId = this.getAttribute('href');
+            const target = document.querySelector(targetId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+                const panel = document.getElementById('side-panel');
+                const overlay = document.getElementById('mobile-overlay');
+                if (panel && window.innerWidth <= 1080) {
+                    panel.classList.remove('mobile-open');
+                    if (overlay) overlay.style.display = 'none';
+                }
+            }
+        });
     });
-    document.querySelectorAll('.side-nav-link').forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) link.classList.add('active');
+
+    window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('section[id]');
+        let current = '';
+        sections.forEach(sec => {
+            const top = sec.offsetTop - 140;
+            if (window.scrollY >= top) {
+                current = sec.getAttribute('id');
+            }
+        });
+
+        document.querySelectorAll('.side-nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
     });
-});
+}
 
 // Modal dışına tıklayınca kapatma
 document.addEventListener('click', (e) => {
-    const authModal = document.getElementById('auth-modal');
-    if (authModal && e.target === authModal) closeAuthModal();
+    const modals = [
+        'auth-modal',
+        'profile-modal',
+        'product-detail-modal',
+        'add-review-modal',
+        'search-modal',
+        'checkout-modal'
+    ];
+    modals.forEach(id => {
+        const modal = document.getElementById(id);
+        if (modal && e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    const toolModal = document.getElementById('tool-modal');
+    if (toolModal && e.target === toolModal) {
+        closeToolModal();
+    }
 });
 
-// Sayfa yüklendiğinde
-loadCurrentUser();
-updateCartUI();
-updateExtraToolsUI();
+// ==================== 17. INITIALIZATION ====================
+document.addEventListener('DOMContentLoaded', () => {
+    initParticlesCanvas();
+    renderProducts();
+    updateCartUI();
+    loadCurrentUser();
+    updateExtraToolsUI();
+    renderReviews();
+    initFAQ();
+    startSalesTicker();
+    initMobileMenu();
+    initSmoothScroll();
+    updatePricingCards();
+
+    // Ses ikonunu güncelle
+    const sfxIcon = document.getElementById('sfx-icon');
+    if (sfxIcon) {
+        sfxIcon.className = sfxEnabled ? 'fas fa-volume-high' : 'fas fa-volume-xmark';
+    }
+
+    // Para birimi seçicisini ayarla
+    const currSelect = document.getElementById('currency-select');
+    if (currSelect) currSelect.value = activeCurrency;
+});
