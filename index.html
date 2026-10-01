@@ -17,6 +17,7 @@
 
     <!-- ARKA PLAN EFEKTLERİ -->
     <canvas id="particles-canvas"></canvas>
+    <canvas id="mouse-trail-canvas"></canvas>
     <div class="ambient-glow glow-1"></div>
     <div class="ambient-glow glow-2"></div>
     <div class="ambient-glow glow-3"></div>
@@ -74,21 +75,21 @@
         <!-- EXTRA TOOLS MENÜSÜ (GENİŞLETİLMİŞ 11 GÜÇLÜ ARAÇ) -->
         <div class="panel-extra">
             <div class="menu-label extra-label">
-                <span><i class="fas fa-toolbox"></i> EXTRA TOOLS SUITE (11)</span>
+                <span><i class="fas fa-toolbox text-purple"></i> EXTRA TOOLS (11)</span>
                 <button id="access-extra-btn" class="access-btn" title="Key ile Araçları Aç"><i class="fas fa-key"></i> <span id="access-btn-text">KİLİTLİ</span></button>
             </div>
             <ul id="extra-tools-list" class="extra-tools-list">
-                <li><a href="#" id="tool-sms" class="extra-link locked" data-tool="sms"><i class="fas fa-paper-plane tool-icon"></i><span>SMS Bomber (Sim)</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-token" class="extra-link locked" data-tool="token"><i class="fab fa-discord tool-icon"></i><span>Discord Token Inspector</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-webhook" class="extra-link locked" data-tool="webhook"><i class="fas fa-bullhorn tool-icon"></i><span>Discord Webhook Sender</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-ip" class="extra-link locked" data-tool="ip"><i class="fas fa-globe-americas tool-icon"></i><span>IP & Geo Locator</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-filehash" class="extra-link locked" data-tool="filehash"><i class="fas fa-file-shield tool-icon"></i><span>File Hasher & VT</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-pass" class="extra-link locked" data-tool="pass"><i class="fas fa-fingerprint tool-icon"></i><span>Key & Password Gen</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-hash" class="extra-link locked" data-tool="hash"><i class="fas fa-code tool-icon"></i><span>Hash & Base64 Studio</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-dns" class="extra-link locked" data-tool="dns"><i class="fas fa-network-wired tool-icon"></i><span>DNS Records Lookup</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-hw" class="extra-link locked" data-tool="hw"><i class="fas fa-microchip tool-icon"></i><span>GPU & HWID Inspector</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-port" class="extra-link locked" data-tool="port"><i class="fas fa-gauge-high tool-icon"></i><span>HTTP Ping & Latency</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-obfuscator" class="extra-link locked" data-tool="obfuscator"><i class="fas fa-user-secret tool-icon"></i><span>Code Obfuscator</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-sms" class="extra-link locked" data-tool="sms" title="SMS Bomber Simülatörü"><i class="fas fa-paper-plane tool-icon"></i><span>SMS Bomb</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-token" class="extra-link locked" data-tool="token" title="Discord Token Inspector"><i class="fab fa-discord tool-icon"></i><span>Token Info</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-webhook" class="extra-link locked" data-tool="webhook" title="Discord Webhook Gönderici"><i class="fas fa-bullhorn tool-icon"></i><span>Webhook</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-ip" class="extra-link locked" data-tool="ip" title="IP & Geo Konumlandırıcı"><i class="fas fa-globe-americas tool-icon"></i><span>IP Locator</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-filehash" class="extra-link locked" data-tool="filehash" title="Dosya Hash & VirusTotal"><i class="fas fa-file-shield tool-icon"></i><span>File Hash</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-pass" class="extra-link locked" data-tool="pass" title="Key & Şifre Üretici"><i class="fas fa-fingerprint tool-icon"></i><span>Key Gen</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-hash" class="extra-link locked" data-tool="hash" title="Hash & Base64 Stüdyo"><i class="fas fa-code tool-icon"></i><span>Hash Studio</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-dns" class="extra-link locked" data-tool="dns" title="DNS Kayıtları Tarayıcı"><i class="fas fa-network-wired tool-icon"></i><span>DNS Lookup</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-hw" class="extra-link locked" data-tool="hw" title="GPU & Donanım Dedektörü"><i class="fas fa-microchip tool-icon"></i><span>GPU & HW</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-port" class="extra-link locked" data-tool="port" title="HTTP Ping & Gecikme"><i class="fas fa-gauge-high tool-icon"></i><span>Latency Ping</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li style="grid-column: 1 / -1;"><a href="#" id="tool-obfuscator" class="extra-link locked" data-tool="obfuscator" title="JavaScript Kod Karıştırıcı (Obfuscator)"><i class="fas fa-user-secret tool-icon"></i><span>JS Code Obfuscator</span><i class="fas fa-lock lock-icon"></i></a></li>
             </ul>
         </div>
 
@@ -946,7 +947,7 @@
             <div class="cart-drawer-footer">
                 <!-- Kupon Kodu Alanı -->
                 <div class="coupon-box">
-                    <input type="text" id="coupon-input" placeholder="İndirim Kodu (örn: LEGANTE20)">
+                    <input type="text" id="coupon-input" placeholder="Kupon / İndirim Kodu">
                     <button class="btn btn-sm btn-outline" onclick="applyCoupon()">Uygula</button>
                 </div>
                 <div id="coupon-applied-msg" class="coupon-msg"></div>

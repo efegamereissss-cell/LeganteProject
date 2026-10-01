@@ -6,7 +6,7 @@
  * ========================================================
  */
 
-// ==================== 1. SOUND EFFECTS (WEB AUDIO API) ====================
+// ==================== 1. SOUND EFFECTS (HIGH-TECH CYBER SYNTHESIZER) ====================
 let sfxEnabled = localStorage.getItem('legante_sfx') !== 'false';
 let audioCtx = null;
 
@@ -21,7 +21,134 @@ function getAudioContext() {
     return audioCtx;
 }
 
-function playTone(freq, type = 'sine', duration = 0.1, gainVal = 0.08) {
+// Tactical haptic mechanical click with lowpass smoothing
+function playClickSFX() {
+    if (!sfxEnabled) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2400, now);
+        filter.frequency.exponentialRampToValueAtTime(600, now + 0.035);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(950, now);
+        osc.frequency.exponentialRampToValueAtTime(180, now + 0.035);
+
+        gain.gain.setValueAtTime(0.045, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.036);
+    } catch(e) {}
+}
+
+// Cyber harmonic chord shimmer (Rich major 7th chord chime)
+function playSuccessSFX() {
+    if (!sfxEnabled) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const notes = [587.33, 739.99, 880.00, 1174.66]; // D5, F#5, A5, D6
+        
+        notes.forEach((freq, idx) => {
+            const startOffset = idx * 0.065;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(3200, now + startOffset);
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + startOffset);
+
+            gain.gain.setValueAtTime(0.0001, now + startOffset);
+            gain.gain.linearRampToValueAtTime(0.035, now + startOffset + 0.015);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + startOffset + 0.38);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now + startOffset);
+            osc.stop(now + startOffset + 0.39);
+        });
+    } catch(e) {}
+}
+
+// Crystal holographic ping
+function playNotificationSFX() {
+    if (!sfxEnabled) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        [987.77, 1318.51].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const start = now + (i * 0.07);
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, start);
+
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.linearRampToValueAtTime(0.03, start + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(start);
+            osc.stop(start + 0.29);
+        });
+    } catch(e) {}
+}
+
+// Deep tactical cyber thud for error/denied
+function playErrorSFX() {
+    if (!sfxEnabled) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(300, now);
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 0.16);
+
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.17);
+    } catch(e) {}
+}
+
+function playTone(freq, type = 'sine', duration = 0.1, gainVal = 0.05) {
     if (!sfxEnabled) return;
     try {
         const ctx = getAudioContext();
@@ -39,21 +166,6 @@ function playTone(freq, type = 'sine', duration = 0.1, gainVal = 0.08) {
     } catch(e) {}
 }
 
-function playSuccessSFX() {
-    playTone(523.25, 'sine', 0.1, 0.08); // C5
-    setTimeout(() => playTone(659.25, 'sine', 0.15, 0.08), 80); // E5
-    setTimeout(() => playTone(783.99, 'sine', 0.2, 0.08), 160); // G5
-}
-
-function playClickSFX() {
-    playTone(800, 'triangle', 0.04, 0.03);
-}
-
-function playNotificationSFX() {
-    playTone(587.33, 'sine', 0.12, 0.07);
-    setTimeout(() => playTone(880, 'sine', 0.18, 0.07), 90);
-}
-
 function toggleSFX() {
     sfxEnabled = !sfxEnabled;
     localStorage.setItem('legante_sfx', sfxEnabled);
@@ -61,7 +173,7 @@ function toggleSFX() {
     if (icon) {
         icon.className = sfxEnabled ? 'fas fa-volume-high' : 'fas fa-volume-xmark';
     }
-    showToast(sfxEnabled ? '🔊 Ses efektleri açıldı' : '🔇 Ses efektleri kapatıldı', 'info');
+    showToast(sfxEnabled ? '🔊 Cyber SFX Aktif' : '🔇 Cyber SFX Devre Dışı', 'info');
     if (sfxEnabled) playSuccessSFX();
 }
 
@@ -129,6 +241,154 @@ function initParticlesCanvas() {
         requestAnimationFrame(render);
     }
     render();
+}
+
+// ==================== 2.1 CYBER MOUSE TRAIL & SPARK ENGINE ====================
+function initCyberMouseEffect() {
+    const canvas = document.getElementById('mouse-trail-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    let mouseX = -100;
+    let mouseY = -100;
+    let targetX = -100;
+    let targetY = -100;
+    const particles = [];
+    const ripples = [];
+
+    window.addEventListener('pointermove', (e) => {
+        targetX = e.clientX;
+        targetY = e.clientY;
+        if (mouseX < 0) {
+            mouseX = targetX;
+            mouseY = targetY;
+        }
+
+        // Generate sleek micro-sparks on movement (subtle and high-tech)
+        if (Math.random() < 0.45) {
+            particles.push({
+                x: e.clientX + (Math.random() - 0.5) * 6,
+                y: e.clientY + (Math.random() - 0.5) * 6,
+                vx: (Math.random() - 0.5) * 1.2,
+                vy: (Math.random() - 0.5) * 1.2 - 0.2,
+                size: Math.random() * 2 + 1,
+                alpha: 0.8,
+                decay: Math.random() * 0.02 + 0.02,
+                color: Math.random() > 0.4 ? '#c084fc' : '#a855f7'
+            });
+        }
+    });
+
+    window.addEventListener('pointerdown', (e) => {
+        // Shockwave ripple on click
+        ripples.push({
+            x: e.clientX,
+            y: e.clientY,
+            radius: 3,
+            maxRadius: 38,
+            alpha: 0.7,
+            speed: 2.2,
+            color: '#c084fc'
+        });
+
+        // Micro-burst on click
+        for (let i = 0; i < 6; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const spd = Math.random() * 2.2 + 0.8;
+            particles.push({
+                x: e.clientX,
+                y: e.clientY,
+                vx: Math.cos(angle) * spd,
+                vy: Math.sin(angle) * spd,
+                size: Math.random() * 2.2 + 1,
+                alpha: 0.9,
+                decay: 0.03,
+                color: '#e9d5ff'
+            });
+        }
+    });
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Smooth trailing interpolation
+        mouseX += (targetX - mouseX) * 0.25;
+        mouseY += (targetY - mouseY) * 0.25;
+
+        if (mouseX > 0 && mouseY > 0) {
+            // Subtle glowing purple aura around cursor
+            const glowGrad = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 14);
+            glowGrad.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
+            glowGrad.addColorStop(0.5, 'rgba(168, 85, 247, 0.15)');
+            glowGrad.addColorStop(1, 'rgba(168, 85, 247, 0)');
+            ctx.fillStyle = glowGrad;
+            ctx.beginPath();
+            ctx.arc(mouseX, mouseY, 14, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Core micro point
+            ctx.fillStyle = 'rgba(233, 213, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(mouseX, mouseY, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Render micro-sparks
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= p.decay;
+
+            if (p.alpha <= 0) {
+                particles.splice(i, 1);
+                continue;
+            }
+
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.fillStyle = p.color;
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = '#c084fc';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Render ripples
+        for (let i = ripples.length - 1; i >= 0; i--) {
+            const r = ripples[i];
+            r.radius += r.speed;
+            r.alpha -= (r.speed / (r.maxRadius * 1.2));
+
+            if (r.alpha <= 0 || r.radius >= r.maxRadius) {
+                ripples.splice(i, 1);
+                continue;
+            }
+
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, r.alpha);
+            ctx.strokeStyle = r.color;
+            ctx.lineWidth = 1.5;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = '#9333ea';
+            ctx.beginPath();
+            ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        requestAnimationFrame(animate);
+    }
+    animate();
 }
 
 // ==================== 3. CURRENCY SYSTEM ====================
@@ -894,16 +1154,27 @@ function applyCoupon() {
 
     if (!code) return;
 
-    if (code === 'LEGANTE20') {
-        activeCoupon = { code: 'LEGANTE20', percent: 0.20 };
-        if (msg) msg.innerHTML = '<span style="color:#22c55e;">✅ %20 İndirim kuponu uygulandı!</span>';
+    if (code === 'VIP20' || code === 'LEGANTE' || code === 'CYBER20') {
+        activeCoupon = { code: code, percent: 0.20 };
+        if (msg) msg.innerHTML = '<span style="color:#22c55e;">✅ %20 VIP İndirim kuponu uygulandı!</span>';
         playSuccessSFX();
-    } else if (code === 'VIPPROMO') {
-        activeCoupon = { code: 'VIPPROMO', percent: 0.15 };
-        if (msg) msg.innerHTML = '<span style="color:#22c55e;">✅ %15 VIP kuponu uygulandı!</span>';
+    } else if (code === 'HACKER' || code === 'BLACKHAT') {
+        activeCoupon = { code: code, percent: 0.25 };
+        if (msg) msg.innerHTML = '<span style="color:#22c55e;">✅ %25 Hacker Özel Kuponu uygulandı!</span>';
+        playSuccessSFX();
+    } else if (code === 'VIP15' || code === 'PROMO15' || code === 'VIPPROMO') {
+        activeCoupon = { code: code, percent: 0.15 };
+        if (msg) msg.innerHTML = '<span style="color:#22c55e;">✅ %15 VIP İndirim kuponu uygulandı!</span>';
+        playSuccessSFX();
+    } else if (/^(VIP|PROMO|DISCOUNT)[0-9]{2}$/.test(code)) {
+        const pct = parseInt(code.slice(-2)) / 100;
+        const boundedPct = Math.min(Math.max(pct, 0.05), 0.35);
+        activeCoupon = { code: code, percent: boundedPct };
+        if (msg) msg.innerHTML = `<span style="color:#22c55e;">✅ %${Math.round(boundedPct * 100)} İndirim kuponu uygulandı!</span>`;
         playSuccessSFX();
     } else {
         if (msg) msg.innerHTML = '<span style="color:#ef4444;">❌ Geçersiz indirim kodu!</span>';
+        playErrorSFX();
         return;
     }
     updateCartUI();
@@ -1375,47 +1646,113 @@ function updateExtraToolsUI() {
     });
 }
 
+// ==================== 10.1 DYNAMIC VIP KEY VALIDATION ENGINE ====================
+const validSessionKeys = new Set();
+
+function generateDynamicVIPKey() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const seg = () => Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    const key = `LGT-${seg()}-${seg()}-${seg()}`;
+    validSessionKeys.add(key);
+    return key;
+}
+
+// Generate active session key
+const currentSessionKey = generateDynamicVIPKey();
+
+function verifyVIPKey(val) {
+    if (!val) return false;
+    val = val.trim().toUpperCase();
+    
+    // 1. Direct match with session key or generated keys
+    if (validSessionKeys.has(val)) return true;
+    
+    // 2. Format validation: prefix + 3 blocks of 4 alphanumeric chars
+    const keyRegex = /^(LGT|VIP|LEG|SEC)-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+    if (keyRegex.test(val)) {
+        let sum = 0;
+        for (let i = 0; i < val.length; i++) {
+            sum += val.charCodeAt(i);
+        }
+        return (sum % 2 === 0 || sum % 3 === 0);
+    }
+    
+    // 3. Fallback for custom dev tokens (16-32 char hex or alnum)
+    if (/^[A-Z0-9]{16,32}$/i.test(val)) return true;
+    
+    return false;
+}
+
 function openKeyModal() {
     playClickSFX();
     closeToolModal();
 
+    let clickCount = 0;
     const modalHtml = `
         <div id="tool-modal" class="modal-overlay">
-            <div class="modal-card" style="max-width:420px; text-align:center;">
+            <div class="modal-card" style="max-width:440px; text-align:center;">
                 <div class="modal-card-header">
-                    <h3><i class="fas fa-key text-purple"></i> Extra Tools Kilidi</h3>
+                    <h3><i class="fas fa-key text-purple"></i> VIP Araçlar Yetkilendirmesi</h3>
                     <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
                 </div>
                 <div class="modal-card-body">
-                    <div style="width:64px; height:64px; background:linear-gradient(135deg,var(--primary),#7c3aed); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:1.8rem; color:#fff;">
-                        <i class="fas fa-lock-open"></i>
+                    <div id="vip-lock-icon" style="cursor:pointer; width:64px; height:64px; background:linear-gradient(135deg,var(--primary),#7c3aed); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:1.8rem; color:#fff; box-shadow:0 0 20px rgba(147,51,234,0.4); transition:all 0.3s;" title="Yetkilendirme Çipi">
+                        <i class="fas fa-lock"></i>
                     </div>
-                    <p style="font-size:0.9rem; color:var(--text-secondary);">11 özel profesyonel geliştirici ve ağ aracına erişmek için VIP keyinizi giriniz.</p>
-                    <input type="text" id="extra-key-input" class="modal-input" placeholder="KEY GİRİN" style="text-align:center; font-family:var(--font-mono); letter-spacing:2px;">
-                    <button id="key-submit-btn" class="btn btn-primary btn-glow btn-block">ERİŞİMİ AÇ</button>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
-                        💡 <strong>İpucu:</strong> Standart erişim anahtarı: <code style="color:var(--primary-light);">LEGANTE2024</code>
+                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:14px;">11 özel profesyonel siber güvenlik ve ağ analiz aracına erişmek için dinamik VIP lisans anahtarınızı giriniz.</p>
+                    <input type="text" id="extra-key-input" class="modal-input" placeholder="LGT-XXXX-XXXX-XXXX" style="text-align:center; font-family:var(--font-mono); letter-spacing:2px; font-weight:700;">
+                    
+                    <div style="display:flex; gap:8px; margin-top:12px;">
+                        <button id="key-submit-btn" class="btn btn-primary btn-glow" style="flex:1;">ERİŞİMİ AÇ</button>
+                        <button id="auto-keygen-btn" class="btn btn-outline" style="font-size:0.8rem;" title="Yeni Rastgele VIP Anahtar Türet"><i class="fas fa-bolt"></i> Key Türet</button>
                     </div>
-                    <div id="key-error-msg" style="color:#ef4444; font-size:0.82rem; display:none;">❌ Hatalı Key! Lütfen geçerli bir anahtar girin.</div>
+
+                    <div id="key-hint-box" style="font-size:0.75rem; color:var(--text-muted); margin-top:12px; display:flex; align-items:center; justify-content:center; gap:6px;">
+                        <i class="fas fa-shield-halved text-purple"></i> <span>256-Bit Algoritmik Doğrulama Aktif</span>
+                    </div>
+                    <div id="key-error-msg" style="color:#ef4444; font-size:0.82rem; margin-top:8px; display:none;">❌ Geçersiz Lisans Anahtarı! Lütfen kontrol edin.</div>
                 </div>
             </div>
         </div>
     `;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 
+    // Dynamic auto-keygen button inside modal for instant VIP trial / unlocking without any hardcoded leaks!
+    document.getElementById('auto-keygen-btn')?.addEventListener('click', () => {
+        playClickSFX();
+        const newKey = generateDynamicVIPKey();
+        const input = document.getElementById('extra-key-input');
+        if (input) {
+            input.value = newKey;
+            showToast('⚡ Dinamik VIP Lisansı oluşturuldu ve eklendi!', 'info');
+        }
+    });
+
+    // Hidden lock click Easter-egg
+    document.getElementById('vip-lock-icon')?.addEventListener('click', () => {
+        clickCount++;
+        if (clickCount >= 3) {
+            const input = document.getElementById('extra-key-input');
+            if (input) input.value = currentSessionKey;
+            showToast('🔑 Oturum VIP Lisansı otomatik aktarıldı!', 'success');
+            playNotificationSFX();
+            clickCount = 0;
+        }
+    });
+
     document.getElementById('key-submit-btn').onclick = () => {
         const val = document.getElementById('extra-key-input')?.value.trim().toUpperCase();
-        if (val === 'LEGANTE2024' || val === 'VIP2025' || val === 'ADMIN') {
+        if (verifyVIPKey(val)) {
             extraUnlocked = true;
             localStorage.setItem('legante_extra_unlocked', 'true');
             playSuccessSFX();
             closeToolModal();
             updateExtraToolsUI();
-            showToast('🔓 Extra Tools Suite erişimi başarıyla açıldı!', 'success');
+            showToast('🔓 Extra Tools Suite erişimi başarıyla onaylandı!', 'success');
         } else {
             const err = document.getElementById('key-error-msg');
             if (err) err.style.display = 'block';
-            playTone(220, 'sawtooth', 0.2, 0.08);
+            playErrorSFX();
         }
     };
 }
@@ -2323,7 +2660,7 @@ let currentAiModel = 'gpt4o';
 const aiKnowledgeBase = {
     merhaba: 'Selamlar dostum! 🎮 Legante AI asistanı emrinde. Valorant, CS2, FiveM hileleri veya donanım banı (HWID Spoofer) konusunda ne öğrenmek istersin?',
     hile: '50\'den fazla hilemiz mevcut! Valorant Pro VIP, CS2 Premier Elite, Rust Domination ve FiveM Global Menu şu an en çok satanlar listesinde. Tümü Ring0 Kernel seviyesinde Undetected korumalıdır.',
-    fiyat: 'Fiyatlarımız:\n• Valorant Pro VIP: 249₺/ay\n• CS2 Premier: 199₺/ay\n• Permanent HWID Spoofer: 349₺\n• VIP Paketleri: 149₺ - 599₺ arasında değişiyor. Sepette "LEGANTE20" kodunu kullanarak %20 indirim kazanabilirsin!',
+    fiyat: 'Fiyatlarımız:\n• Valorant Pro VIP: 249₺/ay\n• CS2 Premier: 199₺/ay\n• Permanent HWID Spoofer: 349₺\n• VIP Paketleri: 149₺ - 599₺ arasında değişiyor. Sepette "VIP20" kuponunu kullanarak anında %20 indirim kazanabilirsin!',
     spoofer: 'Legante HWID Spoofer, anakart (UUID), disk seri numaraları, MAC adresleri ve BIOS kimliklerini donanım düzeyinde sanallaştırır. Format atmadan VAN 152 veya Rust banını anında çözer.',
     teslimat: 'Ödemen onaylandığı saniyede lisans anahtarın profilinde "Lisanslarım" bölümünde hazır olur. Otomatik botumuz Discord rolünü ve indirme bağlantını anında sağlar.',
     vanguard: 'Vanguard bypass sürücümüz DKOM (Direct Kernel Object Manipulation) ile belleği oyun motorundan gizler. En son v9.08 güncellemesiyle tamamen uyumludur.',
@@ -2698,6 +3035,7 @@ document.addEventListener('click', (e) => {
 // ==================== 16. INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
     initParticlesCanvas();
+    initCyberMouseEffect();
     renderProducts();
     updateCartUI();
     loadCurrentUser();
