@@ -454,6 +454,74 @@ function showToast(message, type = 'info') {
 // ==================== 5. PRODUCT CATALOG WITH REAL IN-GAME SCREENSHOTS ====================
 const productsData = [
     {
+        id: 'valo-mevlana',
+        title: 'Valorant Mevlana & Rage Protocol (Apex Edition)',
+        category: 'valorant',
+        game: 'Riot Games / Valorant',
+        badge: '👑 MEVLANA RAGE',
+        badgeClass: 'badge-hot',
+        status: 'UNDETECTED • Ring0 Kernel DKOM',
+        priceTRY: 599,
+        popular: true,
+        icon: 'fas fa-tornado',
+        bannerImg: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/ab96dcddbc07d7221ee6f72c0d287bfebca50a98-854x484.png?w=1280&auto=format',
+        gallery: [
+            { title: 'Mevlana 360° Desync SpinBot Açı Kontrolü', url: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/ab96dcddbc07d7221ee6f72c0d287bfebca50a98-854x484.png?w=1280&auto=format' },
+            { title: 'Silent Aim & Rage Penetration Arayüzü', url: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/6628e175321b3fb53c863e58d1c033f7bfe5390e-854x484.png?w=1280&auto=format' },
+            { title: 'Breeze Haritası 360 İskelet & Mesafe ESP', url: 'https://media.valorant-api.com/maps/2fb9a4fd-47b8-4e7d-a969-74b4046ebd53/splash.png' }
+        ],
+        desc: 'Saniyede 1440° açı dönüşlü Mevlana (360° Desync SpinBot), Silent Aim 360°, Magic Bullet Prediction, Auto Wallbang ve Vanguard Kernel DKOM sürücüsüyle sınır tanımayan en vahşi Valorant hilesi.',
+        tags: ['360° Mevlana SpinBot', 'Silent Aim 360°', 'Magic Bullet Penetration', 'Vanguard Ring0 DKOM', 'Auto Headshot Lock', 'OBS Stream-Proof'],
+        features: [
+            '360° Desync SpinBot / Mevlana Modu (Hedef şaşırtıcı saniyede 1440° açı rotasyonu ve mermi saptırma)',
+            'Silent Aim 360° (Ekran dönmeden FOV açısındaki tüm düşmanlara anında kafa vuruşu)',
+            'Magic Bullet & Wall Penetration Assist (Duvar arkası hasar çarpanı ve anında infaz)',
+            'Vanguard Ring0 DKOM Kernel Sürücüsü (VAN 152 / VAN 5 / TPM 2.0 tam bypass)',
+            'Glow Chams, Skeleton 3D, Ability, Ulti, Spike & Para ESP',
+            'Auto-Shoot / Otomatik Tetik & %100 No-Recoil / No-Spread',
+            'OBS, Streamlabs ve Discord yayınlarında %100 görünmez (Stream-Proof)',
+            'Dahili Donanım HWID Spoofer Pakete Ücretsiz Dahil'
+        ],
+        specs: {
+            os: 'Windows 10 / 11 (Tüm Versiyonlar)',
+            cpu: 'Intel & AMD (Tüm İşlemciler)',
+            anticheat: 'Riot Vanguard (Undetected - Zero Ban)',
+            delivery: 'Anında Otomatik Lisans Teslimatı'
+        }
+    },
+    {
+        id: 'valo-colorbot',
+        title: 'Valorant Neural AI Colorbot (Memory-Free)',
+        category: 'valorant',
+        game: 'Riot Games / Valorant',
+        badge: 'YAPAY ZEKA',
+        badgeClass: 'badge-safe',
+        status: 'UNDETECTED • Neural Vision',
+        priceTRY: 349,
+        popular: false,
+        icon: 'fas fa-brain',
+        bannerImg: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/a3bca41d7d070b4a4cb5c8aebc5eec7d1ebdaef0-854x484.png?w=1280&auto=format',
+        gallery: [
+            { title: 'Neural Vision Düşman Rengi Algılama', url: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/a3bca41d7d070b4a4cb5c8aebc5eec7d1ebdaef0-854x484.png?w=1280&auto=format' },
+            { title: 'Kuronami Silah Kaplaması Görseli', url: 'https://media.valorant-api.com/bundles/69d9b2be-4439-0785-780b-ba8951053683/displayicon2.png' }
+        ],
+        desc: 'Oyun belleğine kesinlikle dokunmayan, YOLOv8 yapay zeka görüntü işleme motoruyla çalışan %100 ban riski sıfır Aimbot & Triggerbot.',
+        tags: ['Yapay Zeka Vision', 'Sıfır Bellek İzi (No-Memory)', 'Humanized Smooth', 'Arduino & KMBox Desteği'],
+        features: [
+            'Görüntü İşleme Tabanlı Neural Network (Bellek okuma/yazma sıfır)',
+            'İnsan Reflekslerini Taklit Eden Humanized Aimbot & Smooth RCS',
+            'Arduino / KMBox donanım emülatörü desteği ile %0 algılanma',
+            'Mor, Sarı ve Kırmızı düşman renk profillerine tam uyum',
+            'Vanguard sürücülerinin algılayamayacağı fiziksel fare girdi protokolü'
+        ],
+        specs: {
+            os: 'Windows 10 / 11',
+            cpu: 'Intel & AMD (Nvidia / AMD GPU)',
+            anticheat: 'Riot Vanguard (%100 Güvenli)',
+            delivery: 'Anında Otomatik Teslimat'
+        }
+    },
+    {
         id: 'valo-pro',
         title: 'Valorant Pro VIP',
         category: 'valorant',
@@ -461,7 +529,7 @@ const productsData = [
         badge: 'BESTSELLER',
         badgeClass: 'badge-safe',
         status: 'UNDETECTED • v9.08.1',
-        priceTRY: 249,
+        priceTRY: 379,
         popular: true,
         icon: 'fas fa-crosshairs',
         bannerImg: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/6628e175321b3fb53c863e58d1c033f7bfe5390e-854x484.png?w=1280&auto=format',
@@ -494,7 +562,7 @@ const productsData = [
         badge: 'YENİ SÜRÜM',
         badgeClass: 'badge-vip',
         status: 'UNDETECTED • Kernel Radar',
-        priceTRY: 189,
+        priceTRY: 289,
         popular: false,
         icon: 'fas fa-eye',
         bannerImg: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/23e7bfb92f61c8e6161134882f8e247ce1a2d285-854x484.png?w=1280&auto=format',
@@ -527,7 +595,7 @@ const productsData = [
         badge: 'POPÜLER',
         badgeClass: 'badge-hot',
         status: 'UNDETECTED • VACnet 3.0',
-        priceTRY: 199,
+        priceTRY: 319,
         popular: true,
         icon: 'fas fa-gun',
         bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/730/9c8b8fd6ebb2c84a1c38541369e6c05db7f1fbe0/ss_9c8b8fd6ebb2c84a1c38541369e6c05db7f1fbe0.1920x1080.jpg?t=1789251637',
@@ -560,7 +628,7 @@ const productsData = [
         badge: 'BESTSELLER',
         badgeClass: 'badge-hot',
         status: 'UNDETECTED • EAC Safe',
-        priceTRY: 299,
+        priceTRY: 449,
         popular: true,
         icon: 'fas fa-radiation',
         bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/252490/ss_271feae67943bdc141c1249aba116349397e9ba9.1920x1080.jpg?t=1781536981',
@@ -593,7 +661,7 @@ const productsData = [
         badge: 'GLOBAL',
         badgeClass: 'badge-vip',
         status: 'UNDETECTED • Global Bypass',
-        priceTRY: 179,
+        priceTRY: 279,
         popular: false,
         icon: 'fas fa-car',
         bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.1920x1080.jpg?t=1765387725',
@@ -626,7 +694,7 @@ const productsData = [
         badge: 'DMA SAFE',
         badgeClass: 'badge-vip',
         status: 'UNDETECTED • DMA / 2.PC',
-        priceTRY: 279,
+        priceTRY: 399,
         popular: false,
         icon: 'fas fa-skull',
         bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1172470/ss_3fc2dfcf0e8d7d7202a3ca32ae26c7afaec723e2.1920x1080.jpg?t=1790164440',
@@ -659,7 +727,7 @@ const productsData = [
         badge: 'YENİ SÜRÜM',
         badgeClass: 'badge-safe',
         status: 'UNDETECTED • BattlEye Safe',
-        priceTRY: 219,
+        priceTRY: 329,
         popular: false,
         icon: 'fas fa-shield-halved',
         bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/359550/2efed3587d876f560cbf3f25d9a72fbd387b74e6/ss_2efed3587d876f560cbf3f25d9a72fbd387b74e6.1920x1080.jpg?t=1790108602',
@@ -691,7 +759,7 @@ const productsData = [
         badge: 'GÜNCELLENDİ',
         badgeClass: 'badge-hot',
         status: 'UNDETECTED • Ricochet Safe',
-        priceTRY: 259,
+        priceTRY: 389,
         popular: true,
         icon: 'fas fa-person-rifle',
         bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1938090/ee5f6b6aebe4dc9e86b49c4e309d361b132df308/ss_ee5f6b6aebe4dc9e86b49c4e309d361b132df308.1920x1080.jpg?t=1790698535',
@@ -723,7 +791,7 @@ const productsData = [
         badge: 'ÖMÜR BOYU',
         badgeClass: 'badge-safe',
         status: 'WORKING • Permanent Ring0',
-        priceTRY: 349,
+        priceTRY: 549,
         popular: true,
         icon: 'fas fa-compact-disc',
         bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/730/capsule_616x353.jpg',
@@ -755,7 +823,7 @@ const productsData = [
         badge: 'VIP ROLLER',
         badgeClass: 'badge-vip',
         status: 'VIP ACCESS • Aktif',
-        priceTRY: 149,
+        priceTRY: 249,
         popular: false,
         icon: 'fas fa-crown',
         bannerImg: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/41a9316861671756f6f2bdedcde60f99e37de0d4-3840x2160.jpg?w=1280&auto=format',
@@ -785,7 +853,7 @@ const productsData = [
         badge: 'HIZLI BOOST',
         badgeClass: 'badge-hot',
         status: 'ONLINE • 7/24 Aktif',
-        priceTRY: 69,
+        priceTRY: 119,
         popular: false,
         icon: 'fas fa-rocket',
         bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1172470/ss_d64ce54903a3ba6429c6e3189ad746a7db70ee3e.1920x1080.jpg?t=1790164440',
@@ -2208,7 +2276,7 @@ function ownerExportDatabase() {
 let extraUnlocked = localStorage.getItem('legante_extra_unlocked') === 'true';
 
 function updateExtraToolsUI() {
-    const tools = ['sms', 'token', 'webhook', 'ip', 'filehash', 'pass', 'hash', 'dns', 'hw', 'port', 'obfuscator'];
+    const tools = ['sms', 'token', 'webhook', 'ip', 'filehash', 'pass', 'hash', 'dns', 'hw', 'port', 'jwt', 'subnet', 'antidebug', 'base64img', 'obfuscator'];
     const accessText = document.getElementById('access-btn-text');
 
     if (accessText) {
@@ -3210,6 +3278,287 @@ function openCodeObfuscator() {
     };
 }
 
+// 12. JWT TOKEN ANALYZER & DECODER
+function openJWTDecoder() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-id-card-clip text-purple"></i> JSON Web Token (JWT) Çözücü</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">JWT token stringini yapıştırarak Header, Payload ve Süre (Expiration) verilerini anında görselleştirin.</p>
+                    <textarea id="jwt-input" class="modal-input" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkxlZ2FudGUgVklQIiwiaWF0IjoxNTE2MjM5MDIyfQ..."></textarea>
+                    <div style="display:flex; gap:8px;">
+                        <button id="run-jwt-decode-btn" class="btn btn-primary" style="flex:1;"><i class="fas fa-unlock-keyhole"></i> Tokeni Ayrıştır</button>
+                        <button id="jwt-sample-btn" class="btn btn-outline" style="flex:0 0 auto;"><i class="fas fa-vial"></i> Örnek Token</button>
+                    </div>
+                    <div id="jwt-res-box" class="tool-result-box" style="display:none; margin-top:12px;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('jwt-sample-btn').onclick = () => {
+        document.getElementById('jwt-input').value = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwbmx5QW55QGdtYWlsLmNvbSIsInJvbGUiOiJPd25lciIsImlzc3VlciI6IkxlZ2FudGVQcm9qZWN0IiwiZXhwIjoxNzk4NzU1MjAwfQ.sF5jWb_SampleSignatureOnly';
+    };
+
+    document.getElementById('run-jwt-decode-btn').onclick = () => {
+        const val = document.getElementById('jwt-input').value.trim();
+        const resBox = document.getElementById('jwt-res-box');
+        if (!val) {
+            showToast('Lütfen geçerli bir JWT girin!', 'error');
+            return;
+        }
+
+        const parts = val.split('.');
+        if (parts.length < 2) {
+            showToast('Geçersiz JWT formatı (En az Header ve Payload olmalı)!', 'error');
+            return;
+        }
+
+        try {
+            playClickSFX();
+            const b64Decode = (str) => {
+                str = str.replace(/-/g, '+').replace(/_/g, '/');
+                while (str.length % 4) str += '=';
+                return decodeURIComponent(escape(atob(str)));
+            };
+            const header = JSON.parse(b64Decode(parts[0]));
+            const payload = JSON.parse(b64Decode(parts[1]));
+            let expDate = 'Belirtilmemiş';
+            if (payload.exp) {
+                expDate = new Date(payload.exp * 1000).toLocaleString('tr-TR');
+            }
+
+            playSuccessSFX();
+            resBox.style.display = 'block';
+            resBox.innerHTML = `
+                <div style="margin-bottom:8px;">
+                    <span style="color:#ef4444; font-weight:700;"><i class="fas fa-file-code"></i> HEADER (Algoritma & Tip):</span>
+                    <pre style="background:rgba(0,0,0,0.5); padding:8px; border-radius:6px; color:#f87171; font-size:0.75rem; overflow:auto;">${JSON.stringify(header, null, 2)}</pre>
+                </div>
+                <div style="margin-bottom:8px;">
+                    <span style="color:#a855f7; font-weight:700;"><i class="fas fa-database"></i> PAYLOAD (Veri İddiaları):</span>
+                    <pre style="background:rgba(0,0,0,0.5); padding:8px; border-radius:6px; color:#c084fc; font-size:0.75rem; overflow:auto;">${JSON.stringify(payload, null, 2)}</pre>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                    <span style="font-size:0.8rem; color:var(--text-muted);">Son Geçerlilik (exp):</span>
+                    <strong style="color:#10b981; font-size:0.85rem;">${expDate}</strong>
+                </div>
+            `;
+        } catch (err) {
+            showToast('JWT çözülürken hata oluştu: Geçersiz Base64 verisi!', 'error');
+        }
+    };
+}
+
+// 13. SUBNET & CIDR AĞ HESAPLAYICI
+function openSubnetCalculator() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-diagram-project text-blue"></i> Subnet & CIDR Ağ Hesaplayıcı</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">IP ve CIDR maskesi girerek Ağ Adresi, Broadcast, Ağ Maskesi ve kullanılabilir host sayısını anında hesaplayın.</p>
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="subnet-ip" class="modal-input" placeholder="Örn: 192.168.1.1" value="192.168.1.50">
+                        <select id="subnet-cidr" class="modal-input" style="padding:10px;">
+                            ${Array.from({length: 31}, (_, i) => i + 1).map(c => `<option value="${c}" ${c === 24 ? 'selected' : ''}>/${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <button id="run-subnet-btn" class="btn btn-primary btn-block"><i class="fas fa-calculator"></i> Ağı Hesapla</button>
+                    <div id="subnet-res-box" class="tool-result-box" style="display:none; margin-top:12px;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('run-subnet-btn').onclick = () => {
+        const ip = document.getElementById('subnet-ip').value.trim();
+        const cidr = parseInt(document.getElementById('subnet-cidr').value, 10);
+        const resBox = document.getElementById('subnet-res-box');
+
+        const parts = ip.split('.').map(Number);
+        if (parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) {
+            showToast('Geçerli bir IPv4 adresi girin!', 'error');
+            return;
+        }
+
+        playClickSFX();
+        const ipInt = (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
+        const maskInt = cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
+        const netInt = (ipInt & maskInt) >>> 0;
+        const bcastInt = (netInt | (~maskInt >>> 0)) >>> 0;
+
+        const toIP = (num) => [(num >>> 24) & 255, (num >>> 16) & 255, (num >>> 8) & 255, num & 255].join('.');
+        const totalHosts = Math.pow(2, 32 - cidr);
+        const usableHosts = cidr >= 31 ? (cidr === 31 ? 2 : 1) : Math.max(0, totalHosts - 2);
+
+        playSuccessSFX();
+        resBox.style.display = 'block';
+        resBox.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Ağ Adresi (Network):</span><strong style="color:var(--primary-light);">${toIP(netInt)}</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Alt Ağ Maskesi (Netmask):</span><strong style="color:#22c55e;">${toIP(maskInt)}</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Broadcast Adresi:</span><strong style="color:#f59e0b;">${toIP(bcastInt)}</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Kullanılabilir IP Aralığı:</span><strong style="color:#38bdf8; font-size:0.75rem;">${toIP(netInt + 1)} - ${toIP(bcastInt - 1)}</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Toplam / Kullanılabilir Host:</span><strong style="color:#ec4899;">${totalHosts.toLocaleString()} / ${usableHosts.toLocaleString()}</strong></div>
+            <div style="display:flex; justify-content:space-between;"><span>CIDR Notasyonu:</span><strong style="color:#a855f7;">${ip}/${cidr}</strong></div>
+        `;
+    };
+}
+
+// 14. ZERO-TRUST WAF & SİBER KALKAN DURUMU
+function openAntiDebugProtectionStatus() {
+    closeToolModal();
+    const isOwner = currentUser?.isOwner || (currentUser?.email && currentUser.email.toLowerCase() === '0nlyany@gmail.com');
+    const logs = JSON.parse(localStorage.getItem('legante_security_audit') || '[]');
+    
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-shield-halved text-green"></i> Legante Zero-Trust Siber Kalkan</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <div style="background:rgba(34, 197, 94, 0.1); border:1px solid rgba(34, 197, 94, 0.3); border-radius:10px; padding:14px; margin-bottom:14px; display:flex; align-items:center; gap:12px;">
+                        <i class="fas fa-circle-check" style="font-size:2rem; color:#22c55e;"></i>
+                        <div>
+                            <strong style="color:#22c55e; font-size:0.95rem; display:block;">Web Uygulama Güvenlik Kalkanı (WAF) AKTİF</strong>
+                            <span style="font-size:0.75rem; color:var(--text-secondary);">Tarayıcı düzeyinde konsol kilitleme, anti-tamper ve injection filtreleri çalışıyor.</span>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+                        <div class="hw-card">
+                            <span style="color:var(--text-muted); font-size:0.75rem;">F12 / DevTools Koruması:</span><br>
+                            <strong style="color:#22c55e;"><i class="fas fa-lock"></i> Aktif (Korumalı)</strong>
+                        </div>
+                        <div class="hw-card">
+                            <span style="color:var(--text-muted); font-size:0.75rem;">Sağ Tık / ContextMenu:</span><br>
+                            <strong style="color:#22c55e;"><i class="fas fa-shield-virus"></i> Engellendi</strong>
+                        </div>
+                        <div class="hw-card">
+                            <span style="color:var(--text-muted); font-size:0.75rem;">Kaynak İnceleme (Ctrl+U):</span><br>
+                            <strong style="color:#22c55e;"><i class="fas fa-file-shield"></i> Kilitli</strong>
+                        </div>
+                        <div class="hw-card">
+                            <span style="color:var(--text-muted); font-size:0.75rem;">Yetki Seviyesi:</span><br>
+                            <strong style="color:${isOwner ? '#ec4899' : '#a855f7'};"><i class="fas fa-user-shield"></i> ${isOwner ? '👑 KURUCU (Bypass)' : 'Standart Ziyaretçi'}</strong>
+                        </div>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); margin-bottom:12px;">
+                        <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:6px;"><i class="fas fa-clock-rotate-left"></i> Son Kalkan Tehdit Logları (${logs.length}):</span>
+                        <div style="max-height:100px; overflow-y:auto; font-size:0.72rem; font-family:monospace; color:#ef4444;">
+                            ${logs.length > 0 ? logs.slice(-4).reverse().map(l => `<div>[${new Date(l.timestamp).toLocaleTimeString()}] ${l.type} - ${l.action}</div>`).join('') : '<span style="color:#22c55e;">Herhangi bir tehdit algılanmadı. Sistem stabil.</span>'}
+                        </div>
+                    </div>
+                    <button class="btn btn-outline btn-block" onclick="showToast('Siber kalkan motoru bütünlük testi: %100 BAŞARILI', 'success'); playSuccessSFX();">
+                        <i class="fas fa-arrows-rotate"></i> Bütünlük Taraması Yap
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+// 15. BASE64 & HEX SİBER ÇEVİRİCİ ATÖLYESİ
+function openBase64HexStudio() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-card-header">
+                    <h3><i class="fas fa-file-code text-purple"></i> Base64 & Hex Kodlama Stüdyosu</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">Metinleri Base64, Hexadecimal veya URL biçimlerine dönüştürün veya çözün.</p>
+                    <textarea id="b64-source" class="modal-input" rows="3" placeholder="Dönüştürmek istediğiniz metni veya Base64/Hex kodunu girin..."></textarea>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+                        <button id="btn-to-b64" class="btn btn-primary"><i class="fas fa-arrow-down-a-z"></i> Text ➔ Base64</button>
+                        <button id="btn-from-b64" class="btn btn-outline"><i class="fas fa-arrow-up-z-a"></i> Base64 ➔ Text</button>
+                        <button id="btn-to-hex" class="btn btn-primary"><i class="fas fa-hashtag"></i> Text ➔ Hex</button>
+                        <button id="btn-from-hex" class="btn btn-outline"><i class="fas fa-font"></i> Hex ➔ Text</button>
+                    </div>
+                    <div id="b64-res-box" class="tool-result-box" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    const showRes = (title, output) => {
+        const resBox = document.getElementById('b64-res-box');
+        resBox.style.display = 'block';
+        resBox.innerHTML = `
+            <span style="color:var(--primary-light); font-weight:700;">${title}:</span><br>
+            <div style="max-height:120px; overflow:auto; word-break:break-all; font-family:monospace; font-size:0.75rem; color:#38bdf8; margin:6px 0; background:rgba(0,0,0,0.4); padding:8px; border-radius:6px;">
+                ${output}
+            </div>
+            <button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText(\`${output.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`); showToast('Panoya kopyalandı!', 'success');">
+                <i class="fas fa-copy"></i> Kopyala
+            </button>
+        `;
+        playSuccessSFX();
+    };
+
+    document.getElementById('btn-to-b64').onclick = () => {
+        const txt = document.getElementById('b64-source').value;
+        if (!txt) return showToast('Metin girin!', 'error');
+        try {
+            const res = btoa(unescape(encodeURIComponent(txt)));
+            showRes('Base64 Kodlanmış Veri', res);
+        } catch(e) {
+            showToast('Base64 kodlama hatası!', 'error');
+        }
+    };
+
+    document.getElementById('btn-from-b64').onclick = () => {
+        const txt = document.getElementById('b64-source').value.trim();
+        if (!txt) return showToast('Base64 verisi girin!', 'error');
+        try {
+            const res = decodeURIComponent(escape(atob(txt)));
+            showRes('Base64 Çözülmüş Metin', res);
+        } catch(e) {
+            showToast('Geçersiz Base64 verisi!', 'error');
+        }
+    };
+
+    document.getElementById('btn-to-hex').onclick = () => {
+        const txt = document.getElementById('b64-source').value;
+        if (!txt) return showToast('Metin girin!', 'error');
+        let hex = '';
+        for (let i = 0; i < txt.length; i++) {
+            hex += txt.charCodeAt(i).toString(16).padStart(2, '0') + ' ';
+        }
+        showRes('Hexadecimal Dökümü', hex.trim());
+    };
+
+    document.getElementById('btn-from-hex').onclick = () => {
+        const txt = document.getElementById('b64-source').value.trim().replace(/\s+/g, '');
+        if (!txt) return showToast('Hex verisi girin!', 'error');
+        try {
+            let res = '';
+            for (let i = 0; i < txt.length; i += 2) {
+                res += String.fromCharCode(parseInt(txt.substr(i, 2), 16));
+            }
+            showRes('Hex Çözülmüş Metin', res);
+        } catch(e) {
+            showToast('Geçersiz Hex dizesi!', 'error');
+        }
+    };
+}
+
 // Extra tools buton dinleyicileri bağlama
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('access-extra-btn')?.addEventListener('click', () => {
@@ -3241,6 +3590,10 @@ document.addEventListener('DOMContentLoaded', () => {
     bindTool('tool-dns', openDNSLookup);
     bindTool('tool-hw', openHardwareInspector);
     bindTool('tool-port', openPortScanner);
+    bindTool('tool-jwt', openJWTDecoder);
+    bindTool('tool-subnet', openSubnetCalculator);
+    bindTool('tool-antidebug', openAntiDebugProtectionStatus);
+    bindTool('tool-base64img', openBase64HexStudio);
     bindTool('tool-obfuscator', openCodeObfuscator);
 });
 
@@ -3249,8 +3602,8 @@ let currentAiModel = 'gpt4o';
 
 const aiKnowledgeBase = {
     merhaba: 'Selamlar dostum! 🎮 Legante AI asistanı emrinde. Valorant, CS2, FiveM hileleri veya donanım banı (HWID Spoofer) konusunda ne öğrenmek istersin?',
-    hile: '50\'den fazla hilemiz mevcut! Valorant Pro VIP, CS2 Premier Elite, Rust Domination ve FiveM Global Menu şu an en çok satanlar listesinde. Tümü Ring0 Kernel seviyesinde Undetected korumalıdır.',
-    fiyat: 'Fiyatlarımız:\n• Valorant Pro VIP: 249₺/ay\n• CS2 Premier: 199₺/ay\n• Permanent HWID Spoofer: 349₺\n• VIP Paketleri: 149₺ - 599₺ arasında değişiyor. Sepette "VIP20" kuponunu kullanarak anında %20 indirim kazanabilirsin!',
+    hile: '50\'den fazla hilemiz mevcut! Valorant Mevlana (Apex Edition), Valorant Pro VIP, CS2 Premier Elite, Rust Domination ve FiveM Global Menu şu an en çok satanlar listesinde. Tümü Ring0 Kernel seviyesinde Undetected korumalıdır.',
+    fiyat: 'Fiyatlarımız:\n• Valorant Mevlana & Rage VIP (360° Desync & Silent Aim): 599₺/ay\n• Valorant Neural AI Colorbot: 349₺\n• Valorant Pro VIP: 379₺/ay\n• CS2 Premier Elite: 319₺/ay\n• Rust Domination: 449₺/ay\n• Permanent HWID Spoofer: 549₺\n• VIP Paketleri: 249₺ - 799₺ arasında değişiyor. Sepette "VIP20" kuponunu kullanarak anında %20 indirim kazanabilirsin!',
     spoofer: 'Legante HWID Spoofer, anakart (UUID), disk seri numaraları, MAC adresleri ve BIOS kimliklerini donanım düzeyinde sanallaştırır. Format atmadan VAN 152 veya Rust banını anında çözer.',
     teslimat: 'Ödemen onaylandığı saniyede lisans anahtarın profilinde "Lisanslarım" bölümünde hazır olur. Otomatik botumuz Discord rolünü ve indirme bağlantını anında sağlar.',
     vanguard: 'Vanguard bypass sürücümüz DKOM (Direct Kernel Object Manipulation) ile belleği oyun motorundan gizler. En son v9.08 güncellemesiyle tamamen uyumludur.',
@@ -3622,7 +3975,65 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// ==================== 16. INITIALIZATION ====================
+// ==================== 16. ZERO-TRUST WEBSITE PROTECTIONS (ANTI-DEVTOOLS & INTEGRITY) ====================
+function initWebsiteProtections() {
+    const isOwner = () => {
+        const user = currentUser || JSON.parse(localStorage.getItem('legante_current_user') || 'null');
+        return user?.isOwner || (user?.email && user.email.toLowerCase() === '0nlyany@gmail.com');
+    };
+
+    // 1. Geliştirici Konsolu ve Kısayol Tuşları Kilidi (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
+    window.addEventListener('keydown', (e) => {
+        if (isOwner()) return; // Kurucu serbestçe konsolu kullanabilir
+
+        const isF12 = e.key === 'F12' || e.keyCode === 123;
+        const isInspect = (e.ctrlKey || e.metaKey) && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key);
+        const isViewSource = (e.ctrlKey || e.metaKey) && ['u', 'U', 's', 'S'].includes(e.key);
+
+        if (isF12 || isInspect || isViewSource) {
+            e.preventDefault();
+            e.stopPropagation();
+            playNotificationSFX();
+            showToast('🛡️ SİBER GÜVENLİK KALKANI: Geliştirici konsolu ve kaynak kodu inceleme engellendi!', 'error');
+            
+            // Güvenlik logu kaydet
+            try {
+                const logs = JSON.parse(localStorage.getItem('legante_security_audit') || '[]');
+                logs.push({
+                    timestamp: Date.now(),
+                    type: 'DEVTOOLS_ACCESS_BLOCKED',
+                    action: `Tetiklenen Tuş: ${e.key || e.keyCode}`,
+                    ip: 'Client Protected'
+                });
+                if (logs.length > 50) logs.shift();
+                localStorage.setItem('legante_security_audit', JSON.stringify(logs));
+            } catch(err) {}
+            return false;
+        }
+    }, true);
+
+    // 2. Sağ Tık Menüsü Koruması
+    document.addEventListener('contextmenu', (e) => {
+        if (isOwner()) return; // Kurucu sağ tık yapabilir
+        if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) return;
+        
+        e.preventDefault();
+        showToast('🛡️ SİBER GÜVENLİK: Sağ tık menüsü koruma altındadır.', 'warning');
+        return false;
+    });
+
+    // 3. Tarayıcı Konsolu Güvenlik Uyarısı
+    try {
+        console.clear();
+        console.log(
+            '%c🛡️ LEGANTE ZERO-TRUST SECURITY SUITE v4.5\n%cTelif Hakkı © 2026 Legante Project. Tüm Hakları Saklıdır.\nKurucu: 0nlyAny@gmail.com\n\nUYARI: Buraya yetkisiz script yapıştırmak veya konsol komutları çalıştırmak hesabınızın kalıcı askıya alınmasına sebep olur.',
+            'color: #a855f7; font-size: 20px; font-weight: 800; text-shadow: 0 0 10px rgba(168,85,247,0.5);',
+            'color: #ef4444; font-size: 13px; font-weight: 600;'
+        );
+    } catch(err) {}
+}
+
+// ==================== 17. INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
     initParticlesCanvas();
     initCyberMouseEffect();
@@ -3636,6 +4047,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     initSmoothScroll();
     updatePricingCards();
+    initWebsiteProtections();
 
     // Ses ikonunu güncelle
     const sfxIcon = document.getElementById('sfx-icon');

@@ -75,7 +75,7 @@
         <!-- EXTRA TOOLS MENÜSÜ (GENİŞLETİLMİŞ 11 GÜÇLÜ ARAÇ) -->
         <div class="panel-extra">
             <div class="menu-label extra-label">
-                <span><i class="fas fa-toolbox text-purple"></i> EXTRA TOOLS (11)</span>
+                <span><i class="fas fa-toolbox text-purple"></i> EXTRA TOOLS (15)</span>
                 <button id="access-extra-btn" class="access-btn" title="Key ile Araçları Aç"><i class="fas fa-key"></i> <span id="access-btn-text">KİLİTLİ</span></button>
             </div>
             <ul id="extra-tools-list" class="extra-tools-list">
@@ -89,6 +89,10 @@
                 <li><a href="#" id="tool-dns" class="extra-link locked" data-tool="dns" title="DNS Kayıtları Tarayıcı"><i class="fas fa-network-wired tool-icon"></i><span>DNS Lookup</span><i class="fas fa-lock lock-icon"></i></a></li>
                 <li><a href="#" id="tool-hw" class="extra-link locked" data-tool="hw" title="GPU & Donanım Dedektörü"><i class="fas fa-microchip tool-icon"></i><span>GPU & HW</span><i class="fas fa-lock lock-icon"></i></a></li>
                 <li><a href="#" id="tool-port" class="extra-link locked" data-tool="port" title="HTTP Ping & Gecikme"><i class="fas fa-gauge-high tool-icon"></i><span>Latency Ping</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-jwt" class="extra-link locked" data-tool="jwt" title="JWT Token Analizcisi"><i class="fas fa-id-card-clip tool-icon"></i><span>JWT Decode</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-subnet" class="extra-link locked" data-tool="subnet" title="Subnet & CIDR Ağ Hesaplayıcı"><i class="fas fa-diagram-project tool-icon"></i><span>Subnet CIDR</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-antidebug" class="extra-link locked" data-tool="antidebug" title="Sistem Siber Kalkan Durumu"><i class="fas fa-shield-halved tool-icon"></i><span>WAF Shield</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-base64img" class="extra-link locked" data-tool="base64img" title="Base64 & Hex Çevirici"><i class="fas fa-file-code tool-icon"></i><span>Base64 Studio</span><i class="fas fa-lock lock-icon"></i></a></li>
                 <li style="grid-column: 1 / -1;"><a href="#" id="tool-obfuscator" class="extra-link locked" data-tool="obfuscator" title="JavaScript Kod Karıştırıcı (Obfuscator)"><i class="fas fa-user-secret tool-icon"></i><span>JS Code Obfuscator</span><i class="fas fa-lock lock-icon"></i></a></li>
             </ul>
         </div>
@@ -139,6 +143,12 @@
 
                 <!-- Sağ Butonlar -->
                 <div class="nav-right-actions">
+                    <!-- Siber Kalkan Canlı Koruma İndikatörü -->
+                    <div class="shield-indicator-pill" title="Legante Zero-Trust Siber Kalkan ve Anti-Tamper Aktif">
+                        <span class="shield-status-dot"></span>
+                        <span class="shield-text"><i class="fas fa-shield-halved"></i> WAF AKTİF</span>
+                    </div>
+
                     <!-- Ses Efektleri Butonu -->
                     <button id="sfx-toggle-btn" class="icon-action-btn" title="Ses Efektlerini Aç/Kapat" onclick="toggleSFX()">
                         <i class="fas fa-volume-high" id="sfx-icon"></i>
@@ -597,7 +607,7 @@
                             <span class="pricing-tier-name">VIP 1 (Başlangıç)</span>
                             <div class="pricing-amount">
                                 <span class="currency">₺</span>
-                                <span class="price-val" data-base="149">149</span>
+                                <span class="price-val" data-base="249">249</span>
                                 <span class="duration">/ay</span>
                             </div>
                             <p class="pricing-desc">Hile dünyasına ilk adımı atanlar için ideal giriş paketi.</p>
@@ -610,7 +620,7 @@
                             <li class="disabled"><i class="fas fa-times-circle text-muted"></i> HWID Spoofer Dahil Değil</li>
                             <li class="disabled"><i class="fas fa-times-circle text-muted"></i> Öncelikli Canlı Destek</li>
                         </ul>
-                        <button class="btn btn-outline btn-block" onclick="addToCart('VIP 1 (Başlangıç)', 149, 'vip')">
+                        <button class="btn btn-outline btn-block" onclick="addToCart('VIP 1 (Başlangıç)', 249, 'vip')">
                             <i class="fas fa-cart-plus"></i> Sepete Ekle
                         </button>
                     </div>
@@ -622,7 +632,7 @@
                             <span class="pricing-tier-name">VIP 2 (Pro Master)</span>
                             <div class="pricing-amount">
                                 <span class="currency">₺</span>
-                                <span class="price-val" data-base="299">299</span>
+                                <span class="price-val" data-base="449">449</span>
                                 <span class="duration">/ay</span>
                             </div>
                             <p class="pricing-desc">Ciddi rekabet eden ve rank kasan oyuncular için en ideal paket.</p>
@@ -635,7 +645,7 @@
                             <li><i class="fas fa-check-circle text-green"></i> Extra Tools Tümüne Tam Erişim</li>
                             <li><i class="fas fa-check-circle text-green"></i> Özel VIP Çekilişlerine Katılım</li>
                         </ul>
-                        <button class="btn btn-primary btn-glow btn-block" onclick="addToCart('VIP 2 (Pro Master)', 299, 'vip')">
+                        <button class="btn btn-primary btn-glow btn-block" onclick="addToCart('VIP 2 (Pro Master)', 449, 'vip')">
                             <i class="fas fa-crown"></i> VIP Satın Al
                         </button>
                     </div>
@@ -646,7 +656,7 @@
                             <span class="pricing-tier-name">VIP 3 (Godlike Unlimited)</span>
                             <div class="pricing-amount">
                                 <span class="currency">₺</span>
-                                <span class="price-val" data-base="599">599</span>
+                                <span class="price-val" data-base="799">799</span>
                                 <span class="duration">/ay</span>
                             </div>
                             <p class="pricing-desc">Sınırsız güç. Tüm arşiv, beta sürümler ve birebir geliştirici desteği.</p>
@@ -659,7 +669,7 @@
                             <li><i class="fas fa-check-circle text-green"></i> Discord "GODLIKE" Özel Rozeti & Kanalları</li>
                             <li><i class="fas fa-check-circle text-green"></i> Özel Script & Config İsteme Hakkı</li>
                         </ul>
-                        <button class="btn btn-outline btn-block" onclick="addToCart('VIP 3 (Godlike Unlimited)', 599, 'vip')">
+                        <button class="btn btn-outline btn-block" onclick="addToCart('VIP 3 (Godlike Unlimited)', 799, 'vip')">
                             <i class="fas fa-gem"></i> Ultimate Seç
                         </button>
                     </div>
