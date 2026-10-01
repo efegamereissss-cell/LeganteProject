@@ -404,6 +404,42 @@
 
                     <div class="status-card">
                         <div class="status-card-header">
+                            <div class="game-logo"><i class="fas fa-shield-halved"></i></div>
+                            <div>
+                                <h4>R6 Siege Tactical</h4>
+                                <span class="ac-tag">BattlEye Ring0</span>
+                            </div>
+                        </div>
+                        <div class="status-card-badge status-undetected">
+                            <span class="dot"></span>
+                            <span>UNDETECTED</span>
+                        </div>
+                        <div class="status-card-footer">
+                            <span>Sürüm: Y9S4</span>
+                            <span class="time-ago">9 dk önce test edildi</span>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="status-card-header">
+                            <div class="game-logo"><i class="fas fa-person-rifle"></i></div>
+                            <div>
+                                <h4>Warzone Phantom</h4>
+                                <span class="ac-tag">Ricochet Kernel Safe</span>
+                            </div>
+                        </div>
+                        <div class="status-card-badge status-undetected">
+                            <span class="dot"></span>
+                            <span>UNDETECTED</span>
+                        </div>
+                        <div class="status-card-footer">
+                            <span>Sürüm: Season 1 MW3</span>
+                            <span class="time-ago">6 dk önce test edildi</span>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="status-card-header">
                             <div class="game-logo"><i class="fas fa-compact-disc"></i></div>
                             <div>
                                 <h4>HWID Perm Spoofer</h4>
@@ -430,7 +466,7 @@
                     <div>
                         <span class="section-tag-pill"><i class="fas fa-store"></i> PREMİUM YAZILIMLAR</span>
                         <h2 class="section-heading">Legante <span class="gradient-text">Yazılım Marketi</span></h2>
-                        <p class="section-subtext">Resmi oyun görselleriyle donatılmış, yüksek kaliteli hile arşivi ve VIP paketler.</p>
+                        <p class="section-subtext">Resmi oyun içi ekran görüntüleriyle donatılmış, yüksek kaliteli hile arşivi ve VIP paketler.</p>
                     </div>
 
                     <!-- Canlı Arama ve Sıralama Barı -->
@@ -452,14 +488,16 @@
 
                 <!-- Kategori Butonları -->
                 <div class="market-category-filters" id="category-filter-container">
-                    <button class="cat-pill-btn active" data-category="all"><i class="fas fa-layer-group"></i> Tümü</button>
-                    <button class="cat-pill-btn" data-category="valorant"><i class="fas fa-crosshairs"></i> Valorant</button>
-                    <button class="cat-pill-btn" data-category="cs2"><i class="fas fa-gun"></i> CS2</button>
-                    <button class="cat-pill-btn" data-category="rust"><i class="fas fa-radiation"></i> Rust</button>
-                    <button class="cat-pill-btn" data-category="fivem"><i class="fas fa-car"></i> FiveM</button>
-                    <button class="cat-pill-btn" data-category="spoofer"><i class="fas fa-shield"></i> Spoofer & Tools</button>
-                    <button class="cat-pill-btn" data-category="vip"><i class="fas fa-crown"></i> VIP Üyelik</button>
-                    <button class="cat-pill-btn" data-category="booster"><i class="fas fa-rocket"></i> Booster</button>
+                    <button class="cat-pill-btn active" data-category="all" onclick="filterByCategory('all')"><i class="fas fa-layer-group"></i> Tümü</button>
+                    <button class="cat-pill-btn" data-category="valorant" onclick="filterByCategory('valorant')"><i class="fas fa-crosshairs"></i> Valorant</button>
+                    <button class="cat-pill-btn" data-category="cs2" onclick="filterByCategory('cs2')"><i class="fas fa-gun"></i> CS2</button>
+                    <button class="cat-pill-btn" data-category="rust" onclick="filterByCategory('rust')"><i class="fas fa-radiation"></i> Rust</button>
+                    <button class="cat-pill-btn" data-category="fivem" onclick="filterByCategory('fivem')"><i class="fas fa-car"></i> FiveM</button>
+                    <button class="cat-pill-btn" data-category="apex" onclick="filterByCategory('apex')"><i class="fas fa-skull"></i> Apex Legends</button>
+                    <button class="cat-pill-btn" data-category="tactical" onclick="filterByCategory('tactical')"><i class="fas fa-person-rifle"></i> R6 & Warzone</button>
+                    <button class="cat-pill-btn" data-category="spoofer" onclick="filterByCategory('spoofer')"><i class="fas fa-shield"></i> Spoofer</button>
+                    <button class="cat-pill-btn" data-category="vip" onclick="filterByCategory('vip')"><i class="fas fa-crown"></i> VIP Üyelik</button>
+                    <button class="cat-pill-btn" data-category="booster" onclick="filterByCategory('booster')"><i class="fas fa-rocket"></i> Booster</button>
                 </div>
 
                 <!-- Ürün Kartları Izgarası (Görsel Banner'lı Dinamik JS Render) -->

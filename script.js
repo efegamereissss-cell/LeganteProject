@@ -191,31 +191,71 @@ function showToast(message, type = 'info') {
     }, 3500);
 }
 
-// ==================== 5. PRODUCT CATALOG WITH OFFICIAL GAME PHOTOS ====================
+// ==================== 5. PRODUCT CATALOG WITH REAL IN-GAME SCREENSHOTS ====================
 const productsData = [
     {
         id: 'valo-pro',
         title: 'Valorant Pro VIP',
         category: 'valorant',
         game: 'Riot Games / Valorant',
-        badge: 'UNDETECTED',
+        badge: 'BESTSELLER',
         badgeClass: 'badge-safe',
+        status: 'UNDETECTED • v9.08.1',
         priceTRY: 249,
         popular: true,
         icon: 'fas fa-crosshairs',
-        bannerImg: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop',
-        desc: 'Vanguard Ring0 tam korumalı, ESP Box, Skeleton, Chams, Aimbot ve Smoothness ayarları ile en güvenli sürüm.',
+        bannerImg: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/6628e175321b3fb53c863e58d1c033f7bfe5390e-854x484.png?w=1280&auto=format',
+        gallery: [
+            { title: 'Jett Taktiksel Oyun İçi Arayüz', url: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/6628e175321b3fb53c863e58d1c033f7bfe5390e-854x484.png?w=1280&auto=format' },
+            { title: 'Ascent Haritası Bomba Alanı', url: 'https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png' },
+            { title: 'RGX 11z Pro Neon Silah Arayüzü', url: 'https://media.valorant-api.com/bundles/35815cab-429d-79e4-43f5-e0af8fdac22b/displayicon2.png' }
+        ],
+        desc: 'Vanguard Ring0 tam korumalı, ESP Box, Skeleton, Glow, Aimbot ve Smoothness ayarları ile en güvenli Valorant sürümü.',
+        tags: ['Vanguard Ring0', 'OBS Stream-Proof', 'Silent Aim', 'Glow & Skeleton ESP'],
         features: [
-            'Kernel Düzeyi Vanguard Bypass',
-            'Smooth Aimbot & Recoil Control',
-            'Glow, Box, Skeleton & Health ESP',
-            'OBS & Discord Screen Share Proof',
-            'Dahili HWID Spoofer Dahil'
+            'Kernel Düzeyi Vanguard Bypass (VAN 152 Korumalı)',
+            'Smooth Aimbot & Recoil Control (RCS)',
+            'Glow, Box, Skeleton, Health & Spike ESP',
+            'OBS & Discord Ekran Paylaşımında Görünmez',
+            'Dahili HWID Spoofer Pakete Dahil'
         ],
         specs: {
             os: 'Windows 10 / 11 (Tüm Sürümler)',
             cpu: 'Intel & AMD Uyumlu',
             anticheat: 'Riot Vanguard (Undetected)',
+            delivery: 'Anında Otomatik Teslimat'
+        }
+    },
+    {
+        id: 'valo-radiant',
+        title: 'Valorant Radiant ESP & Radar',
+        category: 'valorant',
+        game: 'Riot Games / Valorant',
+        badge: 'YENİ SÜRÜM',
+        badgeClass: 'badge-vip',
+        status: 'UNDETECTED • Kernel Radar',
+        priceTRY: 189,
+        popular: false,
+        icon: 'fas fa-eye',
+        bannerImg: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/23e7bfb92f61c8e6161134882f8e247ce1a2d285-854x484.png?w=1280&auto=format',
+        gallery: [
+            { title: 'Reyna Empress Taktiksel Görünüm', url: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/23e7bfb92f61c8e6161134882f8e247ce1a2d285-854x484.png?w=1280&auto=format' },
+            { title: 'Kuronami Silah Kaplaması Görseli', url: 'https://media.valorant-api.com/bundles/69d9b2be-4439-0785-780b-ba8951053683/displayicon2.png' },
+            { title: 'Haven Haritası 3D Radar Görünümü', url: 'https://media.valorant-api.com/maps/2bee0dc9-4ffe-519b-1cbd-7fbe763a6047/splash.png' }
+        ],
+        desc: 'Düşük CPU tüketimi, 2. ekran radar desteği, Glow Chams ve bomba süresi göstergesi ile legit oynayanlara özel.',
+        tags: ['2. PC Web Radarı', 'Glow Chams', 'Spike Timer', 'Zero Ban Risk'],
+        features: [
+            'Tarayıcı Üzerinden 2. Ekranda Canlı Mini Harita',
+            'Glow Chams & Renkli Düşman Vurgulama',
+            'Spike Çözme / Patlama Zamanlayıcısı',
+            'Riot Vanguard Tarafından Algılanamaz',
+            'Oyun İçi FPS Düşüşü %0'
+        ],
+        specs: {
+            os: 'Windows 10 / 11 (64-Bit)',
+            cpu: 'Tüm İşlemciler Destekli',
+            anticheat: 'Riot Vanguard (Güvenli)',
             delivery: 'Anında Otomatik Teslimat'
         }
     },
@@ -226,17 +266,24 @@ const productsData = [
         game: 'Valve / Counter-Strike 2',
         badge: 'POPÜLER',
         badgeClass: 'badge-hot',
+        status: 'UNDETECTED • VACnet 3.0',
         priceTRY: 199,
         popular: true,
         icon: 'fas fa-gun',
-        bannerImg: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800&auto=format&fit=crop',
-        desc: 'VACnet 3.0 ve Premier Ranked için optimize edilmiş, Silent Aim, Triggerbot ve radar destekli profesyonel yazılım.',
+        bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/730/9c8b8fd6ebb2c84a1c38541369e6c05db7f1fbe0/ss_9c8b8fd6ebb2c84a1c38541369e6c05db7f1fbe0.1920x1080.jpg?t=1789251637',
+        gallery: [
+            { title: 'Dust II Oyun İçi Çatışma', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/730/9c8b8fd6ebb2c84a1c38541369e6c05db7f1fbe0/ss_9c8b8fd6ebb2c84a1c38541369e6c05db7f1fbe0.1920x1080.jpg?t=1789251637' },
+            { title: 'Dinamik Sis & Molotof Etkileşimi', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/730/4ef95eed5fcd98c576bf13e024bc6c845b622132/ss_4ef95eed5fcd98c576bf13e024bc6c845b622132.1920x1080.jpg?t=1789251637' },
+            { title: 'Resmi CS2 Operatör Modelleri', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/730/capsule_616x353.jpg' }
+        ],
+        desc: 'VACnet 3.0 ve Premier Ranked için optimize edilmiş, Silent Aim, Triggerbot, RCS ve radar destekli profesyonel yazılım.',
+        tags: ['VACnet 3.0 Safe', 'Silent Aim', 'RCS Recoil Control', 'Overwatch Safe'],
         features: [
-            'VACnet 3.0 & Overwatch Safe',
-            'Silent Aim & Görünmez Spike ESP',
-            'Bones, Box, Weapon & Dropped ESP',
-            'Standart & Legit RCS (Geri Tepme)',
-            'Bulut Tabanlı CFG Senkronizasyonu'
+            'VACnet 3.0 & Overwatch Bypass Koruması',
+            'Silent Aim & Görünmez Spike / C4 ESP',
+            'Kemik, Kutu, Silah & Dropped Item ESP',
+            'Standart & Legit RCS (Geri Tepme Önleyici)',
+            'Bulut Tabanlı CFG Paylaşımı ve Senkronizasyonu'
         ],
         specs: {
             os: 'Windows 10 / 11 (64-Bit)',
@@ -252,16 +299,23 @@ const productsData = [
         game: 'Facepunch / Rust',
         badge: 'BESTSELLER',
         badgeClass: 'badge-hot',
+        status: 'UNDETECTED • EAC Safe',
         priceTRY: 299,
         popular: true,
         icon: 'fas fa-radiation',
-        bannerImg: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop',
+        bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/252490/ss_271feae67943bdc141c1249aba116349397e9ba9.1920x1080.jpg?t=1781536981',
+        gallery: [
+            { title: 'Oyun İçi Raid ve AK-47 Çatışması', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/252490/ss_271feae67943bdc141c1249aba116349397e9ba9.1920x1080.jpg?t=1781536981' },
+            { title: 'Üs Savunması ve Anıtlar (Monuments)', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/252490/ss_e825b087b95e51c3534383cfd75ad6e8038147c3.1920x1080.jpg?t=1781536981' },
+            { title: 'Rust Hayatta Kalma Dünyası', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/252490/header.jpg' }
+        ],
         desc: 'EAC korumasını tamamen devreden çıkaran, Silent Aim, No-Spread, Ore/Player ESP ve Debug Camera barındıran hile.',
+        tags: ['EAC Bypass', 'No-Spread', 'Ore/Loot ESP', 'Admin Debug Cam'],
         features: [
-            'Easy Anti-Cheat (EAC) Bypass',
-            'Silent Aim & Otomatik Tahmin (Prediction)',
-            'Maden, Kasa, Oyuncu & Tuzak ESP',
-            'Debug Camera & Admin Modu',
+            'Easy Anti-Cheat (EAC) & Cerberus Bypass',
+            'Silent Aim & Otomatik Mermi Tahmini (Prediction)',
+            'Maden, Kasa, Oyuncu, Uyuyan ve Tuzak ESP',
+            'Debug Camera & Serbest Uçuş (Admin Modu)',
             'Tüfek Geri Tepme Sıfırlama (%100 RCS)'
         ],
         specs: {
@@ -278,22 +332,126 @@ const productsData = [
         game: 'Rockstar / FiveM Roleplay',
         badge: 'GLOBAL',
         badgeClass: 'badge-vip',
+        status: 'UNDETECTED • Global Bypass',
         priceTRY: 179,
         popular: false,
         icon: 'fas fa-car',
-        bannerImg: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800&auto=format&fit=crop',
+        bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.1920x1080.jpg?t=1765387725',
+        gallery: [
+            { title: 'Los Santos Şehir İçi Hız & Kovalama', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.1920x1080.jpg?t=1765387725' },
+            { title: 'Gece Aksiyonu ve Helikopter Takibi', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/271590/ss_2744f112fa060320d191a50e8b3a92441a648a56.1920x1080.jpg?t=1765387725' },
+            { title: 'FiveM Roleplay Evreni', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg' }
+        ],
         desc: 'Tüm FiveM RP sunucularında çalışan, Lua Executor, Godmode, Araç ve Silah modlama özellikli devasa hile menüsü.',
+        tags: ['Lua Executor', 'Global AC Bypass', 'Vehicle Spawner', 'Noclip & Teleport'],
         features: [
-            'Global Sunucu Ban Bypass',
-            'Güçlü Lua Executor & Dumper',
-            'Godmode, Noclip, Teleport & Para Modu',
-            'Özel Araç Spawn ve Drift Modları',
-            'Bütün Sunucu AC Sistemlerine Uyumlu'
+            'Global Sunucu Donanım Banı Bypass',
+            'Gelişmiş Lua Executor & Server Dumper',
+            'Godmode, Noclip, Teleport & Para Hilesi Modları',
+            'Özel Araç Spawn ve Drift / Nitro Modları',
+            'Bütün Türk & Yabancı RP Sunucularına Uyumlu'
         ],
         specs: {
             os: 'Windows 10 / 11',
             cpu: 'Intel & AMD',
             anticheat: 'FiveM Global Anticheat',
+            delivery: 'Anında Otomatik Teslimat'
+        }
+    },
+    {
+        id: 'apex-dma',
+        title: 'Apex Legends DMA Radar',
+        category: 'apex',
+        game: 'EA / Apex Legends',
+        badge: 'DMA SAFE',
+        badgeClass: 'badge-vip',
+        status: 'UNDETECTED • DMA / 2.PC',
+        priceTRY: 279,
+        popular: false,
+        icon: 'fas fa-skull',
+        bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1172470/ss_3fc2dfcf0e8d7d7202a3ca32ae26c7afaec723e2.1920x1080.jpg?t=1790164440',
+        gallery: [
+            { title: 'Oyun İçi Takım Çatışması & Loot', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1172470/ss_3fc2dfcf0e8d7d7202a3ca32ae26c7afaec723e2.1920x1080.jpg?t=1790164440' },
+            { title: 'Apex Arena & Bölge Kontrolü', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1172470/ss_d64ce54903a3ba6429c6e3189ad746a7db70ee3e.1920x1080.jpg?t=1790164440' },
+            { title: 'Apex Legends Karakterleri', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1172470/header.jpg' }
+        ],
+        desc: 'İkinci bilgisayar veya tek PC radar modu ile çalışan, tespit edilmesi imkansız donanım tabanlı ESP ve Aimbot.',
+        tags: ['DMA Donanım Güvenliği', 'Bone Aimbot', 'Glow ESP', 'Loot Filtresi'],
+        features: [
+            '2. PC Web / İkincil Ekran Canlı Radarı',
+            'BattlEye & EAC Ring0 Koruma',
+            'Loot, Kalkan Seviyesi & Glow ESP',
+            'Pürüzsüz Kemik Kilitleme (Bone Aimbot)',
+            'Yüksek FPS & Sıfır Bellek İzi'
+        ],
+        specs: {
+            os: 'Windows 10 / 11',
+            cpu: 'Intel & AMD',
+            anticheat: 'Easy Anti-Cheat',
+            delivery: 'Anında Otomatik Teslimat'
+        }
+    },
+    {
+        id: 'r6-tactical',
+        title: 'Rainbow Six Siege Tactical',
+        category: 'tactical',
+        game: 'Ubisoft / R6 Siege',
+        badge: 'YENİ SÜRÜM',
+        badgeClass: 'badge-safe',
+        status: 'UNDETECTED • BattlEye Safe',
+        priceTRY: 219,
+        popular: false,
+        icon: 'fas fa-shield-halved',
+        bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/359550/2efed3587d876f560cbf3f25d9a72fbd387b74e6/ss_2efed3587d876f560cbf3f25d9a72fbd387b74e6.1920x1080.jpg?t=1790108602',
+        gallery: [
+            { title: 'Taktiksel Duvar Delme ve Baskın', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/359550/2efed3587d876f560cbf3f25d9a72fbd387b74e6/ss_2efed3587d876f560cbf3f25d9a72fbd387b74e6.1920x1080.jpg?t=1790108602' },
+            { title: 'R6 Siege Operasyon Merkezi', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/359550/6b69a8d5ac8d0542bba5c735a8bcc5bb33cda42e/header_alt_assets_25.jpg?t=1790108602' }
+        ],
+        desc: 'BattlEye bypass ile duvar arkasındaki rakipleri, tuzakları ve kameraları gören, No-Recoil destekli profesyonel yazılım.',
+        tags: ['Caveira ESP', 'No Recoil', 'Trap & Cam ESP', 'Silent Aim'],
+        features: [
+            'BattlEye Ring0 Kernel Driver Koruması',
+            'Duvar Arkası Operatör & Sağlık ESP',
+            'Kamera, Dron ve Tuzak Görünürlüğü',
+            'Silah Sekme Sıfırlayıcı (No-Recoil)',
+            'OBS ve Kayıt Programlarında Görünmez'
+        ],
+        specs: {
+            os: 'Windows 10 / 11',
+            cpu: 'Intel & AMD',
+            anticheat: 'BattlEye Safe',
+            delivery: 'Anında Otomatik Teslimat'
+        }
+    },
+    {
+        id: 'warzone-phantom',
+        title: 'Warzone Phantom Ring0',
+        category: 'tactical',
+        game: 'Activision / Call of Duty',
+        badge: 'GÜNCELLENDİ',
+        badgeClass: 'badge-hot',
+        status: 'UNDETECTED • Ricochet Safe',
+        priceTRY: 259,
+        popular: true,
+        icon: 'fas fa-person-rifle',
+        bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1938090/ee5f6b6aebe4dc9e86b49c4e309d361b132df308/ss_ee5f6b6aebe4dc9e86b49c4e309d361b132df308.1920x1080.jpg?t=1790698535',
+        gallery: [
+            { title: 'Warzone Oyun İçi Çatışma Alanı', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1938090/ee5f6b6aebe4dc9e86b49c4e309d361b132df308/ss_ee5f6b6aebe4dc9e86b49c4e309d361b132df308.1920x1080.jpg?t=1790698535' },
+            { title: 'Call of Duty Operasyon Bölgesi', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1938090/header.jpg' }
+        ],
+        desc: 'Ricochet Anti-Cheat motoruna tam uyumlu, Prediction Aimbot, Kutu/İskelet ESP ve Kasa/Para radar özellikli hile.',
+        tags: ['Ricochet Bypass', 'Prediction Aim', 'Loot & Money ESP', 'UAV Radar'],
+        features: [
+            'Ricochet Kernel Sürücü Koruması',
+            'Mermi Hızı ve Düşüşü Hesaplayan Prediction Aim',
+            'Kutu, Zırh, Para ve Silah Sandığı ESP',
+            'Sürekli Aktif Kişisel İHA (UAV) Radarı',
+            'Görünmez Menü & Güvenli Enjeksiyon'
+        ],
+        specs: {
+            os: 'Windows 10 / 11 (64-Bit)',
+            cpu: 'Intel & AMD',
+            anticheat: 'Ricochet (Undetected)',
             delivery: 'Anında Otomatik Teslimat'
         }
     },
@@ -304,14 +462,20 @@ const productsData = [
         game: 'Tüm Oyunlar İçin Evrensel',
         badge: 'ÖMÜR BOYU',
         badgeClass: 'badge-safe',
+        status: 'WORKING • Permanent Ring0',
         priceTRY: 349,
         popular: true,
         icon: 'fas fa-compact-disc',
-        bannerImg: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop',
-        desc: 'Format gerektirmeyen, tek tıkla anakart, SSD, NIC ve BIOS kimliklerini yenileyen kalıcı donanım ban kaldırıcı.',
+        bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/730/capsule_616x353.jpg',
+        gallery: [
+            { title: 'Anakart & Donanım Kimlik Sıfırlayıcı', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/730/capsule_616x353.jpg' },
+            { title: 'TPM 2.0 & SecureBoot Sanallaştırma', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/252490/header.jpg' }
+        ],
+        desc: 'Format gerektirmeyen, tek tıkla anakart, SSD, NIC ve BIOS seri numaralarını kalıcı olarak yenileyen profesyonel araç.',
+        tags: ['Format Gerekmez', 'VAN 152 / VAN 5 Fix', 'TPM 2.0 Bypass', 'Kalıcı HWID'],
         features: [
-            'Asus, MSI, Gigabyte, ASRock Uyumlu',
-            'Disk, Ağ Kartı (MAC), GPU Seri No Reset',
+            'Asus, MSI, Gigabyte, ASRock, Biostar Uyumlu',
+            'Disk (SSD/NVMe), Ağ Kartı (MAC), GPU Seri No Reset',
             'TPM 2.0 & Secure Boot Sanallaştırma',
             'Format Atmaya Kesinlikle Gerek Yok',
             'Valorant (VAN 152 / VAN 5) Kesin Çözüm'
@@ -324,48 +488,27 @@ const productsData = [
         }
     },
     {
-        id: 'apex-dma',
-        title: 'Apex Legends DMA Radar',
-        category: 'spoofer',
-        game: 'EA / Apex Legends',
-        badge: 'DMA SAFE',
-        badgeClass: 'badge-vip',
-        priceTRY: 279,
-        popular: false,
-        icon: 'fas fa-skull',
-        bannerImg: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop',
-        desc: 'İkinci bilgisayar veya tek PC radar modu ile çalışan, tespit edilmesi imkansız donanım tabanlı ESP ve Aimbot.',
-        features: [
-            '2. PC Web / İkincil Ekran Radarı',
-            'BattlEye & EAC Ring0 Koruma',
-            'Loot, Kalkan Seviyesi & Glow ESP',
-            'Pürüzsüz Kemik Kilitleme (Bone Aimbot)',
-            'Yüksek FPS & Sıfır Donma'
-        ],
-        specs: {
-            os: 'Windows 10 / 11',
-            cpu: 'Intel & AMD',
-            anticheat: 'Easy Anti-Cheat',
-            delivery: 'Anında Otomatik Teslimat'
-        }
-    },
-    {
         id: 'vip-sub-1',
-        title: 'VIP 1 Üyelik Paketi',
+        title: 'VIP All-Access Üyelik',
         category: 'vip',
         game: 'Tüm Arşivden 5 Hile',
         badge: 'VIP ROLLER',
         badgeClass: 'badge-vip',
+        status: 'VIP ACCESS • Aktif',
         priceTRY: 149,
         popular: false,
         icon: 'fas fa-crown',
-        bannerImg: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop',
-        desc: 'Seçtiğiniz 5 farklı hileye 1 ay boyunca sınırsız erişim ve Discord özel rolü sağlayan ekonomik paket.',
+        bannerImg: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/41a9316861671756f6f2bdedcde60f99e37de0d4-3840x2160.jpg?w=1280&auto=format',
+        gallery: [
+            { title: 'VIP Arşiv ve Özel Discord Kanalları', url: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/41a9316861671756f6f2bdedcde60f99e37de0d4-3840x2160.jpg?w=1280&auto=format' }
+        ],
+        desc: 'Seçtiğiniz 5 farklı hileye 1 ay boyunca sınırsız erişim ve Discord özel VIP rolü sağlayan en avantajlı paket.',
+        tags: ['5 Hile Seçimi', 'Discord VIP Rolü', '7/24 Öncelikli Destek', 'Extra Tools Suite'],
         features: [
             '5 Adet Premium Hile Seçim Hakkı',
-            'Discord VIP Rolü & Kanalları',
-            'Otomatik Güncelleme Desteği',
-            'Extra Tools Suite Erişimi'
+            'Discord VIP Rolü & Gizli VIP Kanalları',
+            'Hile Güncellemelerine İlk Sırada Erişim',
+            'Extra Tools Suite Sınırsız Kullanım'
         ],
         specs: {
             os: 'Tüm Sistemler',
@@ -376,21 +519,26 @@ const productsData = [
     },
     {
         id: 'booster-pack-2',
-        title: 'Sunucu Booster Paketi',
+        title: 'Sunucu & Rank Booster',
         category: 'booster',
-        game: 'Discord & Rank Servisi',
+        game: 'Discord & Profesyonel Rank',
         badge: 'HIZLI BOOST',
         badgeClass: 'badge-hot',
+        status: 'ONLINE • 7/24 Aktif',
         priceTRY: 69,
         popular: false,
         icon: 'fas fa-rocket',
-        bannerImg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
+        bannerImg: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1172470/ss_d64ce54903a3ba6429c6e3189ad746a7db70ee3e.1920x1080.jpg?t=1790164440',
+        gallery: [
+            { title: 'Profesyonel Rank Yükseltme Odaları', url: 'https://shared.steamstatic.com/store_item_assets/steam/apps/1172470/ss_d64ce54903a3ba6429c6e3189ad746a7db70ee3e.1920x1080.jpg?t=1790164440' }
+        ],
         desc: '8 saat boyunca VIP lobi, özel koçluk ve hızlı rank yükseltme odalarına öncelikli katılım desteği.',
+        tags: ['8 Saat Kesintisiz', 'Yüksek K/D', 'Birebir Koçluk', 'Garantili Rank'],
         features: [
-            '8 Saat Kesintisiz Booster Desteği',
-            'Özel VIP Ses ve Yayın Odası',
-            'Yüksek K/D Oranı ve Rank Garantisi',
-            '7/24 Birebir Oyun Arkadaşı Desteği'
+            '8 Saat Kesintisiz Profesyonel Oyuncu Desteği',
+            'Özel VIP Ses ve Yayın Odası Erişimi',
+            'Yüksek K/D Oranı ve Rank Atlama Garantisi',
+            '7/24 Anında Başlama & Aktivasyon'
         ],
         specs: {
             os: 'Platform Bağımsız',
@@ -410,10 +558,13 @@ function renderProducts() {
     if (!container) return;
 
     let filtered = productsData.filter(item => {
-        const matchesCategory = (currentFilter === 'all') || (item.category === currentFilter);
+        const matchesCategory = (currentFilter === 'all') ||
+                              (item.category === currentFilter) ||
+                              (currentFilter === 'tactical' && ['r6', 'warzone', 'pubg', 'tactical'].includes(item.category));
         const matchesSearch = item.title.toLowerCase().includes(currentSearch.toLowerCase()) ||
                               item.game.toLowerCase().includes(currentSearch.toLowerCase()) ||
-                              item.desc.toLowerCase().includes(currentSearch.toLowerCase());
+                              item.desc.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                              (item.tags && item.tags.some(t => t.toLowerCase().includes(currentSearch.toLowerCase())));
         return matchesCategory && matchesSearch;
     });
 
@@ -437,20 +588,34 @@ function renderProducts() {
     }
 
     container.innerHTML = filtered.map(item => `
-        <div class="product-card" data-category="${item.category}">
-            <!-- FOTOĞRAFLI BANNER -->
-            <div class="product-card-banner">
-                <img src="${item.bannerImg}" alt="${item.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop'">
+        <div class="product-card" data-category="${item.category}" id="product-${item.id}">
+            <!-- FOTOĞRAFLI RESMİ OYUN BANNERI -->
+            <div class="product-card-banner" onclick="openProductDetail('${item.id}')" style="cursor: pointer;" title="Oyun İçi Ekran Görüntülerini İncele">
+                <img src="${item.bannerImg}" alt="${item.title}" loading="lazy" onerror="this.src='https://shared.steamstatic.com/store_item_assets/steam/apps/730/capsule_616x353.jpg'">
                 <div class="banner-gradient-overlay"></div>
                 <div class="banner-badge-group">
                     <span class="product-game-chip"><i class="${item.icon}"></i> ${item.game.split('/')[0].trim()}</span>
                     <span class="product-badge ${item.badgeClass}">${item.badge}</span>
                 </div>
+                <div class="banner-bottom-bar">
+                    <div class="banner-live-status">
+                        <span class="status-live-dot"></span> ${item.status || 'UNDETECTED'}
+                    </div>
+                    <div class="banner-gallery-count">
+                        <i class="fas fa-images"></i> ${(item.gallery || []).length || 1} Fotoğraf
+                    </div>
+                </div>
             </div>
 
             <div class="product-card-body">
-                <h3 class="product-title">${item.title}</h3>
+                <h3 class="product-title" onclick="openProductDetail('${item.id}')" style="cursor: pointer;">${item.title}</h3>
+                
+                <div class="product-tags-wrapper">
+                    ${(item.tags || []).map(t => `<span class="product-tag-pill">${t}</span>`).join('')}
+                </div>
+
                 <p class="product-desc">${item.desc}</p>
+                
                 <ul class="product-features-list">
                     ${item.features.slice(0, 3).map(f => `<li><i class="fas fa-shield-check"></i> ${f}</li>`).join('')}
                 </ul>
@@ -462,7 +627,7 @@ function renderProducts() {
                     <span class="price-amount">${formatPrice(item.priceTRY)}</span>
                 </div>
                 <div class="product-action-btns">
-                    <button class="btn-detail" onclick="openProductDetail('${item.id}')" title="Detaylı Özellikler">
+                    <button class="btn-detail" onclick="openProductDetail('${item.id}')" title="Detaylı Özellikler & Oyun İçi Görseller">
                         <i class="fas fa-eye"></i> İncele
                     </button>
                     <button class="btn btn-primary btn-sm btn-glow" onclick="addToCart('${item.title}', ${item.priceTRY}, '${item.id}')">
@@ -500,7 +665,34 @@ function sortMarket(val) {
     renderProducts();
 }
 
-// ==================== 6. PRODUCT DETAIL MODAL (WITH BANNER) ====================
+// ==================== 6. PRODUCT DETAIL MODAL (WITH INTERACTIVE IN-GAME GALLERY) ====================
+window.switchModalImage = function(imgUrl, thumbBtn) {
+    const mainImg = document.getElementById('modal-main-gallery-img');
+    if (mainImg) {
+        mainImg.style.opacity = '0.2';
+        setTimeout(() => {
+            mainImg.src = imgUrl;
+            mainImg.style.opacity = '1';
+        }, 120);
+    }
+    document.querySelectorAll('.gallery-thumb-btn').forEach(b => b.classList.remove('active'));
+    if (thumbBtn) thumbBtn.classList.add('active');
+    playClickSFX();
+};
+
+window.copyProductShareLink = function(id) {
+    const url = `${window.location.origin}${window.location.pathname}#product-${id}`;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+            showToast('🔗 Ürün bağlantısı panoya kopyalandı!', 'success');
+        }).catch(() => {
+            showToast('Bağlantı: ' + url, 'info');
+        });
+    } else {
+        showToast('Bağlantı: ' + url, 'info');
+    }
+};
+
 function openProductDetail(productId) {
     const item = productsData.find(p => p.id === productId);
     if (!item) return;
@@ -512,25 +704,57 @@ function openProductDetail(productId) {
 
     if (!modal || !title || !body) return;
 
+    const gallery = (item.gallery && item.gallery.length > 0) ? item.gallery : [{ title: 'Ana Görünüm', url: item.bannerImg }];
+
     title.innerHTML = `<i class="${item.icon}"></i> ${item.title}`;
     body.innerHTML = `
-        <!-- MODAL BANNER FOTOĞRAFI -->
-        <div style="position:relative; width:100%; height:180px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:16px;">
-            <img src="${item.bannerImg}" style="width:100%; height:100%; object-fit:cover;" alt="${item.title}">
-            <div style="position:absolute; inset:0; background:linear-gradient(180deg, transparent 40%, rgba(8,8,16,0.95) 100%);"></div>
-            <div style="position:absolute; bottom:12px; left:14px; font-weight:800; font-size:1.15rem; color:#fff;">
-                ${item.title} <span class="product-badge ${item.badgeClass}" style="vertical-align:middle; margin-left:8px;">${item.badge}</span>
+        <!-- İNTERAKTİF OYUN İÇİ FOTOĞRAF GALERİSİ -->
+        <div class="modal-gallery-container">
+            <div class="modal-gallery-viewport">
+                <img id="modal-main-gallery-img" src="${gallery[0].url}" alt="${item.title}">
+                <div class="modal-gallery-overlay">
+                    <div class="modal-gallery-top">
+                        <span class="product-game-chip"><i class="${item.icon}"></i> ${item.game}</span>
+                        <span class="product-badge ${item.badgeClass}">${item.badge}</span>
+                    </div>
+                    <div class="modal-gallery-bottom">
+                        <div class="banner-live-status">
+                            <span class="status-live-dot"></span> ${item.status || 'UNDETECTED'}
+                        </div>
+                        <div class="banner-gallery-count">
+                            <i class="fas fa-camera"></i> ${gallery.length} Ekran Görüntüsü
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Küçük Resim Seçici Çubuğu -->
+            <div class="modal-gallery-thumbnails">
+                ${gallery.map((g, idx) => `
+                    <button type="button" class="gallery-thumb-btn ${idx === 0 ? 'active' : ''}" onclick="switchModalImage('${g.url}', this)" title="${g.title}">
+                        <img src="${g.url}" alt="${g.title}">
+                        <span>${g.title}</span>
+                    </button>
+                `).join('')}
             </div>
         </div>
 
+        <!-- FİYAT & SEPETE EKLEME ŞERİDİ -->
         <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(139,92,246,0.12); border:1px solid var(--border-subtle); padding:14px; border-radius:var(--radius-md);">
             <div>
                 <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">${item.game}</span>
                 <div style="font-size:1.4rem; font-weight:800;">${formatPrice(item.priceTRY)} <span style="font-size:0.85rem; color:var(--text-muted);">/ Ay</span></div>
             </div>
-            <button class="btn btn-primary btn-glow" onclick="addToCart('${item.title}', ${item.priceTRY}, '${item.id}'); closeProductDetail();">
-                <i class="fas fa-cart-plus"></i> Hemen Sepete Ekle
-            </button>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-primary btn-glow" onclick="addToCart('${item.title}', ${item.priceTRY}, '${item.id}'); closeProductDetail();">
+                    <i class="fas fa-cart-plus"></i> Sepete Ekle
+                </button>
+            </div>
+        </div>
+
+        <!-- ETİKETLER (TAGS) -->
+        <div class="product-tags-wrapper">
+            ${(item.tags || []).map(t => `<span class="product-tag-pill" style="font-size:0.75rem; padding:4px 10px;"><i class="fas fa-hashtag"></i> ${t}</span>`).join('')}
         </div>
 
         <div>
@@ -548,6 +772,16 @@ function openProductDetail(productId) {
                 <div><span style="color:var(--text-muted);">Güvenlik Durumu:</span><br><strong class="text-green">${item.specs.anticheat}</strong></div>
                 <div><span style="color:var(--text-muted);">Teslimat Türü:</span><br><strong>${item.specs.delivery}</strong></div>
             </div>
+        </div>
+
+        <!-- HIZLI EYLEM GRUBU -->
+        <div class="modal-product-cta-group">
+            <a href="https://discord.gg/bM6SZcNmzW" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="flex:1; justify-content:center;">
+                <i class="fab fa-discord"></i> Discord Destek & Ticket
+            </a>
+            <button class="btn btn-glass" onclick="copyProductShareLink('${item.id}')" title="Ürün Bağlantısını Kopyala">
+                <i class="fas fa-share-nodes"></i> Paylaş
+            </button>
         </div>
     `;
 

@@ -1518,6 +1518,62 @@ input, textarea, select {
 .badge-vip { background: rgba(139, 92, 246, 0.25); color: var(--primary-light); border: 1px solid var(--primary); }
 .badge-safe { background: rgba(16, 185, 129, 0.25); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
 
+/* BANNER ALT BARI (CANLI DURUM & GALERİ SAYACI) */
+.banner-bottom-bar {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+}
+
+.banner-live-status {
+    background: rgba(8, 8, 16, 0.88);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.3px;
+}
+
+.status-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: livePulse 1.8s infinite;
+}
+
+@keyframes livePulse {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px #10b981; }
+    100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+.banner-gallery-count {
+    background: rgba(8, 8, 16, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #cbd5e1;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 .product-card-body {
     padding: 16px 20px 20px;
     flex: 1;
@@ -1529,6 +1585,30 @@ input, textarea, select {
     font-size: 1.25rem;
     font-weight: 800;
     margin-bottom: 6px;
+    transition: color 0.2s ease;
+}
+.product-title:hover {
+    color: var(--primary-light);
+}
+
+.product-tags-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 12px;
+}
+
+.product-tag-pill {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 4px;
+    padding: 2px 7px;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
 }
 
 .product-desc {
@@ -2650,6 +2730,124 @@ input, textarea, select {
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px var(--primary-glow);
     display: flex;
     flex-direction: column;
+}
+
+/* GENİŞLETİLMİŞ ÜRÜN DETAY MODALI */
+.product-detail-card {
+    max-width: 720px;
+    width: 95%;
+}
+
+.modal-gallery-container {
+    margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-gallery-viewport {
+    position: relative;
+    width: 100%;
+    height: 270px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #090912;
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+#modal-main-gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: opacity 0.2s ease, transform 0.4s ease;
+}
+
+.modal-gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(6, 6, 12, 0.3) 0%, transparent 45%, rgba(6, 6, 14, 0.95) 100%);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 14px 16px;
+}
+
+.modal-gallery-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-gallery-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.modal-gallery-thumbnails {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 2px 2px 6px;
+}
+
+.gallery-thumb-btn {
+    flex: 1;
+    min-width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.gallery-thumb-btn img {
+    width: 100%;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.gallery-thumb-btn span {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    font-weight: 600;
+}
+
+.gallery-thumb-btn:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+    background: rgba(139, 92, 246, 0.08);
+}
+
+.gallery-thumb-btn.active {
+    border-color: var(--primary);
+    background: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.gallery-thumb-btn.active span {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.modal-product-cta-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 
 .modal-card-header {
