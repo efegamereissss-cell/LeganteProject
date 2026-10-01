@@ -3186,6 +3186,245 @@ input, textarea, select {
     overflow-y: auto;
 }
 
+/* ==================== ULTRA-SECURE AUTH & OWNER STYLES ==================== */
+.badge-owner {
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(168, 85, 247, 0.35)) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(251, 191, 36, 0.5) !important;
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.35) !important;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    animation: ownerGlowPulse 2.5s infinite alternate;
+}
+
+@keyframes ownerGlowPulse {
+    0% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.2); }
+    100% { box-shadow: 0 0 18px rgba(251, 191, 36, 0.6); }
+}
+
+.prof-tab-owner {
+    color: #fbbf24 !important;
+}
+.prof-tab-owner.active::after {
+    background: #fbbf24 !important;
+}
+
+/* CYBER SHIELD / TURNSTILE VERIFICATION */
+.cyber-shield-container {
+    background: rgba(15, 6, 28, 0.75);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    margin: 12px 0;
+    transition: var(--transition);
+}
+.cyber-shield-container:hover {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+}
+.cyber-shield-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+.cyber-shield-checkbox {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid rgba(168, 85, 247, 0.5);
+    background: rgba(4, 1, 8, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: var(--primary-light);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cyber-shield-checkbox.verified {
+    background: #22c55e !important;
+    border-color: #22c55e !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+}
+.cyber-shield-checkbox.spinning {
+    border-color: var(--primary-light);
+    animation: shieldSpin 1s infinite linear;
+}
+@keyframes shieldSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.cyber-shield-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.cyber-shield-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+.cyber-shield-sub {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+.cyber-shield-status {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary-light);
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(168, 85, 247, 0.15);
+}
+
+/* LOCKOUT ALERT */
+.lockout-alert {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.lockout-alert i {
+    font-size: 1.6rem;
+    color: #ef4444;
+}
+
+/* PASSWORD STRENGTH METER */
+.password-meter-wrap {
+    margin-top: -6px;
+    margin-bottom: 12px;
+}
+.password-meter-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.password-meter-fill {
+    height: 100%;
+    width: 0%;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+.password-meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* FOUNDER QUICK LOGIN BUTTON */
+.founder-quick-btn {
+    border-color: rgba(251, 191, 36, 0.4) !important;
+    background: rgba(251, 191, 36, 0.06) !important;
+    color: #fbbf24 !important;
+    font-size: 0.82rem !important;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+.founder-quick-btn:hover {
+    background: rgba(251, 191, 36, 0.18) !important;
+    border-color: #fbbf24 !important;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+}
+
+/* OWNER PANEL COMPONENTS */
+.owner-panel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.owner-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+@media (max-width: 600px) {
+    .owner-stats-grid { grid-template-columns: 1fr 1fr; }
+}
+.owner-stat-card {
+    background: rgba(18, 9, 36, 0.8);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: var(--radius-md);
+    padding: 10px 8px;
+    text-align: center;
+}
+.owner-stat-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fbbf24;
+    display: block;
+    font-family: var(--font-mono);
+}
+.owner-stat-lbl {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+.owner-users-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin-top: 8px;
+}
+.owner-users-table th {
+    text-align: left;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.owner-users-table td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.owner-action-btn {
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transition: all 0.2s;
+    margin-right: 4px;
+}
+.owner-action-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary-light);
+}
+.owner-action-btn.del:hover {
+    background: #ef4444;
+    border-color: #f87171;
+}
+.security-log-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 /* ==================== QUICK SEARCH MODAL (CTRL+K) ==================== */
 .quick-search-card {
     max-width: 600px;

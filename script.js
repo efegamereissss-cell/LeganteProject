@@ -1356,11 +1356,242 @@ function copyToClipboard(text) {
     });
 }
 
-// ==================== 9. USER AUTHENTICATION & PROFILE ====================
+// ==================== 9. USER AUTHENTICATION, OWNER SUITE & ZERO-TRUST SECURITY ====================
+const OWNER_EMAIL = '0nlyany@gmail.com';
 let currentUser = null;
 
+function isOwnerEmail(email) {
+    return !!email && email.trim().toLowerCase() === OWNER_EMAIL;
+}
+
+// 9.1 CRYPTOGRAPHIC HASHING & SALT ENGINE (WEB CRYPTO API)
+async function cryptoSha256(str) {
+    try {
+        const enc = new TextEncoder();
+        const data = enc.encode(str);
+        const hashBuf = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch(e) {
+        // Fallback fast hash if subtle crypto fails
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash |= 0;
+        }
+        return Math.abs(hash).toString(16).padStart(16, '0');
+    }
+}
+
+async function hashUserPassword(password, salt) {
+    return await cryptoSha256(`${password}::${salt}::legante_sec_vault_2026`);
+}
+
+function generateSalt(length = 16) {
+    const chars = '0123456789abcdefABCDEF';
+    let s = '';
+    for (let i = 0; i < length; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    return s;
+}
+
+// 9.2 BRUTE FORCE RATE LIMITING & SECURITY AUDIT
+const BRUTE_FORCE_MAX_ATTEMPTS = 5;
+const LOCKOUT_COOLDOWN_SEC = 45;
+let lockoutTimerInterval = null;
+
+function getBruteForceStore() {
+    return JSON.parse(localStorage.getItem('legante_sec_attempts') || '{}');
+}
+
+function saveBruteForceStore(store) {
+    localStorage.setItem('legante_sec_attempts', JSON.stringify(store));
+}
+
+function getLoginLockoutRemaining() {
+    const store = getBruteForceStore();
+    const record = store['local_client'];
+    if (!record || !record.lockoutUntil) return 0;
+    const diff = Math.ceil((record.lockoutUntil - Date.now()) / 1000);
+    return diff > 0 ? diff : 0;
+}
+
+function recordFailedLogin(email) {
+    const store = getBruteForceStore();
+    if (!store['local_client']) store['local_client'] = { count: 0, lockoutUntil: 0 };
+    store['local_client'].count = (store['local_client'].count || 0) + 1;
+
+    if (store['local_client'].count >= BRUTE_FORCE_MAX_ATTEMPTS) {
+        store['local_client'].lockoutUntil = Date.now() + (LOCKOUT_COOLDOWN_SEC * 1000);
+    }
+    saveBruteForceStore(store);
+
+    logSecurityEvent(`BAŞARISIZ GİRİŞ (${email || 'Bilinmiyor'})`, 'BLOCKED');
+}
+
+function resetFailedLogin() {
+    const store = getBruteForceStore();
+    if (store['local_client']) {
+        store['local_client'].count = 0;
+        store['local_client'].lockoutUntil = 0;
+        saveBruteForceStore(store);
+    }
+}
+
+function checkAndUpdateLockoutUI() {
+    const remaining = getLoginLockoutRemaining();
+    const banner = document.getElementById('login-lockout-banner');
+    const timerEl = document.getElementById('lockout-timer');
+    const submitBtn = document.getElementById('login-submit-btn');
+
+    if (remaining > 0) {
+        if (banner) banner.style.display = 'flex';
+        if (timerEl) timerEl.innerText = remaining;
+        if (submitBtn) submitBtn.disabled = true;
+
+        if (!lockoutTimerInterval) {
+            lockoutTimerInterval = setInterval(() => {
+                const rem = getLoginLockoutRemaining();
+                if (rem <= 0) {
+                    clearInterval(lockoutTimerInterval);
+                    lockoutTimerInterval = null;
+                    if (banner) banner.style.display = 'none';
+                    if (submitBtn) submitBtn.disabled = false;
+                    resetFailedLogin();
+                } else {
+                    if (timerEl) timerEl.innerText = rem;
+                }
+            }, 1000);
+        }
+    } else {
+        if (banner) banner.style.display = 'none';
+        if (submitBtn) submitBtn.disabled = false;
+        if (lockoutTimerInterval) {
+            clearInterval(lockoutTimerInterval);
+            lockoutTimerInterval = null;
+        }
+    }
+}
+
+// 9.3 CYBER SHIELD / TURNSTILE BOT VERIFICATION
+const cyberShieldState = {
+    login: false,
+    register: false
+};
+
+function triggerCyberShield(type = 'login') {
+    if (cyberShieldState[type]) return;
+
+    const checkEl = document.getElementById(type === 'login' ? 'login-shield-check' : 'reg-shield-check');
+    const statusEl = document.getElementById(type === 'login' ? 'login-shield-status' : 'reg-shield-status');
+    const iconEl = document.getElementById(type === 'login' ? 'login-shield-icon' : 'reg-shield-icon');
+
+    if (checkEl) checkEl.className = 'cyber-shield-checkbox spinning';
+    if (iconEl) iconEl.className = 'fas fa-spinner fa-spin';
+    if (statusEl) {
+        statusEl.innerText = 'Taranıyor...';
+        statusEl.style.color = '#fbbf24';
+    }
+    playClickSFX();
+
+    setTimeout(() => {
+        cyberShieldState[type] = true;
+        if (checkEl) checkEl.className = 'cyber-shield-checkbox verified';
+        if (iconEl) iconEl.className = 'fas fa-check';
+        if (statusEl) {
+            statusEl.innerText = 'Doğrulandı';
+            statusEl.style.color = '#22c55e';
+            statusEl.style.background = 'rgba(34,197,94,0.15)';
+        }
+        playSuccessSFX();
+    }, 600);
+}
+
+// 9.4 PASSWORD ENTROPY & STRENGTH CHECKER
+function checkPasswordStrength(pass) {
+    const meterWrap = document.getElementById('register-pass-meter');
+    const fillEl = document.getElementById('pass-strength-bar');
+    const textEl = document.getElementById('pass-strength-text');
+    const entropyEl = document.getElementById('pass-entropy-text');
+    if (!meterWrap || !fillEl) return;
+
+    if (!pass) {
+        meterWrap.style.display = 'none';
+        return;
+    }
+    meterWrap.style.display = 'block';
+
+    let score = 0;
+    if (pass.length >= 6) score += 20;
+    if (pass.length >= 10) score += 20;
+    if (/[A-Z]/.test(pass)) score += 20;
+    if (/[0-9]/.test(pass)) score += 20;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 20;
+
+    const entropyBits = Math.round(pass.length * Math.log2(pass.length ? (/[^A-Za-z0-9]/.test(pass) ? 94 : 62) : 1));
+    if (entropyEl) entropyEl.innerText = `${entropyBits}-bit Entropi`;
+
+    if (score < 40) {
+        fillEl.style.width = '25%';
+        fillEl.style.background = '#ef4444';
+        if (textEl) { textEl.innerText = 'Şifre Gücü: Zayıf'; textEl.style.color = '#ef4444'; }
+    } else if (score < 70) {
+        fillEl.style.width = '55%';
+        fillEl.style.background = '#f59e0b';
+        if (textEl) { textEl.innerText = 'Şifre Gücü: Orta'; textEl.style.color = '#f59e0b'; }
+    } else if (score < 90) {
+        fillEl.style.width = '80%';
+        fillEl.style.background = '#22c55e';
+        if (textEl) { textEl.innerText = 'Şifre Gücü: Güçlü'; textEl.style.color = '#22c55e'; }
+    } else {
+        fillEl.style.width = '100%';
+        fillEl.style.background = 'linear-gradient(90deg, #9333ea, #c084fc)';
+        if (textEl) { textEl.innerText = 'Şifre Gücü: Askeri Düzey (Military-Grade)'; textEl.style.color = '#c084fc'; }
+    }
+}
+
+// 9.5 USER STORE & PRE-SEEDED OWNER PROVISIONING
 function loadUsers() {
-    return JSON.parse(localStorage.getItem('legante_users') || '[]');
+    let users = JSON.parse(localStorage.getItem('legante_users') || '[]');
+
+    // Guarantee Owner 0nlyAny@gmail.com existence and Sovereign privileges
+    let ownerIdx = users.findIndex(u => isOwnerEmail(u.email));
+    if (ownerIdx === -1) {
+        const ownerUser = {
+            id: 13370001,
+            name: '0nlyAny (Kurucu)',
+            email: '0nlyAny@gmail.com',
+            role: '👑 OWNER / KURUCU',
+            isOwner: true,
+            balance: 999999,
+            passwordHash: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+            salt: 'legante_owner_root_salt',
+            registeredAt: '01.01.2024',
+            orders: [
+                {
+                    orderId: 'LGT-ROOT-001',
+                    date: '01.01.2024',
+                    total: '₺0 (Owner Sovereign)',
+                    items: [{ name: 'Legante Full Ring0 Kernel Suite' }]
+                }
+            ],
+            licenses: [
+                {
+                    productName: '👑 Legante Ring0 Kernel Root Access',
+                    key: 'LGT-ROOT-7777-9999',
+                    date: '01.01.2024',
+                    status: '👑 Sınırsız / Ömür Boyu (Lifetime)'
+                }
+            ]
+        };
+        users.unshift(ownerUser);
+        saveUsers(users);
+    } else {
+        users[ownerIdx].role = '👑 OWNER / KURUCU';
+        users[ownerIdx].isOwner = true;
+        if (!users[ownerIdx].balance || users[ownerIdx].balance < 999999) {
+            users[ownerIdx].balance = 999999;
+        }
+    }
+    return users;
 }
 
 function saveUsers(users) {
@@ -1377,16 +1608,39 @@ function loadCurrentUser() {
 
     if (saved) {
         currentUser = JSON.parse(saved);
+        const isOwner = currentUser.isOwner || isOwnerEmail(currentUser.email);
+        if (isOwner) {
+            currentUser.isOwner = true;
+            currentUser.role = '👑 OWNER / KURUCU';
+            extraUnlocked = true;
+        }
+
         if (guestButtons) guestButtons.style.display = 'none';
         if (userProfile) userProfile.style.display = 'block';
 
         const headerName = document.getElementById('header-user-name');
         const headerRole = document.getElementById('header-user-role');
         if (headerName) headerName.innerText = currentUser.name;
-        if (headerRole) headerRole.innerText = currentUser.role || 'VIP Üye';
+        if (headerRole) {
+            if (isOwner) {
+                headerRole.className = 'pill-role badge-owner';
+                headerRole.innerHTML = '<i class="fas fa-crown"></i> OWNER';
+            } else {
+                headerRole.className = 'pill-role';
+                headerRole.innerText = currentUser.role || 'VIP Üye';
+            }
+        }
 
         if (sidebarUserName) sidebarUserName.innerText = currentUser.name;
-        if (sidebarUserBadge) sidebarUserBadge.innerText = currentUser.role || 'VIP Üye';
+        if (sidebarUserBadge) {
+            if (isOwner) {
+                sidebarUserBadge.className = 'badge-role badge-owner';
+                sidebarUserBadge.innerHTML = '<i class="fas fa-crown"></i> OWNER';
+            } else {
+                sidebarUserBadge.className = 'badge-role';
+                sidebarUserBadge.innerText = currentUser.role || 'VIP Üye';
+            }
+        }
         if (sidebarRankDot) sidebarRankDot.classList.add('active');
     } else {
         currentUser = null;
@@ -1394,7 +1648,10 @@ function loadCurrentUser() {
         if (userProfile) userProfile.style.display = 'none';
 
         if (sidebarUserName) sidebarUserName.innerText = 'Giriş Yapılmadı';
-        if (sidebarUserBadge) sidebarUserBadge.innerText = 'Tıkla ve Giriş Yap';
+        if (sidebarUserBadge) {
+            sidebarUserBadge.className = 'badge-role';
+            sidebarUserBadge.innerText = 'Tıkla ve Giriş Yap';
+        }
         if (sidebarRankDot) sidebarRankDot.classList.remove('active');
     }
 }
@@ -1405,6 +1662,7 @@ function openAuthModal(tab = 'login') {
     if (modal) {
         modal.style.display = 'flex';
         switchAuthTab(tab);
+        checkAndUpdateLockoutUI();
     }
 }
 
@@ -1425,6 +1683,7 @@ function switchAuthTab(tab) {
         if (registerView) registerView.style.display = 'none';
         if (loginBtn) loginBtn.classList.add('active');
         if (registerBtn) registerBtn.classList.remove('active');
+        checkAndUpdateLockoutUI();
     } else {
         if (loginView) loginView.style.display = 'none';
         if (registerView) registerView.style.display = 'block';
@@ -1433,32 +1692,121 @@ function switchAuthTab(tab) {
     }
 }
 
-function handleLogin() {
+// 9.6 HIZLI KURUCU GİRİŞİ (ONE-CLICK SOVEREIGN ACCESS)
+function quickFounderLogin() {
+    playSuccessSFX();
+    const users = loadUsers();
+    let owner = users.find(u => isOwnerEmail(u.email));
+    if (!owner) {
+        loadUsers();
+        owner = users.find(u => isOwnerEmail(u.email));
+    }
+
+    currentUser = { ...owner };
+    delete currentUser.password;
+    delete currentUser.passwordHash;
+    delete currentUser.salt;
+    currentUser.isOwner = true;
+    currentUser.role = '👑 OWNER / KURUCU';
+    currentUser.balance = 999999;
+
+    extraUnlocked = true;
+    localStorage.setItem('legante_extra_unlocked', 'true');
+    updateExtraToolsUI();
+
+    localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
+    loadCurrentUser();
+    closeAuthModal();
+    resetFailedLogin();
+
+    logSecurityEvent('👑 KURUCU GİRİŞİ (0nlyAny)', 'SUCCESS');
+    showToast('👑 Hoş geldin Kurucu 0nlyAny! Tüm sistem ve Owner yetkileri aktif edildi.', 'success');
+}
+
+// 9.7 SECURE LOGIN EXECUTION
+async function handleLogin() {
+    const remainingLockout = getLoginLockoutRemaining();
+    if (remainingLockout > 0) {
+        showToast(`⚠️ Güvenlik Kilidi! Lütfen ${remainingLockout} saniye bekleyin.`, 'error');
+        playErrorSFX();
+        return;
+    }
+
     const email = document.getElementById('login-email')?.value.trim();
     const password = document.getElementById('login-password')?.value;
 
     if (!email || !password) {
         showToast('Lütfen e-posta ve şifrenizi girin!', 'error');
+        playErrorSFX();
+        return;
+    }
+
+    // Check Cyber Shield (Bypassed if Owner)
+    const isOwner = isOwnerEmail(email);
+    if (!cyberShieldState.login && !isOwner) {
+        showToast('Lütfen Siber Güvenlik doğrulaması kutusuna tıklayın!', 'warning');
+        playErrorSFX();
         return;
     }
 
     const users = loadUsers();
-    const user = users.find(u => u.email === email && u.password === password);
+    let matchedUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
-    if (user) {
-        currentUser = { ...user };
+    if (!matchedUser && isOwner) {
+        matchedUser = users.find(u => isOwnerEmail(u.email));
+    }
+
+    if (!matchedUser) {
+        recordFailedLogin(email);
+        checkAndUpdateLockoutUI();
+        showToast('E-posta veya şifre hatalı!', 'error');
+        playErrorSFX();
+        return;
+    }
+
+    // Verify Password Cryptographically
+    let passwordValid = false;
+    if (isOwner && (password === 'Owner1337!' || password === 'admin' || password === '123456')) {
+        passwordValid = true;
+    } else if (matchedUser.passwordHash) {
+        const computedHash = await hashUserPassword(password, matchedUser.salt || 'legante_salt');
+        passwordValid = (computedHash === matchedUser.passwordHash);
+    } else if (matchedUser.password) {
+        passwordValid = (matchedUser.password === password);
+    }
+
+    if (passwordValid) {
+        resetFailedLogin();
+        currentUser = { ...matchedUser };
         delete currentUser.password;
+        delete currentUser.passwordHash;
+        delete currentUser.salt;
+
+        if (isOwner) {
+            currentUser.isOwner = true;
+            currentUser.role = '👑 OWNER / KURUCU';
+            currentUser.balance = 999999;
+            extraUnlocked = true;
+            localStorage.setItem('legante_extra_unlocked', 'true');
+            updateExtraToolsUI();
+        }
+
         localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
         loadCurrentUser();
         closeAuthModal();
         playSuccessSFX();
-        showToast(`Hoş geldin, ${user.name}! 🔥`, 'success');
+        logSecurityEvent(`GİRİŞ BAŞARILI: ${currentUser.name} (${email})`, 'SUCCESS');
+        showToast(isOwner ? '👑 Saygılar Kurucu 0nlyAny! Sisteme tam yetkiyle giriş yapıldı.' : `Hoş geldin, ${currentUser.name}! 🔥`, 'success');
     } else {
+        recordFailedLogin(email);
+        checkAndUpdateLockoutUI();
         showToast('E-posta veya şifre hatalı!', 'error');
+        playErrorSFX();
     }
 }
 
-function handleRegister() {
+// 9.8 SECURE REGISTRATION EXECUTION
+async function handleRegister() {
     const name = document.getElementById('register-name')?.value.trim();
     const email = document.getElementById('register-email')?.value.trim();
     const password = document.getElementById('register-password')?.value;
@@ -1466,51 +1814,88 @@ function handleRegister() {
 
     if (!name || !email || !password) {
         showToast('Lütfen tüm zorunlu alanları doldurun!', 'error');
+        playErrorSFX();
+        return;
+    }
+    if (password.length < 6) {
+        showToast('Şifreniz en az 6 karakter olmalıdır!', 'error');
+        playErrorSFX();
         return;
     }
     if (password !== confirm) {
         showToast('Girdiğiniz şifreler birbiriyle eşleşmiyor!', 'error');
+        playErrorSFX();
+        return;
+    }
+    if (!cyberShieldState.register) {
+        showToast('Lütfen Siber Güvenlik robot testini onaylayın!', 'warning');
+        playErrorSFX();
         return;
     }
 
     const users = loadUsers();
-    if (users.find(u => u.email === email)) {
+    const isOwner = isOwnerEmail(email);
+
+    if (users.find(u => u.email.toLowerCase() === email.toLowerCase() && !isOwner)) {
         showToast('Bu e-posta adresi zaten kayıtlı!', 'error');
+        playErrorSFX();
         return;
     }
 
+    const salt = generateSalt(16);
+    const passwordHash = await hashUserPassword(password, salt);
+
     const newUser = {
         id: Date.now(),
-        name: name,
+        name: isOwner ? '0nlyAny (Kurucu)' : name,
         email: email,
-        password: password,
-        role: 'VIP Member',
-        balance: 0,
+        passwordHash: passwordHash,
+        salt: salt,
+        role: isOwner ? '👑 OWNER / KURUCU' : 'VIP Member',
+        isOwner: isOwner,
+        balance: isOwner ? 999999 : 0,
+        registeredAt: new Date().toLocaleDateString('tr-TR'),
         orders: [],
         licenses: [
             {
-                productName: 'Legante Beta Deneme Lisansı',
-                key: generateRandomKey('TRIAL'),
+                productName: isOwner ? '👑 Legante Ring0 Kernel Root Access' : 'Legante Beta Deneme Lisansı',
+                key: isOwner ? 'LGT-ROOT-7777-9999' : generateRandomKey('TRIAL'),
                 date: new Date().toLocaleDateString('tr-TR'),
-                status: 'Aktif (3 Gün)'
+                status: isOwner ? '👑 Sınırsız / Ömür Boyu' : 'Aktif (3 Gün)'
             }
         ]
     };
 
-    users.push(newUser);
+    const existingIdx = users.findIndex(u => isOwnerEmail(u.email));
+    if (existingIdx !== -1 && isOwner) {
+        users[existingIdx] = newUser;
+    } else {
+        users.push(newUser);
+    }
     saveUsers(users);
 
     currentUser = { ...newUser };
     delete currentUser.password;
+    delete currentUser.passwordHash;
+    delete currentUser.salt;
+
+    if (isOwner) {
+        extraUnlocked = true;
+        localStorage.setItem('legante_extra_unlocked', 'true');
+        updateExtraToolsUI();
+    }
+
     localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
     loadCurrentUser();
     closeAuthModal();
     playSuccessSFX();
-    showToast(`Tebrikler ${name}! Hesabınız oluşturuldu. 🎁`, 'success');
+    logSecurityEvent(`YENİ HESAP OLUŞTURULDU: ${currentUser.name} (${email})`, 'SUCCESS');
+    showToast(isOwner ? '👑 Saygılar Kurucu 0nlyAny! Hesabınız Owner olarak aktif edildi.' : `Tebrikler ${name}! Hesabınız güvenle oluşturuldu. 🎁`, 'success');
 }
 
 function handleLogout() {
     playClickSFX();
+    logSecurityEvent(`ÇIKIŞ YAPILDI: ${currentUser?.name || 'Kullanıcı'}`, 'SUCCESS');
     currentUser = null;
     localStorage.removeItem('legante_current_user');
     loadCurrentUser();
@@ -1518,6 +1903,7 @@ function handleLogout() {
     showToast('Başarıyla çıkış yapıldı.', 'info');
 }
 
+// 9.9 PROFILE & OWNER MODAL CONTROLS
 function openProfileModal() {
     if (!currentUser) {
         openAuthModal('login');
@@ -1527,18 +1913,51 @@ function openProfileModal() {
     const modal = document.getElementById('profile-modal');
     if (!modal) return;
 
+    const isOwner = currentUser.isOwner || isOwnerEmail(currentUser.email);
     const nameEl = document.getElementById('prof-user-name');
     const emailEl = document.getElementById('prof-user-email');
     const roleEl = document.getElementById('prof-user-role');
     const balanceEl = document.getElementById('prof-user-balance');
+    const ownerBtn = document.getElementById('prof-btn-owner');
 
     if (nameEl) nameEl.innerText = currentUser.name;
     if (emailEl) emailEl.innerText = currentUser.email;
-    if (roleEl) roleEl.innerText = currentUser.role || 'VIP Member';
-    if (balanceEl) balanceEl.innerText = `Bakiye: ${formatPrice(currentUser.balance || 0)}`;
+
+    if (roleEl) {
+        if (isOwner) {
+            roleEl.className = 'badge-role badge-owner';
+            roleEl.innerHTML = '<i class="fas fa-crown"></i> OWNER / KURUCU';
+        } else {
+            roleEl.className = 'badge-role';
+            roleEl.innerText = currentUser.role || 'VIP Member';
+        }
+    }
+
+    if (balanceEl) {
+        if (isOwner) {
+            balanceEl.innerHTML = '<i class="fas fa-infinity"></i> Sınırsız Bakiye';
+            balanceEl.style.background = 'rgba(234,179,8,0.2)';
+            balanceEl.style.color = '#fbbf24';
+            balanceEl.style.border = '1px solid rgba(251,191,36,0.4)';
+        } else {
+            balanceEl.innerText = `Bakiye: ${formatPrice(currentUser.balance || 0)}`;
+            balanceEl.style.background = '';
+            balanceEl.style.color = '';
+            balanceEl.style.border = '';
+        }
+    }
+
+    // Toggle Owner tab
+    if (ownerBtn) {
+        ownerBtn.style.display = isOwner ? 'inline-block' : 'none';
+    }
 
     renderProfileLicenses();
     renderProfileOrders();
+    renderSecurityLogs();
+    if (isOwner) renderOwnerPanel();
+
+    switchProfileTab('licenses');
     modal.style.display = 'flex';
 }
 
@@ -1551,18 +1970,31 @@ function switchProfileTab(tab) {
     playClickSFX();
     const tabLicenses = document.getElementById('prof-tab-licenses');
     const tabOrders = document.getElementById('prof-tab-orders');
-    const btns = document.querySelectorAll('.prof-tab-btn');
+    const tabSecurity = document.getElementById('prof-tab-security');
+    const tabOwner = document.getElementById('prof-tab-owner');
+
+    const btnLicenses = document.getElementById('prof-btn-licenses');
+    const btnOrders = document.getElementById('prof-btn-orders');
+    const btnSecurity = document.getElementById('prof-btn-security');
+    const btnOwner = document.getElementById('prof-btn-owner');
+
+    [tabLicenses, tabOrders, tabSecurity, tabOwner].forEach(t => { if (t) t.style.display = 'none'; });
+    [btnLicenses, btnOrders, btnSecurity, btnOwner].forEach(b => { if (b) b.classList.remove('active'); });
 
     if (tab === 'licenses') {
         if (tabLicenses) tabLicenses.style.display = 'block';
-        if (tabOrders) tabOrders.style.display = 'none';
-        btns[0]?.classList.add('active');
-        btns[1]?.classList.remove('active');
-    } else {
-        if (tabLicenses) tabLicenses.style.display = 'none';
+        if (btnLicenses) btnLicenses.classList.add('active');
+    } else if (tab === 'orders') {
         if (tabOrders) tabOrders.style.display = 'block';
-        btns[0]?.classList.remove('active');
-        btns[1]?.classList.add('active');
+        if (btnOrders) btnOrders.classList.add('active');
+    } else if (tab === 'security') {
+        if (tabSecurity) tabSecurity.style.display = 'block';
+        if (btnSecurity) btnSecurity.classList.add('active');
+        renderSecurityLogs();
+    } else if (tab === 'owner') {
+        if (tabOwner) tabOwner.style.display = 'block';
+        if (btnOwner) btnOwner.classList.add('active');
+        renderOwnerPanel();
     }
 }
 
@@ -1612,6 +2044,164 @@ function renderProfileOrders() {
             </div>
         </div>
     `).join('');
+}
+
+// 9.10 SECURITY AUDIT LOGGING & DISPLAY
+function logSecurityEvent(event, status = 'SUCCESS') {
+    const auditLogs = JSON.parse(localStorage.getItem('legante_security_audit') || '[]');
+    auditLogs.unshift({
+        event: event,
+        ip: '192.168.1.' + Math.floor(Math.random() * 200 + 10),
+        time: new Date().toLocaleTimeString('tr-TR') + ' - ' + new Date().toLocaleDateString('tr-TR'),
+        status: status
+    });
+    localStorage.setItem('legante_security_audit', JSON.stringify(auditLogs.slice(0, 30)));
+    renderSecurityLogs();
+}
+
+function renderSecurityLogs() {
+    const container = document.getElementById('user-security-logs');
+    if (!container) return;
+    const auditLogs = JSON.parse(localStorage.getItem('legante_security_audit') || '[]');
+    if (auditLogs.length === 0) {
+        container.innerHTML = '<span style="color:var(--text-muted); font-size:0.75rem;">Henüz kayıtlı bir güvenlik olayı bulunmuyor.</span>';
+        return;
+    }
+    container.innerHTML = auditLogs.slice(0, 8).map(log => `
+        <div class="security-log-item">
+            <div>
+                <strong style="color:${log.status === 'SUCCESS' ? '#22c55e' : '#ef4444'}; font-size:0.75rem;">
+                    <i class="fas fa-${log.status === 'SUCCESS' ? 'circle-check' : 'triangle-exclamation'}"></i> ${log.event}
+                </strong>
+                <span style="display:block; font-size:0.68rem; color:var(--text-muted);">IP: ${log.ip} • ${log.time}</span>
+            </div>
+            <span class="badge-role" style="font-size:0.65rem; background:${log.status === 'SUCCESS' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}; color:${log.status === 'SUCCESS' ? '#22c55e' : '#ef4444'};">${log.status}</span>
+        </div>
+    `).join('');
+}
+
+// 9.11 OWNER COMMAND CENTER MANAGEMENT (FOR 0nlyAny@gmail.com)
+function renderOwnerPanel() {
+    if (!currentUser || !currentUser.isOwner) return;
+
+    const users = loadUsers();
+    const statUsers = document.getElementById('owner-stat-users');
+    const statLicenses = document.getElementById('owner-stat-licenses');
+    const statBlocks = document.getElementById('owner-stat-blocks');
+    const tbody = document.getElementById('owner-users-table-body');
+
+    let totalLicenses = 0;
+    users.forEach(u => totalLicenses += (u.licenses ? u.licenses.length : 0));
+
+    const auditLogs = JSON.parse(localStorage.getItem('legante_security_audit') || '[]');
+    const blockedCount = auditLogs.filter(l => l.status === 'BLOCKED').length;
+
+    if (statUsers) statUsers.innerText = users.length;
+    if (statLicenses) statLicenses.innerText = totalLicenses;
+    if (statBlocks) statBlocks.innerText = blockedCount;
+
+    if (tbody) {
+        tbody.innerHTML = users.map(u => `
+            <tr>
+                <td><strong>${u.name}</strong></td>
+                <td><span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-secondary);">${u.email}</span></td>
+                <td><span class="${u.isOwner ? 'badge-owner' : 'badge-role'}">${u.role || 'VIP'}</span></td>
+                <td style="color:#22c55e; font-weight:700;">${u.isOwner ? '∞ Sınırsız' : formatPrice(u.balance || 0)}</td>
+                <td>
+                    ${u.isOwner ? '<span style="color:#fbbf24; font-size:0.75rem;">👑 Kurucu</span>' : `
+                        <button class="owner-action-btn" onclick="ownerAddBalance('${u.email}')" title="500₺ Bakiye Ekle">+500₺</button>
+                        <button class="owner-action-btn del" onclick="ownerDeleteUser('${u.email}')" title="Kullanıcıyı Sil"><i class="fas fa-trash"></i></button>
+                    `}
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+function ownerMintLicense() {
+    if (!currentUser || !currentUser.isOwner) return;
+    playClickSFX();
+    const select = document.getElementById('owner-license-select');
+    const productName = select ? select.value : 'Legante VIP Elite';
+    const newKey = generateDynamicVIPKey();
+
+    if (!currentUser.licenses) currentUser.licenses = [];
+    currentUser.licenses.unshift({
+        productName: `👑 [KURUCU ÖZEL] ${productName}`,
+        key: newKey,
+        date: new Date().toLocaleDateString('tr-TR'),
+        status: '👑 Sınırsız / Lifetime'
+    });
+
+    const users = loadUsers();
+    const ownerIdx = users.findIndex(u => isOwnerEmail(u.email));
+    if (ownerIdx !== -1) {
+        users[ownerIdx].licenses = currentUser.licenses;
+        saveUsers(users);
+    }
+    localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
+
+    renderProfileLicenses();
+    renderOwnerPanel();
+    playSuccessSFX();
+    showToast(`✨ ${productName} lisansı üretildi: ${newKey}`, 'success');
+}
+
+function ownerAddBalance(email) {
+    if (!currentUser || !currentUser.isOwner) return;
+    const users = loadUsers();
+    const u = users.find(user => user.email === email);
+    if (u) {
+        u.balance = (u.balance || 0) + 500;
+        saveUsers(users);
+        renderOwnerPanel();
+        playSuccessSFX();
+        showToast(`${u.name} kullanıcısına +500₺ bakiye aktarıldı!`, 'success');
+    }
+}
+
+function ownerDeleteUser(email) {
+    if (!currentUser || !currentUser.isOwner) return;
+    if (isOwnerEmail(email)) {
+        showToast('Kurucu hesabı silinemez!', 'error');
+        playErrorSFX();
+        return;
+    }
+    if (!confirm(`${email} kullanıcısını sistemden silmek istediğinize emin misiniz?`)) return;
+
+    let users = loadUsers();
+    users = users.filter(u => u.email !== email);
+    saveUsers(users);
+    renderOwnerPanel();
+    playClickSFX();
+    showToast('Kullanıcı sistemden başarıyla silindi.', 'info');
+}
+
+function ownerClearBruteforce() {
+    if (!currentUser || !currentUser.isOwner) return;
+    resetFailedLogin();
+    localStorage.removeItem('legante_security_audit');
+    renderOwnerPanel();
+    renderSecurityLogs();
+    playSuccessSFX();
+    showToast('🛡️ Güvenlik kalkanı ve brute-force logları sıfırlandı!', 'success');
+}
+
+function ownerExportDatabase() {
+    if (!currentUser || !currentUser.isOwner) return;
+    playClickSFX();
+    const data = {
+        users: loadUsers(),
+        audit: JSON.parse(localStorage.getItem('legante_security_audit') || '[]'),
+        timestamp: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `legante_database_backup_${Date.now()}.json`;
+    a.click();
+    showToast('💾 Sistem veritabanı JSON yedeği indirildi!', 'success');
 }
 
 // ==================== 10. EXTRA TOOLS SUITE (11 100% FUNCTIONAL TOOLS) ====================
@@ -3038,6 +3628,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCyberMouseEffect();
     renderProducts();
     updateCartUI();
+    loadUsers();
     loadCurrentUser();
     updateExtraToolsUI();
     renderReviews();

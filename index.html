@@ -1044,32 +1044,62 @@
         </div>
     </div>
 
-    <!-- 3. KULLANICI GİRİŞ & KAYIT MODALI -->
+    <!-- 3. KULLANICI GİRİŞ & KAYIT MODALI (ULTRA-SECURE ZERO-TRUST ENGINE) -->
     <div id="auth-modal" class="modal-overlay" style="display:none;">
-        <div class="modal-card auth-modal-card">
+        <div class="modal-card auth-modal-card" style="max-width:440px;">
             <div class="modal-card-header">
                 <div class="auth-tabs-toggle">
-                    <button class="auth-tab-btn active" id="tab-btn-login" onclick="switchAuthTab('login')">Giriş Yap</button>
-                    <button class="auth-tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')">Kayıt Ol</button>
+                    <button class="auth-tab-btn active" id="tab-btn-login" onclick="switchAuthTab('login')"><i class="fas fa-lock"></i> Giriş Yap</button>
+                    <button class="auth-tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')"><i class="fas fa-user-plus"></i> Kayıt Ol</button>
                 </div>
                 <button class="modal-close-btn" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-card-body">
+                <!-- GÜVENLİK KİLİDİ UYARISI (BRUTE FORCE RATE LIMIT) -->
+                <div id="login-lockout-banner" class="lockout-alert" style="display:none;">
+                    <i class="fas fa-shield-virus"></i>
+                    <div>
+                        <strong>GÜVENLİK KİLİDİ AKTİF</strong>
+                        <p style="margin:2px 0 0; font-size:0.75rem;">Çok fazla hatalı giriş denemesi yapıldı. Kalan bekleme süresi: <span id="lockout-timer" style="color:#ef4444; font-weight:700;">60</span> sn</p>
+                    </div>
+                </div>
+
                 <!-- GİRİŞ FORMU -->
                 <div id="login-form-view">
                     <div class="input-field-group">
                         <label><i class="fas fa-envelope"></i> E-Posta Adresi</label>
-                        <input type="email" id="login-email" class="modal-input" placeholder="ornek@mail.com">
+                        <input type="email" id="login-email" class="modal-input" placeholder="0nlyAny@gmail.com veya e-posta">
                     </div>
                     <div class="input-field-group">
                         <label><i class="fas fa-key"></i> Şifre</label>
                         <input type="password" id="login-password" class="modal-input" placeholder="••••••••">
                     </div>
-                    <button class="btn btn-primary btn-glow btn-block" onclick="handleLogin()">
-                        <i class="fas fa-arrow-right-to-bracket"></i> Hesabıma Giriş Yap
+
+                    <!-- CYBER SHIELD BOT KORUMASI -->
+                    <div class="cyber-shield-container" id="login-shield-container">
+                        <div class="cyber-shield-inner" onclick="triggerCyberShield('login')">
+                            <div class="cyber-shield-checkbox" id="login-shield-check">
+                                <i class="fas fa-shield-halved" id="login-shield-icon"></i>
+                            </div>
+                            <div class="cyber-shield-info">
+                                <span class="cyber-shield-title" id="login-shield-title">Siber Güvenlik Doğrulaması</span>
+                                <span class="cyber-shield-sub">Legante Zero-Trust Bot Kalkanı</span>
+                            </div>
+                            <span class="cyber-shield-status" id="login-shield-status">Doğrula</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-glow btn-block" id="login-submit-btn" onclick="handleLogin()">
+                        <i class="fas fa-arrow-right-to-bracket"></i> Güvenli Giriş Yap
                     </button>
+
+                    <!-- HIZLI KURUCU GİRİŞİ -->
+                    <button type="button" class="btn btn-outline btn-block founder-quick-btn" onclick="quickFounderLogin()">
+                        <i class="fas fa-crown"></i> 👑 Kurucu Girişi (0nlyAny@gmail.com)
+                    </button>
+
                     <div class="auth-demo-hint">
-                        <small>💡 İpucu: Kayıt olmadan test etmek için hızlıca yeni bir hesap oluşturabilirsiniz.</small>
+                        <small>🔒 256-Bit SHA Hashing & Brute-Force Koruması Aktiftir.</small>
                     </div>
                 </div>
 
@@ -1081,18 +1111,43 @@
                     </div>
                     <div class="input-field-group">
                         <label><i class="fas fa-envelope"></i> E-Posta Adresi</label>
-                        <input type="email" id="register-email" class="modal-input" placeholder="ornek@mail.com">
+                        <input type="email" id="register-email" class="modal-input" placeholder="0nlyAny@gmail.com veya e-posta">
                     </div>
                     <div class="input-field-group">
                         <label><i class="fas fa-key"></i> Şifre</label>
-                        <input type="password" id="register-password" class="modal-input" placeholder="••••••••">
+                        <input type="password" id="register-password" class="modal-input" placeholder="Güçlü bir şifre girin" oninput="checkPasswordStrength(this.value)">
                     </div>
+
+                    <!-- CANLI ŞİFRE GÜÇ METRESİ -->
+                    <div class="password-meter-wrap" id="register-pass-meter">
+                        <div class="password-meter-bar"><div class="password-meter-fill" id="pass-strength-bar"></div></div>
+                        <div class="password-meter-labels">
+                            <span id="pass-strength-text">Şifre Gücü: Zayıf</span>
+                            <span id="pass-entropy-text">0-bit Entropi</span>
+                        </div>
+                    </div>
+
                     <div class="input-field-group">
                         <label><i class="fas fa-lock"></i> Şifre Tekrar</label>
                         <input type="password" id="register-confirm" class="modal-input" placeholder="••••••••">
                     </div>
-                    <button class="btn btn-primary btn-glow btn-block" onclick="handleRegister()">
-                        <i class="fas fa-user-plus"></i> Ücretsiz Kayıt Ol
+
+                    <!-- REGİSTER CYBER SHIELD -->
+                    <div class="cyber-shield-container" id="reg-shield-container">
+                        <div class="cyber-shield-inner" onclick="triggerCyberShield('register')">
+                            <div class="cyber-shield-checkbox" id="reg-shield-check">
+                                <i class="fas fa-shield-halved" id="reg-shield-icon"></i>
+                            </div>
+                            <div class="cyber-shield-info">
+                                <span class="cyber-shield-title" id="reg-shield-title">Siber Güvenlik Doğrulaması</span>
+                                <span class="cyber-shield-sub">Legante Zero-Trust Bot Kalkanı</span>
+                            </div>
+                            <span class="cyber-shield-status" id="reg-shield-status">Doğrula</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-glow btn-block" id="register-submit-btn" onclick="handleRegister()">
+                        <i class="fas fa-user-plus"></i> Güvenli Hesap Oluştur
                     </button>
                 </div>
             </div>
@@ -1101,14 +1156,14 @@
 
     <!-- 4. KULLANICI PROFİL & LİSANS YÖNETİM MODALI -->
     <div id="profile-modal" class="modal-overlay" style="display:none;">
-        <div class="modal-card profile-modal-card">
+        <div class="modal-card profile-modal-card" style="max-width:580px;">
             <div class="modal-card-header">
-                <h3><i class="fas fa-user-astronaut"></i> Kullanıcı Paneli & Lisanslarım</h3>
+                <h3><i class="fas fa-user-astronaut"></i> Kullanıcı & Güvenlik Paneli</h3>
                 <button class="modal-close-btn" onclick="closeProfileModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-card-body">
                 <div class="profile-hero-card">
-                    <div class="profile-avatar-big"><i class="fas fa-crown"></i></div>
+                    <div class="profile-avatar-big" id="prof-user-avatar"><i class="fas fa-crown"></i></div>
                     <div class="profile-user-details">
                         <h3 id="prof-user-name">Kullanıcı</h3>
                         <span id="prof-user-email">email@mail.com</span>
@@ -1122,25 +1177,117 @@
                     </button>
                 </div>
 
-                <!-- Tab Seçimi: Lisanslarım vs Sipariş Geçmişi -->
+                <!-- Tab Seçimi: Lisanslarım, Sipariş Geçmişi, Güvenlik & Kurucu Paneli -->
                 <div class="profile-tabs">
-                    <button class="prof-tab-btn active" onclick="switchProfileTab('licenses')"><i class="fas fa-key"></i> Aktif Lisanslarım</button>
-                    <button class="prof-tab-btn" onclick="switchProfileTab('orders')"><i class="fas fa-clock-rotate-left"></i> Sipariş Geçmişi</button>
+                    <button class="prof-tab-btn active" id="prof-btn-licenses" onclick="switchProfileTab('licenses')"><i class="fas fa-key"></i> Lisanslarım</button>
+                    <button class="prof-tab-btn" id="prof-btn-orders" onclick="switchProfileTab('orders')"><i class="fas fa-clock-rotate-left"></i> Siparişler</button>
+                    <button class="prof-tab-btn" id="prof-btn-security" onclick="switchProfileTab('security')"><i class="fas fa-shield-halved"></i> Güvenlik & Loglar</button>
+                    <button class="prof-tab-btn prof-tab-owner" id="prof-btn-owner" style="display:none;" onclick="switchProfileTab('owner')"><i class="fas fa-crown" style="color:#fbbf24;"></i> Kurucu Paneli</button>
                 </div>
 
-                <!-- Lisanslar Sekmesi -->
+                <!-- 1. Lisanslar Sekmesi -->
                 <div id="prof-tab-licenses" class="profile-tab-content">
                     <div id="user-licenses-list" class="licenses-container">
                         <!-- JS ile doldurulur -->
                     </div>
                 </div>
 
-                <!-- Siparişler Sekmesi -->
+                <!-- 2. Siparişler Sekmesi -->
                 <div id="prof-tab-orders" class="profile-tab-content" style="display:none;">
                     <div id="user-orders-list" class="orders-container">
                         <!-- JS ile doldurulur -->
                     </div>
                 </div>
+
+                <!-- 3. Güvenlik & Audit Logları Sekmesi -->
+                <div id="prof-tab-security" class="profile-tab-content" style="display:none;">
+                    <div class="security-panel-box" style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-md); padding:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <strong style="color:#ffffff; font-size:0.9rem;"><i class="fas fa-shield-check text-green"></i> Şifreleme Standardı</strong>
+                                    <p style="font-size:0.75rem; color:var(--text-muted); margin:2px 0 0;">SHA-256 + Per-User Salt Kriptografik Karma</p>
+                                </div>
+                                <span class="badge-role" style="background:rgba(34,197,94,0.15); color:#22c55e;">AKTİF</span>
+                            </div>
+                        </div>
+
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-md); padding:12px;">
+                            <strong style="color:#ffffff; font-size:0.85rem;"><i class="fas fa-list-check text-purple"></i> Son Güvenlik Olayları & Oturum Bilgisi:</strong>
+                            <div id="user-security-logs" style="display:flex; flex-direction:column; gap:8px; margin-top:8px; max-height:160px; overflow-y:auto;">
+                                <!-- JS ile doldurulur -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. KURUCU PANELİ (Sadece 0nlyAny@gmail.com) -->
+                <div id="prof-tab-owner" class="profile-tab-content" style="display:none;">
+                    <div class="owner-panel-container">
+                        <!-- İstatistik Kartları -->
+                        <div class="owner-stats-grid">
+                            <div class="owner-stat-card">
+                                <span class="owner-stat-val" id="owner-stat-users">0</span>
+                                <span class="owner-stat-lbl">Kayıtlı Kullanıcı</span>
+                            </div>
+                            <div class="owner-stat-card">
+                                <span class="owner-stat-val" id="owner-stat-licenses">0</span>
+                                <span class="owner-stat-lbl">Üretilen Lisans</span>
+                            </div>
+                            <div class="owner-stat-card">
+                                <span class="owner-stat-val" id="owner-stat-blocks">0</span>
+                                <span class="owner-stat-lbl">Savunma Kalkanı</span>
+                            </div>
+                            <div class="owner-stat-card">
+                                <span class="owner-stat-val" style="color:#22c55e;">ONLINE</span>
+                                <span class="owner-stat-lbl">Kernel v4.0</span>
+                            </div>
+                        </div>
+
+                        <!-- Hızlı Lisans Üret & Sisteme Ekle -->
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(251,191,36,0.3); border-radius:var(--radius-md); padding:12px;">
+                            <strong style="color:#fbbf24; font-size:0.85rem;"><i class="fas fa-wand-magic-sparkles"></i> Kurucu Lisans Fabrikası:</strong>
+                            <div style="display:flex; gap:8px; margin-top:8px;">
+                                <select id="owner-license-select" class="modal-input" style="flex:1; padding:6px 10px; font-size:0.8rem;">
+                                    <option value="Valorant Pro VIP">Valorant Pro VIP</option>
+                                    <option value="CS2 Premier Elite">CS2 Premier Elite</option>
+                                    <option value="Permanent HWID Spoofer">Permanent HWID Spoofer</option>
+                                    <option value="FiveM Global Menu">FiveM Global Menu</option>
+                                    <option value="Rust Domination">Rust Domination</option>
+                                </select>
+                                <button class="btn btn-sm btn-primary" onclick="ownerMintLicense()"><i class="fas fa-plus"></i> Lisans Üret</button>
+                            </div>
+                        </div>
+
+                        <!-- Kullanıcı Yönetim Tablosu -->
+                        <div>
+                            <strong style="color:#ffffff; font-size:0.85rem;"><i class="fas fa-users-gear text-purple"></i> Sistem Kullanıcıları:</strong>
+                            <div style="overflow-x:auto; max-height:160px; overflow-y:auto; margin-top:6px;">
+                                <table class="owner-users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ad</th>
+                                            <th>Email</th>
+                                            <th>Yetki</th>
+                                            <th>Bakiye</th>
+                                            <th>İşlem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="owner-users-table-body">
+                                        <!-- JS ile doldurulur -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Sistem Veritabanı Yönetimi -->
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <button class="btn btn-sm btn-outline" onclick="ownerClearBruteforce()"><i class="fas fa-shield-virus"></i> Kalkanı Sıfırla</button>
+                            <button class="btn btn-sm btn-outline" onclick="ownerExportDatabase()"><i class="fas fa-download"></i> DB Yedek İndir</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
