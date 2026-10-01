@@ -21,16 +21,6 @@
     <div class="ambient-glow glow-2"></div>
     <div class="ambient-glow glow-3"></div>
 
-    <!-- CANLI SATIN ALMA BİLDİRİMİ (TICKER) -->
-    <div id="live-sales-ticker" class="sales-ticker">
-        <div class="ticker-avatar"><i class="fas fa-crown"></i></div>
-        <div class="ticker-info">
-            <span class="ticker-user" id="ticker-user">Kullanıcı***</span>
-            <span class="ticker-item" id="ticker-item">Valorant VIP Pro</span>
-            <span class="ticker-time" id="ticker-time">1 dk önce</span>
-        </div>
-    </div>
-
     <!-- TOAST BİLDİRİM KONTEYNERİ -->
     <div id="toast-container" class="toast-container"></div>
 
@@ -81,20 +71,24 @@
             </ul>
         </nav>
 
-        <!-- EXTRA TOOLS MENÜSÜ -->
+        <!-- EXTRA TOOLS MENÜSÜ (GENİŞLETİLMİŞ 11 GÜÇLÜ ARAÇ) -->
         <div class="panel-extra">
             <div class="menu-label extra-label">
-                <span><i class="fas fa-toolbox"></i> EXTRA TOOLS SUITE</span>
+                <span><i class="fas fa-toolbox"></i> EXTRA TOOLS SUITE (11)</span>
                 <button id="access-extra-btn" class="access-btn" title="Key ile Araçları Aç"><i class="fas fa-key"></i> <span id="access-btn-text">KİLİTLİ</span></button>
             </div>
             <ul id="extra-tools-list" class="extra-tools-list">
                 <li><a href="#" id="tool-sms" class="extra-link locked" data-tool="sms"><i class="fas fa-paper-plane tool-icon"></i><span>SMS Bomber (Sim)</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-token" class="extra-link locked" data-tool="token"><i class="fab fa-discord tool-icon"></i><span>Discord Token Checker</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-token" class="extra-link locked" data-tool="token"><i class="fab fa-discord tool-icon"></i><span>Discord Token Inspector</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-webhook" class="extra-link locked" data-tool="webhook"><i class="fas fa-bullhorn tool-icon"></i><span>Discord Webhook Sender</span><i class="fas fa-lock lock-icon"></i></a></li>
                 <li><a href="#" id="tool-ip" class="extra-link locked" data-tool="ip"><i class="fas fa-globe-americas tool-icon"></i><span>IP & Geo Locator</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-filehash" class="extra-link locked" data-tool="filehash"><i class="fas fa-file-shield tool-icon"></i><span>File Hasher & VT</span><i class="fas fa-lock lock-icon"></i></a></li>
                 <li><a href="#" id="tool-pass" class="extra-link locked" data-tool="pass"><i class="fas fa-fingerprint tool-icon"></i><span>Key & Password Gen</span><i class="fas fa-lock lock-icon"></i></a></li>
                 <li><a href="#" id="tool-hash" class="extra-link locked" data-tool="hash"><i class="fas fa-code tool-icon"></i><span>Hash & Base64 Studio</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-port" class="extra-link locked" data-tool="port"><i class="fas fa-network-wired tool-icon"></i><span>Port & Ping Tester</span><i class="fas fa-lock lock-icon"></i></a></li>
-                <li><a href="#" id="tool-vt" class="extra-link locked" data-tool="vt"><i class="fas fa-shield-virus tool-icon"></i><span>VirusTotal Scanner</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-dns" class="extra-link locked" data-tool="dns"><i class="fas fa-network-wired tool-icon"></i><span>DNS Records Lookup</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-hw" class="extra-link locked" data-tool="hw"><i class="fas fa-microchip tool-icon"></i><span>GPU & HWID Inspector</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-port" class="extra-link locked" data-tool="port"><i class="fas fa-gauge-high tool-icon"></i><span>HTTP Ping & Latency</span><i class="fas fa-lock lock-icon"></i></a></li>
+                <li><a href="#" id="tool-obfuscator" class="extra-link locked" data-tool="obfuscator"><i class="fas fa-user-secret tool-icon"></i><span>Code Obfuscator</span><i class="fas fa-lock lock-icon"></i></a></li>
             </ul>
         </div>
 
@@ -222,12 +216,12 @@
                         <!-- Mini Sayaçlar -->
                         <div class="hero-stats-row">
                             <div class="stat-pill">
-                                <span class="stat-num" data-target="50">50+</span>
+                                <span class="stat-num">50+</span>
                                 <span class="stat-txt">Aktif Yazılım</span>
                             </div>
                             <div class="stat-divider"></div>
                             <div class="stat-pill">
-                                <span class="stat-num" data-target="2500">2,500+</span>
+                                <span class="stat-num">2,500+</span>
                                 <span class="stat-txt">Mutlu Müşteri</span>
                             </div>
                             <div class="stat-divider"></div>
@@ -429,14 +423,14 @@
             </div>
         </section>
 
-        <!-- 3. YAZILIM KATALOĞU (MARKET) -->
+        <!-- 3. YAZILIM KATALOĞU (FOTOĞRAFLI & GELİŞMİŞ MARKET) -->
         <section id="market" class="market-section">
             <div class="section-container">
                 <div class="section-header-split">
                     <div>
                         <span class="section-tag-pill"><i class="fas fa-store"></i> PREMİUM YAZILIMLAR</span>
                         <h2 class="section-heading">Legante <span class="gradient-text">Yazılım Marketi</span></h2>
-                        <p class="section-subtext">Oyununa en uygun paketi seç, güvenli ödeme ile anında lisansını teslim al.</p>
+                        <p class="section-subtext">Resmi oyun görselleriyle donatılmış, yüksek kaliteli hile arşivi ve VIP paketler.</p>
                     </div>
 
                     <!-- Canlı Arama ve Sıralama Barı -->
@@ -468,9 +462,9 @@
                     <button class="cat-pill-btn" data-category="booster"><i class="fas fa-rocket"></i> Booster</button>
                 </div>
 
-                <!-- Ürün Kartları Izgarası (Dinamik JS ile yönetilir ve beslenir) -->
+                <!-- Ürün Kartları Izgarası (Görsel Banner'lı Dinamik JS Render) -->
                 <div class="products-grid" id="products-container">
-                    <!-- JavaScript ile dinamik render edilir -->
+                    <!-- JavaScript ile zengin kartlar buraya render edilir -->
                 </div>
             </div>
         </section>
@@ -889,8 +883,8 @@
             <div class="footer-bottom-bar">
                 <p>&copy; 2024-2025 Legante Project. Tüm hakları saklıdır. Bu platformdaki yazılımlar güvenlik araştırması ve özel test ortamları için tasarlanmıştır.</p>
                 <div class="footer-bottom-links">
-                    <a href="#terms" onclick="showNotification('Kullanım Koşulları: Bu yazılımlar yalnızca özel test ortamları içindir.', 'info')">Kullanım Koşulları</a>
-                    <a href="#privacy" onclick="showNotification('Gizlilik Politikası: Hiçbir kullanıcı verisi 3. şahıslarla paylaşılmaz.', 'info')">Gizlilik Politikası</a>
+                    <a href="#terms" onclick="showToast('Kullanım Koşulları: Bu yazılımlar yalnızca özel test ortamları içindir.', 'info')">Kullanım Koşulları</a>
+                    <a href="#privacy" onclick="showToast('Gizlilik Politikası: Hiçbir kullanıcı verisi 3. şahıslarla paylaşılmaz.', 'info')">Gizlilik Politikası</a>
                 </div>
             </div>
         </div>

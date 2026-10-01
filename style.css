@@ -7,7 +7,7 @@
     --bg-main: #06060c;
     --bg-secondary: #0a0a16;
     --bg-card: rgba(13, 13, 26, 0.75);
-    --bg-card-hover: rgba(22, 22, 42, 0.85);
+    --bg-card-hover: rgba(22, 22, 42, 0.88);
     --bg-glass: rgba(18, 18, 36, 0.6);
     --bg-panel: rgba(8, 8, 16, 0.96);
 
@@ -536,6 +536,8 @@ input, textarea, select {
 .panel-extra {
     padding: 12px 16px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
+    max-height: 280px;
+    overflow-y: auto;
 }
 
 .extra-label {
@@ -1342,7 +1344,7 @@ input, textarea, select {
     padding-top: 12px;
 }
 
-/* ==================== MARKET SECTION ==================== */
+/* ==================== MARKET & ENHANCED PHOTO CARDS ==================== */
 .market-section {
     padding: 80px 0;
 }
@@ -1426,10 +1428,10 @@ input, textarea, select {
     box-shadow: 0 3px 15px var(--primary-glow);
 }
 
-/* PRODUCT CARDS */
+/* FOTOĞRAFLI YÜKSEK KALİTE ÜRÜN KARTLARI */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 24px;
 }
 
@@ -1442,73 +1444,95 @@ input, textarea, select {
     flex-direction: column;
     transition: var(--transition);
     position: relative;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 .product-card:hover {
     border-color: var(--border-glow);
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(139, 92, 246, 0.15);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.2);
 }
 
-.product-card-top {
+/* KART FOTOĞRAF BANNERI */
+.product-card-banner {
     position: relative;
-    padding: 24px 20px 16px;
-    background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%);
+    width: 100%;
+    height: 165px;
+    overflow: hidden;
+    background: #0f0f1c;
+}
+
+.product-card-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.product-card:hover .product-card-banner img {
+    transform: scale(1.09);
+}
+
+.banner-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(6, 6, 12, 0.2) 0%, rgba(13, 13, 26, 0.6) 60%, var(--bg-card) 100%);
+    pointer-events: none;
+}
+
+.banner-badge-group {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: 14px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    z-index: 2;
+}
+
+.product-game-chip {
+    background: rgba(6, 6, 12, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.product-game-chip i {
+    color: var(--accent-cyan);
 }
 
 .product-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
     font-size: 0.65rem;
     font-weight: 800;
     padding: 4px 10px;
     border-radius: 6px;
     letter-spacing: 0.5px;
 }
-.badge-hot { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
-.badge-vip { background: rgba(139, 92, 246, 0.2); color: var(--primary-light); border: 1px solid var(--primary); }
-.badge-safe { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.35); }
-
-.product-icon-wrap {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #1f1f3a, #2b2b52);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: var(--primary-light);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
+.badge-hot { background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+.badge-vip { background: rgba(139, 92, 246, 0.25); color: var(--primary-light); border: 1px solid var(--primary); }
+.badge-safe { background: rgba(16, 185, 129, 0.25); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
 
 .product-card-body {
-    padding: 0 20px 20px;
+    padding: 16px 20px 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.product-game-tag {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--accent-cyan);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.product-title {
+    font-size: 1.25rem;
+    font-weight: 800;
     margin-bottom: 6px;
 }
 
-.product-title {
-    font-size: 1.2rem;
-    font-weight: 800;
-    margin-bottom: 8px;
-}
-
 .product-desc {
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     color: var(--text-secondary);
     line-height: 1.5;
     margin-bottom: 16px;
@@ -1538,7 +1562,7 @@ input, textarea, select {
 
 .product-card-footer {
     padding: 16px 20px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.25);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
@@ -2985,65 +3009,7 @@ input, textarea, select {
     transform: translateX(4px);
 }
 
-/* ==================== LIVE SALES TICKER & TOAST ==================== */
-.sales-ticker {
-    position: fixed;
-    bottom: 24px;
-    left: calc(var(--sidebar-width) + 24px);
-    background: rgba(14, 14, 28, 0.9);
-    border: 1px solid var(--border-glow);
-    border-radius: var(--radius-lg);
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    z-index: 800;
-    backdrop-filter: blur(15px);
-    transform: translateY(120%);
-    opacity: 0;
-    transition: transform 0.4s ease, opacity 0.4s ease;
-    pointer-events: none;
-}
-
-.sales-ticker.show {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.ticker-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--primary), var(--accent-pink));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-size: 0.9rem;
-}
-
-.ticker-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.ticker-user {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.ticker-item {
-    font-size: 0.72rem;
-    color: var(--primary-light);
-}
-
-.ticker-time {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-}
-
+/* ==================== TOAST NOTIFICATIONS ==================== */
 .toast-container {
     position: fixed;
     top: 24px;
@@ -3084,18 +3050,46 @@ input, textarea, select {
 .tool-result-box {
     margin-top: 14px;
     padding: 14px;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.45);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-md);
     font-size: 0.85rem;
     line-height: 1.6;
-    max-height: 220px;
+    max-height: 250px;
     overflow-y: auto;
 }
 
 .tool-row {
     display: flex;
     gap: 10px;
+}
+
+.drop-zone {
+    border: 2px dashed rgba(139, 92, 246, 0.4);
+    border-radius: var(--radius-md);
+    padding: 24px 16px;
+    text-align: center;
+    background: rgba(139, 92, 246, 0.04);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.drop-zone:hover {
+    border-color: var(--primary-light);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.hw-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 0.8rem;
+}
+
+.hw-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
 }
 
 /* ==================== RESPONSIVE MEDIA QUERIES ==================== */
@@ -3141,10 +3135,6 @@ input, textarea, select {
 
     .mobile-menu-btn {
         display: flex;
-    }
-
-    .sales-ticker {
-        left: 20px;
     }
 
     .hero-grid {
