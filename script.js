@@ -2357,7 +2357,7 @@ function openKeyModal() {
                     <div id="vip-lock-icon" style="cursor:pointer; width:64px; height:64px; background:linear-gradient(135deg,var(--primary),#7c3aed); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:1.8rem; color:#fff; box-shadow:0 0 20px rgba(147,51,234,0.4); transition:all 0.3s;" title="Yetkilendirme Çipi">
                         <i class="fas fa-lock"></i>
                     </div>
-                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:14px;">11 özel profesyonel siber güvenlik ve ağ analiz aracına erişmek için dinamik VIP lisans anahtarınızı giriniz.</p>
+                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:14px;">15 özel profesyonel siber güvenlik ve ağ analiz aracına erişmek için dinamik VIP lisans anahtarınızı giriniz.</p>
                     <input type="text" id="extra-key-input" class="modal-input" placeholder="LGT-XXXX-XXXX-XXXX" style="text-align:center; font-family:var(--font-mono); letter-spacing:2px; font-weight:700;">
                     
                     <div style="display:flex; gap:8px; margin-top:12px;">
