@@ -2199,50 +2199,109 @@ async function pullCloudUsers(showNotification = false) {
     if (icon) icon.classList.add('fa-spin');
 
     try {
+        let localUsers = loadUsers();
+
+        // Cihazdaki aktif oturumu da yerel listeye dahil et
+        const savedCurrent = localStorage.getItem('legante_current_user');
+        if (savedCurrent) {
+            try {
+                const cur = JSON.parse(savedCurrent);
+                if (cur && cur.email) {
+                    const ex = localUsers.find(u => u.email.toLowerCase() === cur.email.toLowerCase());
+                    if (!ex) {
+                        localUsers.push(cur);
+                    }
+                }
+            } catch(e) {}
+        }
+
         const res = await fetch(CLOUD_DB_URL);
         if (res.ok) {
             const json = await res.json();
-            const cloudUsers = json?.data?.users;
-            if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
-                let localUsers = loadUsers();
-                let hasNewUser = false;
+            let cloudUsers = Array.isArray(json?.data?.users) ? json.data.users : [];
+            let hasNewUser = false;
+            let needsCloudUpload = false;
 
-                cloudUsers.forEach(cu => {
-                    const localIdx = localUsers.findIndex(lu => lu.email.toLowerCase() === cu.email.toLowerCase());
-                    if (localIdx === -1) {
-                        localUsers.push(cu);
-                        hasNewUser = true;
-                    } else {
-                        // Eğer root kurucu değilse yetkilerini ve bakiyesini güncelle
-                        if (!isOwnerEmail(localUsers[localIdx].email)) {
-                            localUsers[localIdx].role = cu.role || localUsers[localIdx].role;
-                            localUsers[localIdx].balance = cu.balance !== undefined ? cu.balance : localUsers[localIdx].balance;
-                            if (cu.licenses && cu.licenses.length > (localUsers[localIdx].licenses?.length || 0)) {
-                                localUsers[localIdx].licenses = cu.licenses;
-                            }
+            // 1. Bulutta olup yerelde olmayan kullanıcıları yerele ekle (veya rolleri güncelle)
+            cloudUsers.forEach(cu => {
+                if (!cu || !cu.email) return;
+                const localIdx = localUsers.findIndex(lu => lu.email && lu.email.toLowerCase() === cu.email.toLowerCase());
+                if (localIdx === -1) {
+                    localUsers.push(cu);
+                    hasNewUser = true;
+                } else {
+                    if (!isOwnerEmail(localUsers[localIdx].email)) {
+                        if (cu.role && cu.role !== localUsers[localIdx].role) {
+                            localUsers[localIdx].role = cu.role;
+                            hasNewUser = true;
+                        }
+                        if (cu.balance !== undefined && cu.balance !== localUsers[localIdx].balance) {
+                            localUsers[localIdx].balance = cu.balance;
+                            hasNewUser = true;
+                        }
+                        if (cu.licenses && cu.licenses.length > (localUsers[localIdx].licenses?.length || 0)) {
+                            localUsers[localIdx].licenses = cu.licenses;
+                            hasNewUser = true;
                         }
                     }
+                }
+            });
+
+            // 2. Yerelde olup bulutta olmayan kullanıcıları buluta ekle (Örn: daha önce kayıt olmuş arkadaş!)
+            localUsers.forEach(lu => {
+                if (!lu || !lu.email) return;
+                const cloudIdx = cloudUsers.findIndex(cu => cu.email && cu.email.toLowerCase() === lu.email.toLowerCase());
+                if (cloudIdx === -1) {
+                    cloudUsers.push({
+                        id: lu.id || Date.now(),
+                        name: lu.name || 'Kullanıcı',
+                        email: lu.email,
+                        role: lu.role || '⭐ VIP Member',
+                        isOwner: lu.isOwner || false,
+                        balance: lu.balance || 0,
+                        passwordHash: lu.passwordHash || '',
+                        salt: lu.salt || '',
+                        password: lu.password || '',
+                        registeredAt: lu.registeredAt || new Date().toLocaleDateString('tr-TR'),
+                        orders: lu.orders || [],
+                        licenses: lu.licenses || []
+                    });
+                    needsCloudUpload = true;
+                }
+            });
+
+            // Eğer yerelde önceden kayıtlı kullanıcılar bulunduysa buluta pushla
+            if (needsCloudUpload) {
+                await fetch(CLOUD_DB_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: 'legante_users_master_cloud_v1',
+                        data: { users: cloudUsers, lastUpdated: Date.now() }
+                    })
                 });
+            }
 
+            if (hasNewUser) {
                 saveUsers(localUsers);
+            }
 
-                // Eğer aktif kullanıcı güncellendiyse oturumu da tazele
-                if (currentUser) {
-                    const me = localUsers.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
-                    if (me && !isOwnerEmail(me.email)) {
-                        currentUser.role = me.role;
-                        currentUser.balance = me.balance;
-                        currentUser.licenses = me.licenses;
-                        localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
-                        loadCurrentUser();
-                    }
+            // Eğer aktif kullanıcı güncellendiyse oturumu da tazele
+            if (currentUser) {
+                const me = localUsers.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+                if (me && !isOwnerEmail(me.email)) {
+                    currentUser.role = me.role;
+                    currentUser.balance = me.balance;
+                    currentUser.licenses = me.licenses;
+                    localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
+                    loadCurrentUser();
                 }
+            }
 
-                renderOwnerPanel();
-                if (showNotification) {
-                    showToast(`☁️ Bulut başarıyla senkronize edildi! Toplam ${localUsers.length} kullanıcı aktif.`, 'success');
-                    playSuccessSFX();
-                }
+            renderOwnerPanel();
+            if (showNotification) {
+                showToast(`☁️ Bulut başarıyla senkronize edildi! Toplam ${localUsers.length} kullanıcı aktif.`, 'success');
+                playSuccessSFX();
             }
         }
     } catch(err) {
@@ -3915,12 +3974,11 @@ document.addEventListener('DOMContentLoaded', () => {
     bindTool('tool-obfuscator', openCodeObfuscator);
 });
 
-// ==================== 11. AI CHAT TOOLS ENGINE v4.0 ====================
+// ==================== 11. ADVANCED CONVERSATIONAL AI ENGINE v5.0 ====================
 let currentAiModel = 'gpt4o';
 
 const aiKnowledgeBase = {
-    merhaba: 'Selamlar dostum! 🎮 Legante AI asistanı emrinde. Valorant, CS2, FiveM hileleri veya donanım banı (HWID Spoofer) konusunda ne öğrenmek istersin?',
-    hile: '50\'den fazla hilemiz mevcut! Valorant Mevlana (Apex Edition), Valorant Pro VIP, CS2 Premier Elite, Rust Domination ve FiveM Global Menu şu an en çok satanlar listesinde. Tümü Ring0 Kernel seviyesinde Undetected korumalıdır.',
+    hile: '50\'den fazla hilemiz mevcut! Valorant Mevlana (Apex Edition), Valorant Neural AI Colorbot, Valorant Pro VIP, CS2 Premier Elite, Rust Domination ve FiveM Global Menu şu an en çok satanlar listesinde. Tümü Ring0 Kernel seviyesinde Undetected korumalıdır.',
     fiyat: 'Fiyatlarımız:\n• Valorant Mevlana & Rage VIP (360° Desync & Silent Aim): 599₺/ay\n• Valorant Neural AI Colorbot: 349₺\n• Valorant Pro VIP: 379₺/ay\n• CS2 Premier Elite: 319₺/ay\n• Rust Domination: 449₺/ay\n• Permanent HWID Spoofer: 549₺\n• VIP Paketleri: 249₺ - 799₺ arasında değişiyor. Sepette "VIP20" kuponunu kullanarak anında %20 indirim kazanabilirsin!',
     spoofer: 'Legante HWID Spoofer, anakart (UUID), disk seri numaraları, MAC adresleri ve BIOS kimliklerini donanım düzeyinde sanallaştırır. Format atmadan VAN 152 veya Rust banını anında çözer.',
     teslimat: 'Ödemen onaylandığı saniyede lisans anahtarın profilinde "Lisanslarım" bölümünde hazır olur. Otomatik botumuz Discord rolünü ve indirme bağlantını anında sağlar.',
@@ -3929,11 +3987,159 @@ const aiKnowledgeBase = {
 };
 
 function getAIAnswer(question) {
-    const q = question.toLowerCase();
-    for (const [key, ans] of Object.entries(aiKnowledgeBase)) {
-        if (q.includes(key)) return ans;
+    if (!question) return 'Seni dinliyorum dostum, bir şey sormak ister misin? 🎮';
+    const raw = question.trim();
+    const q = raw.toLowerCase()
+        .replace(/ı/g, 'i')
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ş/g, 's')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c');
+
+    const randomPick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // 1. Selamlama & Karşılama (sa, selam, merhaba vb.)
+    if (/\b(sa|s\.a|s\.a\.|selam|selamun|selamun aleykum|selamunaleykum|slm|merhaba|merhabalar|gunaydin|iyi gunler|iyi aksamlar|hey|yo)\b/.test(q)) {
+        return randomPick([
+            'Aleyküm selam kral! 🎮 Legante Siber Üssüne hoş geldin. Bugün hangi oyunda dominasyon kuruyoruz? Valorant mı, CS2 mi, yoksa Rust mı?',
+            'Ve aleyküm selam dostum! Hoş geldin. Hilelerimiz, HWID Spoofer veya 15 siber analiz aracımız hakkında ne öğrenmek istersin? Emrindeyim! 🚀',
+            'Aleyküm selam reis! Ring0 Kernel sürücülerimiz stabil, WAF kalkanımız devrede. Sana bugün nasıl yardımcı olabilirim? 🔥'
+        ]);
     }
-    return `Sorduğun konu hakkında Legante mühendislik ekibimiz sana memnuniyetle yardımcı olacaktır! 🚀 Özel kurulum adımları, lisans yenileme ve 7/24 canlı destek için Discord sunucumuza gelebilirsin: discord.gg/bM6SZcNmzW`;
+
+    // 2. Aleyküm Selam
+    if (/\b(as|a\.s|a\.s\.|aleykum selam|ve aleykum)\b/.test(q)) {
+        return 'Eyvallah kral! Keyifler nasıl, bugün hangi rankı hedefliyoruz? İstediğin hileyi veya özelliği sorabilirsin. 👑';
+    }
+
+    // 3. Hal Hatır / Nasılsın
+    if (/\b(naber|nasilsin|napıyon|napiyon|ne haber|noruyon|keyifler|durumlar|nasil gidiyor)\b/.test(q)) {
+        return randomPick([
+            'Bomba gibiyim kral! ⚡ 1440° açı dönüşlü Mevlana SpinBot ve WAF kalkanlarımız tıkır tıkır çalışıyor. Sen nasılsın, oyunlar ve ranklar nasıl gidiyor?',
+            'Çok şükür reis, 7/24 görev başındayız! Vanguard ve EAC güncellemelerini anlık takip edip hileleri Undetected tutuyoruz. Sen ne yapıyorsun?',
+            'Harikayım dostum! Senin için hazır bekliyorum. Bugün hangi oyunu fethediyoruz? CS2 Premier mi, Valorant mı? 🎯'
+        ]);
+    }
+
+    // 4. İyiyim / Güzel Cevapları
+    if (/\b(iyiyim|iyi|bomba|sukur|harika|super|fena degil|guzel)\b/.test(q) && !q.includes('fiyat')) {
+        return randomPick([
+            'Harika! Daim olsun kral. Enerjimiz tamamsa hangi yazılımımıza göz atmak istersin? İster yeni 599₺\'lik Valorant Mevlana VIP, ister CS2 Premier!',
+            'Süper! Keyiflerin yerinde olmasına sevindim. Aklına takılan herhangi bir kurulum veya ban koruma sorusu varsa hemen sorabilirsin! 🚀'
+        ]);
+    }
+
+    // 5. Kötüyüm / Ban Yedim / Moral Bozukluğu
+    if (/\b(kotu|moralim|ban yedim|banlandim|hwid ban|van 152|van152)\b/.test(q)) {
+        return 'Geçmiş olsun dostum ama hiç dert etme! Legante Permanent HWID Spoofer (549₺) tam da bu anlar için var. Anakart (UUID) ve disk seri numaralarını sanallaştırıp VAN 152 veya Rust banını 10 saniyede tarihe gömüyoruz. Format atmadan hemen oyuna dönebilirsin! 🛡️';
+    }
+
+    // 6. Kimsin / Nesin
+    if (/\b(sen kimsin|kimsin|adin ne|nesin|yapay zeka misin|ai misin|bot musun)\b/.test(q)) {
+        return 'Ben **Legante AI Asistanı v5.0**! 🤖 Google DeepMind & Legante Siber Güvenlik ekibi tarafından eğitildim. Oyun hileleri, Ring0 Kernel sürücüleri, HWID Spoofer, 15 siber ağ aracı ve hesap güvenliği konusunda sana 7/24 rehberlik etmek için buradayım. Benimle dilediğin gibi sohbet edebilirsin!';
+    }
+
+    // 7. Kurucu / Owner / 0nlyAny
+    if (/\b(kurucu|sahip|owner|0nlyany|kurucusu|kim kurdu)\b/.test(q)) {
+        return 'Legante Project\'in tek ve mutlak egemen kurucusu **0nlyAny** (`0nlyAny@gmail.com`) kraldır! 👑 Tüm Ring0 kernel altyapısı, VIP hile koleksiyonu ve altyapı onun himayesindedir.';
+    }
+
+    // 8. Valorant Mevlana / Spinbot / 600 TL / Rage
+    if (/\b(mevlana|spinbot|rage|1440|apex edition|600 tl|600tl)\b/.test(q)) {
+        return '🌪️ **Valorant Mevlana & Rage Protocol (Apex Edition)** tam bir vahşet! Saniyede 1440° açı dönüş rotasyonlu 360° Desync SpinBot, ekran hedefe dönmeden vuran Silent Aim 360°, duvardan geçiren Magic Bullet ve Vanguard Ring0 DKOM sürücüsü içerir. Fiyatı **599₺** ve kalıcı HWID Spoofer pakete ücretsiz dahildir! Markette hemen inceleyebilirsin.';
+    }
+
+    // 9. Colorbot / Neural / YOLOv8
+    if (/\b(colorbot|color bot|neural|yolov8|vision|goruntu|hafiza|memory free)\b/.test(q)) {
+        return '🧠 **Valorant Neural AI Colorbot (349₺)** oyun belleğine dokunmaz (Zero-Memory)! YOLOv8 yapay zeka görüntü işleme motoruyla düşman rengini algılar, Arduino/KMBox donanımıyla fiziksel fare sinyali üretir. Vanguard\'ın algılaması teknik olarak imkansızdır!';
+    }
+
+    // 10. CS2 / Counter Strike
+    if (/\b(cs2|csgo|counter strike|vacnet|premier)\b/.test(q)) {
+        return '🔫 **CS2 Premier Elite (319₺)** hilemiz VACnet 3.0 yapay zekasına yakalanmayan insan hareketlerini taklit eden (Humanized) aimbot, Skeleton ESP ve Triggerbot içerir. Premier modunda ban riski sıfırdır!';
+    }
+
+    // 11. Rust
+    if (/\b(rust|eac|rust domination)\b/.test(q)) {
+        return '☢️ **Rust Domination (449₺)** hilemiz EAC safe kernel sürücüsü, No-Recoil, Ore/Loot ESP, Silent Aim ve Debug Camera özellikleriyle adanın mutlak hakimi olmanı sağlar!';
+    }
+
+    // 12. FiveM / GTA
+    if (/\b(fivem|gta|roleplay|rp)\b/.test(q)) {
+        return '🚗 **FiveM Global Menu (279₺)** tüm RP sunucularında çalışan Godmode, No-Clip, Para/Araç spawn simülatörü ve dökülmez Silent Aimbot içerir.';
+    }
+
+    // 13. Spoofer / HWID
+    if (/\b(spoofer|hwid|anakart|format)\b/.test(q)) {
+        return '💿 **Permanent HWID Spoofer (549₺)** anakart (UUID), disk seri numaraları, MAC adresleri ve BIOS kimliklerini donanım düzeyinde sanallaştırır. Format atmadan VAN 152 veya Rust banını anında çözer.';
+    }
+
+    // 14. Fiyatlar
+    if (/\b(fiyat|fiyatlar|ne kadar|kac para|ucret|paketler)\b/.test(q)) {
+        return aiKnowledgeBase.fiyat;
+    }
+
+    // 15. Bedava / Ücretsiz / Deneme
+    if (/\b(bedava|ucretsiz|free|deneme|trial)\b/.test(q)) {
+        return 'Kayıt olan tüm üyelerimize profilinde 3 günlük Legante Beta Deneme Lisansı otomatik hediye ediliyor! Ayrıca Discord sunucumuzdaki haftalık VIP çekilişlerine katılarak ücretsiz lisans kazanabilirsin. 🎁';
+    }
+
+    // 16. Ban Riski / Güvenlik
+    if (/\b(guvenli mi|ban yer miyim|ban riski|undetected|yakalanir mi|fix yedi mi)\b/.test(q)) {
+        return 'Tüm yazılımlarımız Ring0 Kernel modunda DKOM ile çalışır. Bellek haritalaması Vanguard ve EasyAntiCheat gözünden gizlenir. Her gün otomatik durum kontrolleri yapılır ve "UNDETECTED" rozetiyle sunulur. Legit (doğal) ayarlarla oynadığın sürece %100 güvendesin! 🛡️';
+    }
+
+    // 17. Satın Alma / Ödeme / Teslimat
+    if (/\b(nasil alirim|satin al|odeme|papara|iban|kredi karti|teslimat|lisans)\b/.test(q)) {
+        return 'Beğendiğin hilenin altındaki "Sepete Ekle" butonuna bas, sağ üstten sepetine git ve "Siparişi Tamamla" de. Papara, Havale/EFT, Kredi Kartı ve Kripto ile ödeyebilirsin. Ödeme onaylandığı saniyede lisansın Profil > Lisanslarım sekmesine anında düşer! 💳';
+    }
+
+    // 18. İndirim / Kupon
+    if (/\b(indirim|kupon|promosyon|kod)\b/.test(q)) {
+        return 'Sepette **VIP20** kupon kodunu kullanarak anında %20 indirim kazanabilirsin kral! 🔥';
+    }
+
+    // 19. Extra Tools / Key
+    if (/\b(extra tools|tool|araclar|anahtar|key|lgt)\b/.test(q)) {
+        return 'Sol menüdeki 15 adet siber güvenlik ve ağ analiz aracına (SMS Bomber, Token Checker, Webhook, JWT Decoder, Subnet CIDR, WAF Kalkan vb.) VIP lisans anahtarı penceresindeki "⚡ Key Türet" butonuna basarak veya `VIP-2026-LEGA-NTE1` yazarak anında erişebilirsin! 🧰';
+    }
+
+    // 20. Yetki / Admin / Arkadaş Ekleme
+    if (/\b(yetki|admin|rol|arkadas|kurucu panel)\b/.test(q)) {
+        return 'Kurucu (`0nlyAny@gmail.com`) hesabıyla giriş yapıldığında Profil > Kurucu Paneli sekmesinden tüm kayıtlı kullanıcılar anında görünür. Oradan tek tıkla arkadaşına Admin, Co-Owner veya VIP yetkisi verebilir, bakiye ve ücretsiz hile lisansı tanımlayabilirsin! 👑';
+    }
+
+    // 21. Discord / İletişim
+    if (/\b(dc|discord|sunucu|topluluk|link)\b/.test(q)) {
+        return 'Resmi Discord sunucumuz: **discord.gg/bM6SZcNmzW** 🚀 Çekilişler, config paylaşımları, duyurular ve 7/24 canlı destek ekibimiz orada!';
+    }
+
+    // 22. Teşekkür / Övgü
+    if (/\b(eyvallah|eyv|sagol|tesekkur|adamsin|kralsin|helal|tsk|sevdim)\b/.test(q)) {
+        return randomPick([
+            'Eyvallah kralım, lafı bile olmaz! Senin memnuniyetin bizim için her şeyden önemli. Başka sorun olursa çekinmeden yaz! 👑❤️',
+            'Rica ederim can dostum! Her zaman buradayım, iyi oyunlar bol zaferler dilerim! 🎮🔥',
+            'Sen de kralsın reis! Legante ailesi olarak daima yanındayız. 🚀'
+        ]);
+    }
+
+    // 23. Samimi Hitaplar
+    if (/\b(kanka|bro|dostum|hocam|reis|baskan|kral)\b/.test(q) && q.length < 15) {
+        return 'Buradayım kral! Bir şeye mi ihtiyacın vardı? Hangi hile veya konuda yardımcı olayım, söyle çözelim! 😎✌️';
+    }
+
+    // 24. Nasıl / Neden / Ne zaman soruları (Akıllı Context)
+    if (q.includes('nasil')) {
+        return `Sorduğun "${raw}" konusuyla ilgili olarak: Hileyi marketten sepete ekleyip aldıktan sonra kullanıcı panelinde hazır lisans anahtarı ve otomatik loader kurulum bağlantısı belirir. Loader'ı yönetici olarak başlatman yeterlidir. Takıldığın her adımda Discord üzerinden 7/24 teknik ekibimiz anında AnyDesk desteği sağlar! 🚀`;
+    }
+
+    if (q.includes('neden') || q.includes('niye')) {
+        return `Legante sistemlerinin bu kadar güçlü olmasının sebebi Ring0 Kernel sürücüsü ve Direct Kernel Object Manipulation (DKOM) teknolojisidir. Bellek tarayıcılar sürücüyü gizli tuttuğu için tespit edilme oranı %0'dır! 🛡️`;
+    }
+
+    // 25. Akıllı Genel Cevaplayıcı
+    return `Anladım kral! "${raw}" hakkında sana memnuniyetle yardımcı olabilirim. Legante olarak Valorant Mevlana VIP, Neural AI Colorbot, CS2 Premier Elite, Rust Domination, Permanent HWID Spoofer ve 15 adet profesyonel siber analiz aracına sahibiz. Hangi konuda detaylı bilgi istersin? 🎮⚡`;
 }
 
 function appendAIMessage(text, sender = 'Legante AI') {
