@@ -1233,7 +1233,19 @@
 
                 <!-- 4. KURUCU PANELİ (Sadece 0nlyAny@gmail.com) -->
                 <div id="prof-tab-owner" class="profile-tab-content" style="display:none;">
-                    <div class="owner-panel-container">
+                    <div class="owner-panel-container" style="display:flex; flex-direction:column; gap:14px;">
+                        
+                        <!-- Üst Bar: Başlık ve Canlı Bulut Senkronizasyon Butonu -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                            <div>
+                                <strong style="color:#fbbf24; font-size:1rem;"><i class="fas fa-crown"></i> KURUCU YÖNETİM MERKEZİ</strong>
+                                <span style="display:block; font-size:0.75rem; color:var(--text-secondary);">Tüm cihazlardan kayıt olan kullanıcıları görüntüleyin, anında yetkilendirin.</span>
+                            </div>
+                            <button id="owner-cloud-sync-btn" class="btn btn-sm btn-primary" onclick="ownerSyncCloud()" title="Tüm cihazlardan kayıt olan kullanıcıları buluttan çek">
+                                <i class="fas fa-arrows-rotate" id="cloud-sync-icon"></i> <span id="cloud-sync-btn-text">Bulut Senkronize Et</span>
+                            </button>
+                        </div>
+
                         <!-- İstatistik Kartları -->
                         <div class="owner-stats-grid">
                             <div class="owner-stat-card">
@@ -1245,20 +1257,86 @@
                                 <span class="owner-stat-lbl">Üretilen Lisans</span>
                             </div>
                             <div class="owner-stat-card">
-                                <span class="owner-stat-val" id="owner-stat-blocks">0</span>
-                                <span class="owner-stat-lbl">Savunma Kalkanı</span>
+                                <span class="owner-stat-val" id="owner-stat-blocks" style="color:#22c55e;">AKTİF</span>
+                                <span class="owner-stat-lbl">Bulut Veritabanı</span>
                             </div>
                             <div class="owner-stat-card">
-                                <span class="owner-stat-val" style="color:#22c55e;">ONLINE</span>
-                                <span class="owner-stat-lbl">Kernel v4.0</span>
+                                <span class="owner-stat-val" style="color:#a855f7;">ONLINE</span>
+                                <span class="owner-stat-lbl">Zero-Trust WAF</span>
+                            </div>
+                        </div>
+
+                        <!-- ARKADAŞ / YENİ KULLANICI YETKİLENDİRME FORMU -->
+                        <div class="owner-friend-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <strong style="color:#ffffff; font-size:0.88rem;"><i class="fas fa-user-shield text-purple"></i> Arkadaşını / Kullanıcıyı Ekle & Yetkilendir:</strong>
+                                <span style="font-size:0.72rem; color:#22c55e;"><i class="fas fa-bolt"></i> Anında Aktif Olur</span>
+                            </div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; margin-bottom:2px;">Kullanıcı / Arkadaş Adı:</label>
+                                    <input type="text" id="owner-new-name" class="modal-input" placeholder="Örn: Efe / Ahmet" style="padding:7px 10px; font-size:0.8rem;">
+                                </div>
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; margin-bottom:2px;">E-Posta Adresi (Kayıtlı/Yeni):</label>
+                                    <input type="email" id="owner-new-email" class="modal-input" placeholder="arkadas@gmail.com" style="padding:7px 10px; font-size:0.8rem;">
+                                </div>
+                            </div>
+                            <div style="display:grid; grid-template-columns: 1.5fr 1fr auto; gap:8px; align-items:end;">
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; margin-bottom:2px;">Atanacak Yetki / Rol:</label>
+                                    <select id="owner-new-role" class="modal-input" style="padding:7px 10px; font-size:0.8rem;">
+                                        <option value="👑 Co-Owner / Kurucu Ortağı">👑 Co-Owner / Kurucu Ortağı</option>
+                                        <option value="🛡️ Admin (Yönetici)" selected>🛡️ Admin (Yönetici)</option>
+                                        <option value="⚡ Moderatör">⚡ Moderatör</option>
+                                        <option value="💎 VIP Godlike">💎 VIP Godlike</option>
+                                        <option value="🔥 VIP Pro">🔥 VIP Pro</option>
+                                        <option value="⭐ VIP Member">⭐ VIP Member</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; margin-bottom:2px;">Tanımlanacak Bakiye (₺):</label>
+                                    <input type="number" id="owner-new-balance" class="modal-input" value="1000" style="padding:7px 10px; font-size:0.8rem;">
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary btn-glow" style="padding:8px 14px; font-size:0.8rem; white-space:nowrap;" onclick="ownerCreateOrAuthorizeUser()">
+                                        <i class="fas fa-check-double"></i> Yetkilendir & Kaydet
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KULLANICI LİSTESİ VE TABLO -->
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                                <strong style="color:#ffffff; font-size:0.88rem;"><i class="fas fa-users-gear text-purple"></i> Sistemdeki Tüm Kullanıcılar & Canlı Yetki Değiştirici:</strong>
+                                <input type="text" id="owner-user-search" class="modal-input" placeholder="🔍 İsim veya Email ara..." oninput="filterOwnerUsers(this.value)" style="max-width:220px; padding:5px 10px; font-size:0.78rem;">
+                            </div>
+                            <div style="overflow-x:auto; max-height:220px; overflow-y:auto; border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-md); background:rgba(0,0,0,0.2);">
+                                <table class="owner-users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Kullanıcı Bilgisi</th>
+                                            <th>E-Posta</th>
+                                            <th>Yetki / Rol (Canlı Değiştir)</th>
+                                            <th>Bakiye</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="owner-users-table-body">
+                                        <!-- JS ile doldurulur -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
                         <!-- Hızlı Lisans Üret & Sisteme Ekle -->
-                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(251,191,36,0.3); border-radius:var(--radius-md); padding:12px;">
-                            <strong style="color:#fbbf24; font-size:0.85rem;"><i class="fas fa-wand-magic-sparkles"></i> Kurucu Lisans Fabrikası:</strong>
-                            <div style="display:flex; gap:8px; margin-top:8px;">
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(251,191,36,0.3); border-radius:var(--radius-md); padding:10px 14px;">
+                            <strong style="color:#fbbf24; font-size:0.82rem;"><i class="fas fa-wand-magic-sparkles"></i> Kurucu Özel Lisans Fabrikası:</strong>
+                            <div style="display:flex; gap:8px; margin-top:6px;">
                                 <select id="owner-license-select" class="modal-input" style="flex:1; padding:6px 10px; font-size:0.8rem;">
+                                    <option value="Valorant Mevlana & Rage Protocol (Apex Edition)">Valorant Mevlana & Rage Protocol (Apex Edition)</option>
+                                    <option value="Valorant Neural AI Colorbot">Valorant Neural AI Colorbot</option>
                                     <option value="Valorant Pro VIP">Valorant Pro VIP</option>
                                     <option value="CS2 Premier Elite">CS2 Premier Elite</option>
                                     <option value="Permanent HWID Spoofer">Permanent HWID Spoofer</option>
@@ -1266,27 +1344,6 @@
                                     <option value="Rust Domination">Rust Domination</option>
                                 </select>
                                 <button class="btn btn-sm btn-primary" onclick="ownerMintLicense()"><i class="fas fa-plus"></i> Lisans Üret</button>
-                            </div>
-                        </div>
-
-                        <!-- Kullanıcı Yönetim Tablosu -->
-                        <div>
-                            <strong style="color:#ffffff; font-size:0.85rem;"><i class="fas fa-users-gear text-purple"></i> Sistem Kullanıcıları:</strong>
-                            <div style="overflow-x:auto; max-height:160px; overflow-y:auto; margin-top:6px;">
-                                <table class="owner-users-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Ad</th>
-                                            <th>Email</th>
-                                            <th>Yetki</th>
-                                            <th>Bakiye</th>
-                                            <th>İşlem</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="owner-users-table-body">
-                                        <!-- JS ile doldurulur -->
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
 

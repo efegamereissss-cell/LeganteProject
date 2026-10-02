@@ -3450,6 +3450,39 @@ input, textarea, select {
     background: #ef4444;
     border-color: #f87171;
 }
+
+.owner-role-select {
+    background: #0f071d;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #e9d5ff;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.25s ease;
+    max-width: 170px;
+}
+.owner-role-select:focus, .owner-role-select:hover {
+    border-color: #a855f7;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+    background: #1a0b36;
+}
+
+.profile-modal-card {
+    max-width: 780px !important;
+    width: 95%;
+}
+
+.owner-friend-card {
+    background: linear-gradient(135deg, rgba(88, 28, 135, 0.2), rgba(30, 10, 60, 0.4));
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
 .security-log-item {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.06);

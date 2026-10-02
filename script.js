@@ -1941,6 +1941,7 @@ async function handleRegister() {
         users.push(newUser);
     }
     saveUsers(users);
+    pushCloudUsers();
 
     currentUser = { ...newUser };
     delete currentUser.password;
@@ -2023,7 +2024,10 @@ function openProfileModal() {
     renderProfileLicenses();
     renderProfileOrders();
     renderSecurityLogs();
-    if (isOwner) renderOwnerPanel();
+    if (isOwner) {
+        renderOwnerPanel();
+        pullCloudUsers();
+    }
 
     switchProfileTab('licenses');
     modal.style.display = 'flex';
@@ -2063,6 +2067,7 @@ function switchProfileTab(tab) {
         if (tabOwner) tabOwner.style.display = 'block';
         if (btnOwner) btnOwner.classList.add('active');
         renderOwnerPanel();
+        pullCloudUsers();
     }
 }
 
@@ -2148,42 +2153,352 @@ function renderSecurityLogs() {
     `).join('');
 }
 
-// 9.11 OWNER COMMAND CENTER MANAGEMENT (FOR 0nlyAny@gmail.com)
+// ==================== 9.11 CLOUD USER DATABASE & OWNER COMMAND CENTER ====================
+const CLOUD_DB_URL = 'https://api.restful-api.dev/objects/ff808181a09d98f701a0fcbb4f4061d2';
+let isCloudSyncing = false;
+let ownerUserSearchQuery = '';
+
+// Bulut Veritabanına Kullanıcıları Yedekle / Eşitle
+async function pushCloudUsers() {
+    try {
+        const users = loadUsers();
+        const cloudData = users.map(u => ({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: u.role || '⭐ VIP Member',
+            isOwner: u.isOwner || false,
+            balance: u.balance || 0,
+            passwordHash: u.passwordHash || '',
+            salt: u.salt || '',
+            password: u.password || '',
+            registeredAt: u.registeredAt || new Date().toLocaleDateString('tr-TR'),
+            orders: u.orders || [],
+            licenses: u.licenses || []
+        }));
+
+        await fetch(CLOUD_DB_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: 'legante_users_master_cloud_v1',
+                data: { users: cloudData, lastUpdated: Date.now() }
+            })
+        });
+    } catch(err) {
+        console.warn('Bulut senkronizasyon uyarısı:', err);
+    }
+}
+
+// Buluttan Kayıt Olan Tüm Kullanıcıları Çek ve Yerel Veritabanıyla Birleştir
+async function pullCloudUsers(showNotification = false) {
+    if (isCloudSyncing) return;
+    isCloudSyncing = true;
+    const btn = document.getElementById('owner-cloud-sync-btn');
+    const icon = document.getElementById('cloud-sync-icon');
+    if (icon) icon.classList.add('fa-spin');
+
+    try {
+        const res = await fetch(CLOUD_DB_URL);
+        if (res.ok) {
+            const json = await res.json();
+            const cloudUsers = json?.data?.users;
+            if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
+                let localUsers = loadUsers();
+                let hasNewUser = false;
+
+                cloudUsers.forEach(cu => {
+                    const localIdx = localUsers.findIndex(lu => lu.email.toLowerCase() === cu.email.toLowerCase());
+                    if (localIdx === -1) {
+                        localUsers.push(cu);
+                        hasNewUser = true;
+                    } else {
+                        // Eğer root kurucu değilse yetkilerini ve bakiyesini güncelle
+                        if (!isOwnerEmail(localUsers[localIdx].email)) {
+                            localUsers[localIdx].role = cu.role || localUsers[localIdx].role;
+                            localUsers[localIdx].balance = cu.balance !== undefined ? cu.balance : localUsers[localIdx].balance;
+                            if (cu.licenses && cu.licenses.length > (localUsers[localIdx].licenses?.length || 0)) {
+                                localUsers[localIdx].licenses = cu.licenses;
+                            }
+                        }
+                    }
+                });
+
+                saveUsers(localUsers);
+
+                // Eğer aktif kullanıcı güncellendiyse oturumu da tazele
+                if (currentUser) {
+                    const me = localUsers.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+                    if (me && !isOwnerEmail(me.email)) {
+                        currentUser.role = me.role;
+                        currentUser.balance = me.balance;
+                        currentUser.licenses = me.licenses;
+                        localStorage.setItem('legante_current_user', JSON.stringify(currentUser));
+                        loadCurrentUser();
+                    }
+                }
+
+                renderOwnerPanel();
+                if (showNotification) {
+                    showToast(`☁️ Bulut başarıyla senkronize edildi! Toplam ${localUsers.length} kullanıcı aktif.`, 'success');
+                    playSuccessSFX();
+                }
+            }
+        }
+    } catch(err) {
+        console.warn('Bulut senkronizasyonu hatası:', err);
+        if (showNotification) {
+            showToast('Bulut sunucusuna erişilemedi, yerel veriler kullanılıyor.', 'warning');
+        }
+    } finally {
+        isCloudSyncing = false;
+        if (icon) icon.classList.remove('fa-spin');
+    }
+}
+
+// Kurucu Butonu ile Manuel Senkronizasyon
+function ownerSyncCloud() {
+    playClickSFX();
+    pullCloudUsers(true);
+}
+
+// Kullanıcı Arama Filtresi
+function filterOwnerUsers(val) {
+    ownerUserSearchQuery = (val || '').toLowerCase().trim();
+    renderOwnerPanel();
+}
+
+// 9.12 KURUCU YÖNETİM MERKEZİ PANELİ RENDER
 function renderOwnerPanel() {
     if (!currentUser || !currentUser.isOwner) return;
 
     const users = loadUsers();
     const statUsers = document.getElementById('owner-stat-users');
     const statLicenses = document.getElementById('owner-stat-licenses');
-    const statBlocks = document.getElementById('owner-stat-blocks');
     const tbody = document.getElementById('owner-users-table-body');
 
     let totalLicenses = 0;
     users.forEach(u => totalLicenses += (u.licenses ? u.licenses.length : 0));
 
-    const auditLogs = JSON.parse(localStorage.getItem('legante_security_audit') || '[]');
-    const blockedCount = auditLogs.filter(l => l.status === 'BLOCKED').length;
-
     if (statUsers) statUsers.innerText = users.length;
     if (statLicenses) statLicenses.innerText = totalLicenses;
-    if (statBlocks) statBlocks.innerText = blockedCount;
+
+    const filteredUsers = ownerUserSearchQuery
+        ? users.filter(u => u.name.toLowerCase().includes(ownerUserSearchQuery) || u.email.toLowerCase().includes(ownerUserSearchQuery) || (u.role && u.role.toLowerCase().includes(ownerUserSearchQuery)))
+        : users;
 
     if (tbody) {
-        tbody.innerHTML = users.map(u => `
-            <tr>
-                <td><strong>${u.name}</strong></td>
-                <td><span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-secondary);">${u.email}</span></td>
-                <td><span class="${u.isOwner ? 'badge-owner' : 'badge-role'}">${u.role || 'VIP'}</span></td>
-                <td style="color:#22c55e; font-weight:700;">${u.isOwner ? '∞ Sınırsız' : formatPrice(u.balance || 0)}</td>
-                <td>
-                    ${u.isOwner ? '<span style="color:#fbbf24; font-size:0.75rem;">👑 Kurucu</span>' : `
-                        <button class="owner-action-btn" onclick="ownerAddBalance('${u.email}')" title="500₺ Bakiye Ekle">+500₺</button>
-                        <button class="owner-action-btn del" onclick="ownerDeleteUser('${u.email}')" title="Kullanıcıyı Sil"><i class="fas fa-trash"></i></button>
-                    `}
-                </td>
-            </tr>
-        `).join('');
+        if (filteredUsers.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">Arama kriterine uygun kullanıcı bulunamadı.</td></tr>`;
+            return;
+        }
+
+        const rolesList = [
+            '👑 OWNER / KURUCU',
+            '👑 Co-Owner / Kurucu Ortağı',
+            '🛡️ Admin (Yönetici)',
+            '⚡ Moderatör',
+            '💎 VIP Godlike',
+            '🔥 VIP Pro',
+            '⭐ VIP Member',
+            '🚫 Yasaklı (Banned)'
+        ];
+
+        tbody.innerHTML = filteredUsers.map(u => {
+            const isRootOwner = isOwnerEmail(u.email);
+            const currentRole = u.role || '⭐ VIP Member';
+
+            return `
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="width:30px; height:30px; border-radius:50%; background:${isRootOwner ? 'linear-gradient(135deg,#fbbf24,#f59e0b)' : 'linear-gradient(135deg,var(--primary),#7c3aed)'}; display:flex; align-items:center; justify-content:center; font-size:0.75rem; color:#fff; font-weight:700; box-shadow:0 0 10px rgba(168,85,247,0.3);">
+                                ${isRootOwner ? '<i class="fas fa-crown"></i>' : (u.name ? u.name.charAt(0).toUpperCase() : 'U')}
+                            </div>
+                            <div>
+                                <strong style="color:#ffffff; font-size:0.83rem;">${u.name}</strong>
+                                <span style="display:block; font-size:0.68rem; color:var(--text-muted);"><i class="fas fa-calendar-day"></i> ${u.registeredAt || '01.01.2024'}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="font-family:var(--font-mono); font-size:0.75rem; color:#38bdf8;">${u.email}</span>
+                    </td>
+                    <td>
+                        ${isRootOwner ? `
+                            <span class="badge-role badge-owner"><i class="fas fa-crown"></i> OWNER</span>
+                        ` : `
+                            <select class="owner-role-select" onchange="ownerChangeUserRole('${u.email}', this.value)" title="Yetkiyi Değiştir">
+                                ${rolesList.map(r => `<option value="${r}" ${currentRole === r ? 'selected' : ''}>${r}</option>`).join('')}
+                            </select>
+                        `}
+                    </td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="color:#22c55e; font-weight:700; font-size:0.82rem;">${isRootOwner ? '∞ Sınırsız' : formatPrice(u.balance || 0)}</span>
+                            ${!isRootOwner ? `<button class="owner-action-btn" onclick="ownerSetCustomBalance('${u.email}')" title="Bakiyeyi Düzenle"><i class="fas fa-pen"></i></button>` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            ${isRootOwner ? '<span style="color:#fbbf24; font-size:0.75rem;">👑 Dokunulmaz</span>' : `
+                                <button class="owner-action-btn" onclick="ownerAddBalance('${u.email}')" title="+500₺ Bakiye Ekle">+500₺</button>
+                                <button class="owner-action-btn" style="background:rgba(168,85,247,0.15); border-color:#a855f7; color:#c084fc;" onclick="ownerGiveProductLicense('${u.email}')" title="Bu Kullanıcıya Lisans Ata"><i class="fas fa-gift"></i> Lisans Ver</button>
+                                <button class="owner-action-btn del" onclick="ownerDeleteUser('${u.email}')" title="Kullanıcıyı Sil"><i class="fas fa-trash"></i></button>
+                            `}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
+}
+
+// 9.13 ARKADAŞI VEYA YENİ KULLANICIYI E-POSTA İLE DİREKT YETKİLENDİRME
+async function ownerCreateOrAuthorizeUser() {
+    if (!currentUser || !currentUser.isOwner) return;
+
+    const nameInput = document.getElementById('owner-new-name');
+    const emailInput = document.getElementById('owner-new-email');
+    const roleSelect = document.getElementById('owner-new-role');
+    const balanceInput = document.getElementById('owner-new-balance');
+
+    const name = nameInput?.value.trim();
+    const email = emailInput?.value.trim();
+    const role = roleSelect?.value || '🛡️ Admin (Yönetici)';
+    const balance = parseInt(balanceInput?.value || '1000', 10);
+
+    if (!name || !email) {
+        showToast('Lütfen arkadaşınızın isim ve e-posta adresini girin!', 'error');
+        playErrorSFX();
+        return;
+    }
+
+    let users = loadUsers();
+    let userIdx = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+
+    playClickSFX();
+    if (userIdx !== -1) {
+        // Kullanıcı zaten varsa doğrudan yetkisini güncelle
+        users[userIdx].role = role;
+        users[userIdx].name = name;
+        users[userIdx].balance = (users[userIdx].balance || 0) + balance;
+        if (role.includes('Co-Owner') || role.includes('Kurucu')) {
+            users[userIdx].isOwner = true;
+        }
+        showToast(`👑 ${name} kullanıcısına "${role}" yetkisi ve +${balance}₺ bakiye aktarıldı!`, 'success');
+    } else {
+        // Yeni kullanıcı olarak oluştur ve yetkilendir
+        const salt = generateSalt(16);
+        const passwordHash = await hashUserPassword('123456', salt);
+        const newUser = {
+            id: Date.now(),
+            name: name,
+            email: email,
+            role: role,
+            isOwner: role.includes('Co-Owner') || role.includes('Kurucu'),
+            balance: balance,
+            passwordHash: passwordHash,
+            password: '123456',
+            salt: salt,
+            registeredAt: new Date().toLocaleDateString('tr-TR'),
+            orders: [],
+            licenses: [
+                {
+                    productName: `👑 ${role} Özel Başlangıç Lisansı`,
+                    key: generateDynamicVIPKey(),
+                    date: new Date().toLocaleDateString('tr-TR'),
+                    status: '👑 Sınırsız / Aktif'
+                }
+            ]
+        };
+        users.push(newUser);
+        showToast(`🎉 ${name} (${email}) başarıyla kaydedildi ve "${role}" yetkisi verildi! (Giriş Şifresi: 123456)`, 'success');
+    }
+
+    saveUsers(users);
+    renderOwnerPanel();
+    await pushCloudUsers();
+    playSuccessSFX();
+
+    if (nameInput) nameInput.value = '';
+    if (emailInput) emailInput.value = '';
+}
+
+// 9.14 CANLI YETKİ / ROL DEĞİŞTİRİCİ
+async function ownerChangeUserRole(email, newRole) {
+    if (!currentUser || !currentUser.isOwner) return;
+    if (isOwnerEmail(email) && newRole !== '👑 OWNER / KURUCU') {
+        showToast('Ana Kurucu (0nlyAny) rolü değiştirilemez!', 'error');
+        renderOwnerPanel();
+        return;
+    }
+
+    let users = loadUsers();
+    const u = users.find(user => user.email.toLowerCase() === email.toLowerCase());
+    if (u) {
+        playClickSFX();
+        u.role = newRole;
+        if (newRole.includes('Co-Owner') || newRole.includes('Kurucu')) {
+            u.isOwner = true;
+        } else if (!isOwnerEmail(u.email)) {
+            u.isOwner = false;
+        }
+        saveUsers(users);
+        renderOwnerPanel();
+        await pushCloudUsers();
+        playSuccessSFX();
+        showToast(`✅ ${u.name} kullanıcısının yetkisi "${newRole}" yapıldı!`, 'success');
+    }
+}
+
+// 9.15 ÖZEL BAKİYE AYARLAMA
+async function ownerSetCustomBalance(email) {
+    if (!currentUser || !currentUser.isOwner) return;
+    const users = loadUsers();
+    const u = users.find(user => user.email.toLowerCase() === email.toLowerCase());
+    if (!u) return;
+
+    const amountStr = prompt(`${u.name} kullanıcısı için yeni bakiye girin (₺):`, u.balance || 0);
+    if (amountStr === null) return;
+    const amt = parseInt(amountStr, 10);
+    if (isNaN(amt) || amt < 0) {
+        showToast('Geçerli bir sayı girin!', 'error');
+        return;
+    }
+
+    u.balance = amt;
+    saveUsers(users);
+    renderOwnerPanel();
+    await pushCloudUsers();
+    playSuccessSFX();
+    showToast(`💰 ${u.name} bakiyesi ${amt}₺ olarak güncellendi!`, 'success');
+}
+
+// 9.16 KULLANICIYA DİREKT HİLE LİSANSI ATAMA
+async function ownerGiveProductLicense(email) {
+    if (!currentUser || !currentUser.isOwner) return;
+    const users = loadUsers();
+    const u = users.find(user => user.email.toLowerCase() === email.toLowerCase());
+    if (!u) return;
+
+    const prodName = prompt(`${u.name} kullanıcısına tanımlamak istediğiniz hile adını yazın:\n(Örn: Valorant Mevlana & Rage Protocol, CS2 Premier Elite, Permanent HWID Spoofer)`, 'Valorant Mevlana & Rage Protocol (Apex Edition)');
+    if (!prodName) return;
+
+    const newKey = generateDynamicVIPKey();
+    if (!u.licenses) u.licenses = [];
+    u.licenses.unshift({
+        productName: `🎁 [YETKİLİ HEDİYESİ] ${prodName}`,
+        key: newKey,
+        date: new Date().toLocaleDateString('tr-TR'),
+        status: '👑 Sınırsız / Ömür Boyu (Lifetime)'
+    });
+
+    saveUsers(users);
+    renderOwnerPanel();
+    await pushCloudUsers();
+    playSuccessSFX();
+    showToast(`🎁 ${u.name} kullanıcısına "${prodName}" lisansı (${newKey}) tanımlandı!`, 'success');
 }
 
 function ownerMintLicense() {
@@ -2211,6 +2526,7 @@ function ownerMintLicense() {
 
     renderProfileLicenses();
     renderOwnerPanel();
+    pushCloudUsers();
     playSuccessSFX();
     showToast(`✨ ${productName} lisansı üretildi: ${newKey}`, 'success');
 }
@@ -2218,11 +2534,12 @@ function ownerMintLicense() {
 function ownerAddBalance(email) {
     if (!currentUser || !currentUser.isOwner) return;
     const users = loadUsers();
-    const u = users.find(user => user.email === email);
+    const u = users.find(user => user.email.toLowerCase() === email.toLowerCase());
     if (u) {
         u.balance = (u.balance || 0) + 500;
         saveUsers(users);
         renderOwnerPanel();
+        pushCloudUsers();
         playSuccessSFX();
         showToast(`${u.name} kullanıcısına +500₺ bakiye aktarıldı!`, 'success');
     }
@@ -2238,9 +2555,10 @@ function ownerDeleteUser(email) {
     if (!confirm(`${email} kullanıcısını sistemden silmek istediğinize emin misiniz?`)) return;
 
     let users = loadUsers();
-    users = users.filter(u => u.email !== email);
+    users = users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
     saveUsers(users);
     renderOwnerPanel();
+    pushCloudUsers();
     playClickSFX();
     showToast('Kullanıcı sistemden başarıyla silindi.', 'info');
 }
@@ -4040,6 +4358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProducts();
     updateCartUI();
     loadUsers();
+    pullCloudUsers();
     loadCurrentUser();
     updateExtraToolsUI();
     renderReviews();
